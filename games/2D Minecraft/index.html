@@ -1,1 +1,53 @@
+<!DOCTYPE html>
+<!--
+    Why are you here? You're supposed to be playing the game, not go here.
+-->
+<html>
+    <head>
+        <!--fonts-->
+        <link rel="stylesheet" media="screen" href="https://fontlibrary.org//face/minecraftia" type="text/css"/>
+        
+        <title>Too Dimensionalcraft</title>
+        <link rel="icon" href="../../images/Minecraft Grass Block.png" type="image/png">
 
+        <link rel="stylesheet" href="2D-Minecraft.css">
+    </head>
+
+    <body>
+        <noscript>
+            <p>Please enable JavaScript for this game to work.</p>
+            <p>If it doesn't work click <a style="color: blue;">here</a> to go to the game again.</p>
+            <p>If this issue persists check the permissions for this site and enable JavaScript.</p>
+
+            <a class="more_games">More games</a>
+        </noscript>
+
+        <p class="position"></p>
+        <p class="FPS"></p>
+
+        <div class="death_screen" style="display: none;">
+            You Died!
+            <p class="deathID">Player fell out of the world</p>
+            <button onclick="window.respawnPlayer();">Respawn</button>
+            <button onclick="window.save();">Main Menu</button>
+        </div>
+
+        <div class="pause_screen">
+            <button onclick="window.play();">Resume</button>
+            <button onclick="window.save();">Save & Go To Main Menu</button>
+        </div>
+        
+        <div class="main_menu">
+            <button onclick="window.play();">Continue</button>
+            <button onclick="window.new();">New World</button>
+        </div>
+
+        <!--canvas rendering-->
+        <canvas id="screen"></canvas>
+
+        <!--modules-->
+        <script type="module" src="../../utilities.js"></script>
+
+        <script type="module" src="2D-Minecraft.js"></script> 
+    </body>
+</html>
