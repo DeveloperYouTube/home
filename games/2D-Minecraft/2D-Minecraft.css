@@ -1,0 +1,104 @@
+/*
+Made by: 
+ _______________________________________________
+|    ______      _______    __        __        | ™
+|   |  ___  \   |  _____|   \ \      / /        |
+|   | |   |  |  | |___       \ \    / /         |
+|   | |   |  |  |  ___|       \ \  / /          |
+|   | |___|  |  | |_____       \ \/ /    ___    |
+|   |_______/   |_______|       \__/    /   \   |
+|_______________________________________\___/___|
+*/
+
+@font-face {
+    font-family: 'Minecraftia';
+    src: url('../../fonts/minecraftia.ttf') format('truetype');
+}
+body {
+    margin: 0px;
+    padding: 0px;
+    z-index: 5;
+    font-family: 'Minecraftia';
+    color: #ffffff;
+    font-size: 15px;
+}
+
+canvas {
+    display: block;
+    z-index: 10;
+    cursor: crosshair;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+}
+.position {
+    background-color: rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    padding: 0px 5px;
+    top: 0px;
+    left: 0px;
+    margin: 0px;
+    position: fixed;
+    z-index: 20;
+}
+.FPS {
+    background-color: rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    padding: 0px 5px;
+    top: 0px;
+    right: 0px;
+    margin: 0px;
+    position: fixed;
+    z-index: 20;
+}
+.death_screen, .main_menu, .pause_screen {
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    background-color: rgba(255, 0, 0, 0.5);
+    display: flex;
+    position: fixed;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    z-index: 100;
+}
+.main_menu {
+    background-color: rgba(0, 0, 0, 1);
+}
+.pause_screen {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+button, .more_games {
+    color: #ffffff;
+    background-color: #808080;
+    border-color: #404040;
+    border-width: 4px;
+    border-style: outset;
+    display: inline-block;
+    width: 500px;
+    height: 50px;
+    font-size: 20px;
+    font-family: 'Minecraftia';
+    margin: 10px;
+    cursor: pointer;
+    font-weight: 400;
+}
+button:active, .more_games:active {
+    border-style: inset;
+}
+.deathID {
+    font-size: 25px;
+    margin: 50px;
+}
+p {
+    margin: 0px;
+    padding: 0px;
+}
+noscript {
+    color: black;
+    font-weight: bold;
+}
