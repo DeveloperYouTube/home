@@ -239,9 +239,6 @@ const blockIDs = {
         drop: blockIDs[2]
     }
 };
-const itemIDs = {
-    0: blockIDs
-}
 
 function load_blocks(x, y) {
     let block_key = `${x}, ${y}`;
@@ -572,4 +569,8 @@ window.new = function() {
     } else {
         alert('Canceled!');
     }
+}
+
+const itemIDs = {
+    0: blockIDs
 }
