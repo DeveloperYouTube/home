@@ -537,3 +537,7 @@ window.new = function() {
         alert('Canceled!');
     }
 }
+
+window.controls = function() {
+    
+}
