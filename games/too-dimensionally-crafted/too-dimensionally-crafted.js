@@ -238,17 +238,17 @@ const blockIDs = {
 function load_blocks(x, y) {
     let block_key = `${x}, ${y}`;
     if (!blocks.hasOwnProperty(block_key)) {
-        const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
+        const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10;
         const noiseFloor = Math.floor(noiseValue);
 
         if (y === noiseFloor) {
-            blocks[block_key] = 0;
-        } else if (y + 3 + Math.random() > noiseFloor) {
-            blocks[block_key] = 4;
-        } else if (y >= noiseFloor) {
-            blocks[block_key] = 1;
+            blocks[block_key] = 0; // Grass at noiseFloor
+        } else if (y < noiseFloor) {
+            blocks[block_key] = 3; // Air above noiseFloor
+        } else if (y > noiseFloor && y <= noiseFloor + 3 + Math.random()) {
+            blocks[block_key] = 4; // Block 4 at random distance below noiseFloor
         } else {
-            blocks[block_key] = 3;
+            blocks[block_key] = 1; // Dirt below noiseFloor (after block 4)
         }
     }
 }
