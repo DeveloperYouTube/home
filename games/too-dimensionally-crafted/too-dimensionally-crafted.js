@@ -241,14 +241,14 @@ function load_blocks(x, y) {
         const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
         const noiseFloor = Math.floor(noiseValue);
 
-        if (y <= noiseFloor) {
-            blocks[block_key] = 3;
-        } else if (y === noiseFloor) {
+        if (y === noiseFloor) {
             blocks[block_key] = 0;
-        } else if (y + 3 >= noiseFloor) {
+        } else if (y + 3 + Math.random() > noiseFloor) {
             blocks[block_key] = 4;
         } else if (y >= noiseFloor) {
             blocks[block_key] = 1;
+        } else {
+            blocks[block_key] = 3;
         }
     }
 }
