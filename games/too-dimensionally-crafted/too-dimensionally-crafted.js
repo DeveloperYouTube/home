@@ -83,15 +83,13 @@ let game_running = false;
 main_menu.style.display = 'flex';
 pause_screen.style.display = 'none';
 death_screen.style.display = 'none';
-
+how2play.style.display = 'none';
 //key press logic
 document.addEventListener('keydown', (event) => {
     pressedKeys[event.key] = true; 
     if (event.key === 'Escape') {
         if (game_running) { // Only show pause menu if the game is running
             pause_screen.style.display = 'flex';
-        } else if (pause_screen.style.display === 'flex') {
-            pause_screen.style.display = 'none';
         }
     };
 });
@@ -538,8 +536,4 @@ window.new = function() {
     } else {
         alert('Canceled!');
     }
-}
-
-window.how2play = function() {
-    how2play.style.display = 'flex';
 }
