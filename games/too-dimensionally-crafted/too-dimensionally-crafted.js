@@ -27,7 +27,7 @@ import {utils} from '../../utilities.js';
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const username = prompt('Enter your Username');
-const seed = prompt('Seed:');
+const seed = Math.random() * 10000;
 const screen = document.getElementById('screen');
 const pen = screen.getContext('2d');
 const background = document.body;
