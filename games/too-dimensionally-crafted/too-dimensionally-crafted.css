@@ -76,9 +76,7 @@ div {
 }
 .how2play {
     background-color: #404040;
-}
-.how2play p {
-    margin-left: 600px;
+    flex-direction: row;
 }
 button, .more_games {
     color: #ffffff;
