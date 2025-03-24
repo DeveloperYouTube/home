@@ -45,6 +45,7 @@ const death_message = document.querySelector('.deathID');
 const pressedKeys = {};
 const main_menu = document.querySelector('.main_menu');
 const pause_screen = document.querySelector('.pause_screen');
+const how2play = document.querySelector('.how2play');
 //let (can change (e.g. player stuff))
 //offsets
 let offset_centerX;
@@ -519,6 +520,7 @@ window.save = function() {
     main_menu.style.display = 'flex';
     pause_screen.style.display = 'none';
     death_screen.style.display = 'none';
+    how2play.style.display = 'none';
 };
 
 window.new = function() {
@@ -538,6 +540,7 @@ window.new = function() {
     }
 }
 
-window.controls = function() {
-    
+window.how2play = function() {
+    how2play.style.display = 'flex';
+    main_menu.style.display = 'none';
 }
