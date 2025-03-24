@@ -237,20 +237,20 @@ const blockIDs = {
 
 function load_blocks(x, y) {
     let block_key = `${x}, ${y}`;
-    if (!blocks.hasOwnProperty(block_key)) {
-        const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10;
-        const noiseFloor = Math.floor(noiseValue);
-
-        if (y === noiseFloor) {
-            blocks[block_key] = 0; // Grass at noiseFloor
-        } else if (y + 3 + Math.random() > noiseFloor) {
-            blocks[block_key] = 4; // Block 4 at random distance below noiseFloor
-        } else if (y >= noiseFloor) {
-            blocks[block_key] = 1; // Dirt below noiseFloor (after block 4)
-        } else {
-            blocks[block_key] = 3; // Air (default)
+        if (!blocks.hasOwnProperty(block_key)) {
+            const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
+            const noiseFloor = Math.floor(noiseValue);
+    
+            if (y >= noiseFloor) {
+                if (y === noiseFloor) {
+                    blocks[block_key] = 0; // Grass block on top
+                } else if (y <= noiseFloor + 3 + Math.random()) {
+                    blocks[block_key] = 1; // Dirt block underneath
+                }
+            } else {
+                blocks[block_key] = 3; // Air block above
+            }
         }
-    }
 }
 
 const blockTextureCanvases = {};
