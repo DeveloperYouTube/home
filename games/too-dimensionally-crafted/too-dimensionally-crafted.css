@@ -53,18 +53,20 @@ canvas {
     z-index: 20;
 }
 .death_screen, .main_menu, .pause_screen {
-    top: 0px;
-    bottom: 0px;
-    right: 0px;
-    left: 0px;
     background-color: rgba(255, 0, 0, 0.5);
     display: flex;
-    position: fixed;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-size: 50px;
     z-index: 100;
+}
+div {
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    position: fixed;
 }
 .main_menu {
     background-color: rgba(0, 0, 0, 1);
