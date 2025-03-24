@@ -102,3 +102,10 @@ noscript {
     color: black;
     font-weight: bold;
 }
+
+.aside {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+}
