@@ -245,7 +245,7 @@ function load_blocks(x, y) {
             blocks[block_key] = 3;
         } else if (y === noiseFloor) {
             blocks[block_key] = 0;
-        } else if (y - 3 >= noiseFloor) {
+        } else if (y + 3 >= noiseFloor) {
             blocks[block_key] = 4;
         } else if (y >= noiseFloor) {
             blocks[block_key] = 1;
