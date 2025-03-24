@@ -11,7 +11,7 @@ Made by:
 */
 
 //safty
-const correctURL = "https://games.dev-alex-youtube.ca/2d-mc";
+const correctURL = "https://developeryoutube.github.io/home/games/too-dimensionally-crafted/";
 const url = window.location.href;
 let in_correctURL = true;
 if (url !== correctURL) {
