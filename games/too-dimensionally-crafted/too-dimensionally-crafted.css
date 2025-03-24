@@ -75,10 +75,10 @@ div {
     background-color: rgba(0, 0, 0, 0.5);
 }
 .how2play {
-    background-color: #808080;
-    p {
-        margin-left: 600px;
-    }
+    background-color: #404040;
+}
+.how2play p {
+    margin-left: 600px;
 }
 button, .more_games {
     color: #ffffff;
