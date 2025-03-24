@@ -74,6 +74,9 @@ div {
 .pause_screen {
     background-color: rgba(0, 0, 0, 0.5);
 }
+.how2play {
+    background-color: #808080;
+}
 button, .more_games {
     color: #ffffff;
     background-color: #808080;

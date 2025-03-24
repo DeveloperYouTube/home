@@ -542,5 +542,4 @@ window.new = function() {
 
 window.how2play = function() {
     how2play.style.display = 'flex';
-    main_menu.style.display = 'none';
 }
