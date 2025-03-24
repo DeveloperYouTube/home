@@ -243,9 +243,9 @@ function load_blocks(x, y) {
 
         if (y === noiseFloor) {
             blocks[block_key] = 0; // Grass at noiseFloor
-        } else if (y > noiseFloor && y <= noiseFloor + 3 + Math.random() && y > noiseFloor) {
+        } else if (y - 3 - Math.random() > noiseFloor) {
             blocks[block_key] = 4; // Block 4 at random distance below noiseFloor
-        } else if (y > noiseFloor) {
+        } else if (y >= noiseFloor) {
             blocks[block_key] = 1; // Dirt below noiseFloor (after block 4)
         } else {
             blocks[block_key] = 3; // Air (default)
