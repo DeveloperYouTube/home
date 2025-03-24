@@ -246,13 +246,13 @@ const itemIDs = {
 function load_blocks(x, y) {
     let block_key = `${x}, ${y}`;
     if (!blocks.hasOwnProperty(block_key)) {
-        const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
-        const noiseFloor = Math.round(noiseValue);
+        const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 2; // Adjust multiplier as needed
+        const noiseFloor = Math.round(noiseValue * 5);
         if (y >= noiseFloor) {
             if (y === noiseFloor) {
                 blocks[block_key] = 0; // Grass block on top
             } else {
-                if (y > noiseFloor + 3) {
+                if (y > Math.round(noiseValue)) {
                     blocks[block_key] = 4;
                 } else {
                     blocks[block_key] = 1;
