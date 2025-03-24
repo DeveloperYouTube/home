@@ -14,12 +14,12 @@ Made by:
 const correctURL = "https://games.dev-alex-youtube.ca/2d-mc";
 const url = window.location.href;
 let in_correctURL = true;
-/*if (url !== correctURL) {
+if (url !== correctURL) {
     in_correctURL = confirm(`The URL\n${url}\nis invalid and might break the game.\nPlease go to\n${correctURL}\nfor no risk of the game breaking.`);
     if (in_correctURL) {
         window.location.href = correctURL;
     };
-};*/
+};
 
 //imports
 import {utils} from '../../utilities.js';
