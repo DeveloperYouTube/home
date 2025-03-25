@@ -306,12 +306,12 @@ function render_blocks() {
     }
 }
 
-function checkCollision(rect1, rect2) {
+function checkCollision(playerX, playerY, playerWidth, playerHeight, blockX, blockY, blockWidth, blockHeight) {
     return (
-        rect1.x < rect2.x + rect2.width &&
-        rect1.x + rect1.width > rect2.x &&
-        rect1.y < rect2.y + rect2.height &&
-        rect1.y + rect1.height > rect2.y
+        playerX < blockX + blockWidth &&
+        playerX + playerWidth > blockX &&
+        playerY < blockY + blockHeight &&
+        playerY + playerHeight > blockY
     );
 }
 
@@ -426,41 +426,39 @@ async function game_update() {
             }
 
             playerVX = player_movement + ((player_movement - playerVX) / 2);
+            const playerWidth = 32;
+            const playerHeight = 64;
+
+            // Movement logic with collision detection
             let newPlayerX = playerX + playerVX * delta_time;
             let newPlayerY = playerY + playerVY * delta_time;
 
-            // Collision Detection
-            let playerRect = { x: newPlayerX, y: newPlayerY, width: 32, height: 64 }; //player hitbox size
-            let collided = false;
+            // Check horizontal collision
+            const horizontalBlockX = Math.floor(newPlayerX / 32);
+            const horizontalBlockY1 = Math.floor(playerY / 32);
+            const horizontalBlockY2 = Math.floor((playerY + playerHeight - 1) / 32);
 
-            for (const [key, blockID] of Object.entries(blocks)) {
-                if (blockID !== 3) { // Check for solid blocks
-                    const [blockX, blockY] = key.split(', ').map(Number);
-                    let blockRect = { x: blockX * 32, y: blockY * 32, width: 32, height: 32 };
-
-                    if (checkCollision(playerRect, blockRect)) {
-                        collided = true;
-                        // Collision Response (Push player out of the block)
-                        let overlapX = Math.min(playerRect.x + playerRect.width, blockRect.x + blockRect.width) - Math.max(playerRect.x, blockRect.x);
-                        let overlapY = Math.min(playerRect.y + playerRect.height, blockRect.y + blockRect.height) - Math.max(playerRect.y, blockRect.y);
-
-                        if (overlapX < overlapY) {
-                            if (playerRect.x < blockRect.x) {
-                                newPlayerX = blockRect.x - playerRect.width;
-                            } else {
-                                newPlayerX = blockRect.x + blockRect.width;
-                            }
-                            playerVX = 0; // Stop horizontal movement
-                        } else {
-                            if (playerRect.y < blockRect.y) {
-                                newPlayerY = blockRect.y - playerRect.height;
-                            } else {
-                                newPlayerY = blockRect.y + blockRect.height;
-                            }
-                            playerVY = 0; // Stop vertical movement
-                        }
-                    }
+            if (blocks[`${horizontalBlockX}, ${horizontalBlockY1}`] !== 3 && checkCollision(newPlayerX, playerY, playerWidth, playerHeight, horizontalBlockX * 32, horizontalBlockY1 * 32, 32, 32) || blocks[`${horizontalBlockX}, ${horizontalBlockY2}`] !== 3 && checkCollision(newPlayerX, playerY, playerWidth, playerHeight, horizontalBlockX * 32, horizontalBlockY2 * 32, 32, 32)) {
+                if (playerVX > 0) {
+                    newPlayerX = Math.floor(playerX / 32) * 32;
+                } else if (playerVX < 0) {
+                    newPlayerX = Math.ceil(playerX / 32) * 32;
                 }
+                playerVX = 0;
+            }
+
+            // Check vertical collision
+            const verticalBlockX1 = Math.floor(playerX / 32);
+            const verticalBlockX2 = Math.floor((playerX + playerWidth - 1) / 32);
+            const verticalBlockY = Math.floor(newPlayerY / 32);
+
+            if (blocks[`${verticalBlockX1}, ${verticalBlockY}`] !== 3 && checkCollision(playerX, newPlayerY, playerWidth, playerHeight, verticalBlockX1 * 32, verticalBlockY * 32, 32, 32) || blocks[`${verticalBlockX2}, ${verticalBlockY}`] !== 3 && checkCollision(playerX, newPlayerY, playerWidth, playerHeight, verticalBlockX2 * 32, verticalBlockY * 32, 32, 32)) {
+                if (playerVY > 0) {
+                    newPlayerY = Math.floor(playerY / 32) * 32;
+                } else if (playerVY < 0) {
+                    newPlayerY = Math.ceil(playerY / 32) * 32;
+                }
+                playerVY = 0;
             }
 
             playerX = newPlayerX;
