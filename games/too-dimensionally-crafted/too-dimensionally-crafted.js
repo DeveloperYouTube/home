@@ -373,13 +373,13 @@ function collisions () {
             playerVY = 0;
         }
     }
-    let image_data = screen.getImageData(
+    image_data = screen.getImageData(
         player_right,
         player_top,
         1,
         64
     );
-    let data = image_data.data;
+    data = image_data.data;
     for (let i = 3; i < data.length; i += 4) {
         // i = 3, 7, 11, etc. (alpha values)
         if (data[i] !== 0) {
@@ -387,13 +387,13 @@ function collisions () {
             playerVX = 0;
         }
     }
-    let image_data = screen.getImageData(
+    image_data = screen.getImageData(
         player_left,
         player_top,
         32,
         1
     );
-    let data = image_data.data;
+    data = image_data.data;
     for (let i = 3; i < data.length; i += 4) {
         // i = 3, 7, 11, etc. (alpha values)
         if (data[i] !== 0) {
@@ -401,13 +401,13 @@ function collisions () {
             playerVY = 0;
         }
     }
-    let image_data = screen.getImageData(
+    image_data = screen.getImageData(
         player_left,
         player_top,
         1,
         64
     );
-    let data = image_data.data;
+    data = image_data.data;
     for (let i = 3; i < data.length; i += 4) {
         // i = 3, 7, 11, etc. (alpha values)
         if (data[i] !== 0) {
