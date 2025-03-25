@@ -59,7 +59,11 @@ let player_movement = 0;
 let playerHP = 20;
 let can_player_take_damage = true;
 let fly = false;
-let inventory = []
+let inventory = [];
+let player_top;
+let player_bottom;
+let player_left;
+let player_right;
 //fps and delta time
 let FPS = 0;
 let last_frame = 0;
@@ -76,6 +80,8 @@ let lastPressTime = 0;
 //other
 let death_reason;
 let game_running = false;
+let image_data;
+let data;
 
 main_menu.style.display = 'flex';
 pause_screen.style.display = 'none';
@@ -118,6 +124,11 @@ function resizeCanvas() {
     screen.height = window.innerHeight;
     offset_centerX = screen.width / 2;
     offset_centerY = screen.height / 2;
+    
+    player_left = offset_centerX - 16;
+    player_top = offset_centerY - 32;
+    player_right = player_left + 32;
+    player_bottom = player_top + 64;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
@@ -349,69 +360,6 @@ document.addEventListener('contextmenu', function(event) {
     }
 });
 
-function collisions () {
-    const player_left = offset_centerX - 16;
-    const player_top = offset_centerY - 32;
-    const player_right = player_left + 32;
-    const player_bottom = player_top + 64;
-    let image_data = pen.getImageData(
-        player_left,
-        player_bottom,
-        32,
-        1
-    );
-    let data = image_data.data;
-    for (let i = 3; i < data.length; i += 4) {
-        // i = 3, 7, 11, etc. (alpha values)
-        if (data[i] !== 0) {
-            playerY = playerY - 1;//bottom collision
-            playerVY = 0;
-        }
-    }
-    image_data = pen.getImageData(
-        player_right,
-        player_top,
-        1,
-        64
-    );
-    data = image_data.data;
-    for (let i = 3; i < data.length; i += 4) {
-        // i = 3, 7, 11, etc. (alpha values)
-        if (data[i] !== 0) {
-            playerX = playerX - 1;//right collision
-            playerVX = 0;
-        }
-    }
-    image_data = pen.getImageData(
-        player_left,
-        player_top,
-        32,
-        1
-    );
-    data = image_data.data;
-    for (let i = 3; i < data.length; i += 4) {
-        // i = 3, 7, 11, etc. (alpha values)
-        if (data[i] !== 0) {
-            playerY = playerY + 1;//top collision
-            playerVY = 0;
-        }
-    }
-    image_data = pen.getImageData(
-        player_left,
-        player_top,
-        1,
-        64
-    );
-    data = image_data.data;
-    for (let i = 3; i < data.length; i += 4) {
-        // i = 3, 7, 11, etc. (alpha values)
-        if (data[i] !== 0) {
-            playerX = playerX + 1;//left collision
-            playerVX = 0;
-        }
-    }
-}
-
 if (!in_correctURL) {
     playerHP = 0;
     death_reason = death.incorrectURL
@@ -440,8 +388,36 @@ async function game_update() {
             if (is_pressed('a')) {
                 player_movement = -138.144;
             }
+            image_data = pen.getImageData(
+                player_left,
+                player_top,
+                1,
+                64
+            );
+            data = image_data.data;
+            for (let i = 3; i < data.length; i += 4) {
+                // i = 3, 7, 11, etc. (alpha values)
+                if (data[i] !== 0) {
+                    playerX = playerX + 1;//left collision
+                    playerVX = 0;
+                }
+            }
             if (is_pressed('d')) {
                 player_movement = 138.144;
+            }
+            image_data = pen.getImageData(
+                player_right,
+                player_top,
+                1,
+                64
+            );
+            data = image_data.data;
+            for (let i = 3; i < data.length; i += 4) {
+                // i = 3, 7, 11, etc. (alpha values)
+                if (data[i] !== 0) {
+                    playerX = playerX - 1;//right collision
+                    playerVX = 0;
+                }
             }
             if ((!(is_pressed('a') || is_pressed('d'))) || (is_pressed('a') && is_pressed('d'))) {
                 player_movement = 0;
@@ -453,21 +429,76 @@ async function game_update() {
                     blocks[`${Math.ceil(playerX / 32)}, ${Math.floor(playerY / 32) + 1}`] !== 3)) {
                     playerVY = -Math.sqrt(40960);
                 }
+                image_data = pen.getImageData(
+                    player_left,
+                    player_top,
+                    32,
+                    1
+                );
+                data = image_data.data;
+                for (let i = 3; i < data.length; i += 4) {
+                    // i = 3, 7, 11, etc. (alpha values)
+                    if (data[i] !== 0) {
+                        playerY = playerY + 1;//top collision
+                        playerVY = 0;
+                    }
+                }
                 if (playerVY < 2240) {
                     playerVY = playerVY + 512 * delta_time;
                 } else {
                     playerVY = playerVY + 256 * delta_time;
+                }
+                image_data = pen.getImageData(
+                    player_left,
+                    player_bottom,
+                    32,
+                    1
+                );
+                data = image_data.data;
+                for (let i = 3; i < data.length; i += 4) {
+                    // i = 3, 7, 11, etc. (alpha values)
+                    if (data[i] !== 0) {
+                        playerY = playerY - 1;//bottom collision
+                        playerVY = 0;
+                    }
                 }
             } else {
                 playerVY = 0;
                 if (is_pressed(' ')) {
                     playerVY = playerVY - 138.144;
                 }
+                image_data = pen.getImageData(
+                    player_left,
+                    player_top,
+                    32,
+                    1
+                );
+                data = image_data.data;
+                for (let i = 3; i < data.length; i += 4) {
+                    // i = 3, 7, 11, etc. (alpha values)
+                    if (data[i] !== 0) {
+                        playerY = playerY + 1;//top collision
+                        playerVY = 0;
+                    }
+                }
                 if (is_pressed('Shift')) {
                     playerVY = playerVY + 138.144;
                 }
-            }    
-            collisions();
+                image_data = pen.getImageData(
+                    player_left,
+                    player_bottom,
+                    32,
+                    1
+                );
+                data = image_data.data;
+                for (let i = 3; i < data.length; i += 4) {
+                    // i = 3, 7, 11, etc. (alpha values)
+                    if (data[i] !== 0) {
+                        playerY = playerY - 1;//bottom collision
+                        playerVY = 0;
+                    }
+                }
+            }
             playerVX = player_movement + ((player_movement - playerVX) / 2);
             playerX = playerX + playerVX * delta_time;
             playerY = playerY + playerVY * delta_time;
