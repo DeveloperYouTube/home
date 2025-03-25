@@ -118,7 +118,7 @@ function is_pressed(key) {
     return pressedKeys[key];
 }
 
-//resizeing and centering
+//resizeing and centering 
 function resizeCanvas() {
     screen.width = window.innerWidth;
     screen.height = window.innerHeight;
