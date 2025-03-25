@@ -467,12 +467,11 @@ async function game_update() {
                 if (is_pressed('Shift')) {
                     playerVY = playerVY + 138.144;
                 }
-            }
+            }    
+            collisions();
             playerVX = player_movement + ((player_movement - playerVX) / 2);
             playerX = playerX + playerVX * delta_time;
             playerY = playerY + playerVY * delta_time;
-    
-            collisions();
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
                 for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
