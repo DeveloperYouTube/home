@@ -373,7 +373,7 @@ function collisions () {
             playerVY = 0;
         }
     }
-    image_data = screen.getImageData(
+    image_data = pen.getImageData(
         player_right,
         player_top,
         1,
@@ -387,7 +387,7 @@ function collisions () {
             playerVX = 0;
         }
     }
-    image_data = screen.getImageData(
+    image_data = pen.getImageData(
         player_left,
         player_top,
         32,
@@ -401,7 +401,7 @@ function collisions () {
             playerVY = 0;
         }
     }
-    image_data = screen.getImageData(
+    image_data = pen.getImageData(
         player_left,
         player_top,
         1,
