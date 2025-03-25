@@ -359,7 +359,7 @@ function collisions () {
     const player_top = offset_centerY - 32;
     const player_right = player_left + 32;
     const player_bottom = player_top + 64;
-    let image_data = screen.getImageData(
+    let image_data = pen.getImageData(
         player_left,
         player_bottom,
         32,
