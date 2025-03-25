@@ -46,6 +46,7 @@ const pressedKeys = {};
 const main_menu = document.querySelector('.main_menu');
 const pause_screen = document.querySelector('.pause_screen');
 const how2play = document.querySelector('.how2play');
+const hotbar = document.querySelector('.hotbar');
 //let (can change (e.g. player stuff))
 //offsets
 let offset_centerX;
@@ -102,7 +103,7 @@ document.addEventListener('keyup', (event) => {
         if (currentTime - lastPressTime <= 500) { 
             spaceBarPresses++;
             if (spaceBarPresses >= 2) {
-                fly = !fly
+                //fly = !fly
                 spaceBarPresses = 0;
                 lastPressTime = currentTime; 
             }
@@ -325,9 +326,7 @@ document.addEventListener('mousedown', (event) => {
 
         if (selectedBlock) {
             blocks[`${selectedBlock.x}, ${selectedBlock.y}`] = 3;
-            if (selectedBlock === 0) {
-                inventory.push();
-            }
+            inventory.push(itemIDs.0[blocks[`${selectedBlock.x}, ${selectedBlock.y}`].drop]);
         }
     }
 });
@@ -480,6 +479,7 @@ async function game_update() {
                 pen.closePath(); 
                 pen.stroke();
             }
+
             if (can_player_take_damage) {
                 if (playerY > 4096) {
                     death_reason = death.void;

@@ -79,7 +79,13 @@ div {
     flex-direction: row;
     z-index: 200;
 }
-button, .more_games {
+.hotbar {
+    bottom: 64px;
+    left: calc(50vw - 50%);
+    display: inline-flex;
+    z-index: 10;
+}
+button, .more_games, .inventory canvas {
     color: #ffffff;
     background-color: #808080;
     border-color: #404040;
@@ -93,6 +99,11 @@ button, .more_games {
     margin: 10px;
     cursor: pointer;
     font-weight: 400;
+}
+.inventory canvas {
+    width: 32px;
+    height: 32px;
+    background-color: #80808080;
 }
 button:active, .more_games:active {
     border-style: inset;
