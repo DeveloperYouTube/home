@@ -343,38 +343,34 @@ function handlePixelCollision(playerX, playerY, blockX, blockY, blockID, playerV
     let newPlayerVX = playerVX;
     let newPlayerVY = playerVY;
 
-    // Simplified collision response (adjust as needed)
-    if (playerX < blockX + 32 &&
-        playerX + 32 > blockX &&
-        playerY < blockY + 32 &&
-        playerY + 64 > blockY) {
-            const dx = (playerX + 16) - (blockX + 16);
-            const dy = (playerY + 32) - (blockY + 16);
-            const width = 32 + 32;
-            const height = 64 + 32;
-            const crossWidth = width * dy;
-            const crossHeight = height * dx;
+    // Calculate overlap
+    const dx = (playerX + 16) - (blockX + 16);
+    const dy = (playerY + 32) - (blockY + 16);
+    const width = 32 + 32;
+    const height = 64 + 32;
+    const crossWidth = width * dy;
+    const crossHeight = height * dx;
 
-            if (Math.abs(dx) <= width / 2 && Math.abs(dy) <= height / 2) {
-                if (crossWidth > crossHeight) {
-                    if (crossWidth > (-crossHeight)) {
-                        newPlayerY = blockY - 64;
-                        newPlayerVY = 0;
-                    } else {
-                        newPlayerX = blockX - 32;
-                        newPlayerVX = 0;
-                    }
-                } else {
-                    if (crossWidth > (-crossHeight)) {
-                        newPlayerX = blockX + 32;
-                        newPlayerVX = 0;
-                    } else {
-                        newPlayerY = blockY + 32;
-                        newPlayerVY = 0;
-                    }
-                }
+    // Determine collision side and resolve overlap
+    if (Math.abs(dx) <= width / 2 && Math.abs(dy) <= height / 2) {
+        if (Math.abs(crossWidth) > Math.abs(crossHeight)) { // Horizontal collision
+            if (crossWidth > 0) { // Right collision
+                newPlayerX = blockX + 32;
+                newPlayerVX = 0;
+            } else { // Left collision
+                newPlayerX = blockX - 32;
+                newPlayerVX = 0;
+            }
+        } else { // Vertical collision
+            if (crossHeight > 0) { // Bottom collision
+                newPlayerY = blockY + 32;
+                newPlayerVY = 0;
+            } else { // Top collision
+                newPlayerY = blockY - 64;
+                newPlayerVY = 0;
             }
         }
+    }
     return { x: newPlayerX, y: newPlayerY, vx: newPlayerVX, vy: newPlayerVY };
 }
 
