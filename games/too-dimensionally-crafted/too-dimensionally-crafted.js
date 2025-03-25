@@ -354,6 +354,69 @@ document.addEventListener('contextmenu', function(event) {
     }
 });
 
+function collisions () {
+    const player_left = offset_centerX - 16;
+    const player_top = offset_centerY - 32;
+    const player_right = player_left + 32;
+    const player_bottom = player_top + 64;
+    let image_data = screen.getImageData(
+        player_left,
+        player_bottom,
+        32,
+        1
+    );
+    let data = image_data.data;
+    for (let i = 3; i < data.length; i += 4) {
+        // i = 3, 7, 11, etc. (alpha values)
+        if (data[i] !== 0) {
+            playerY = playerY - 1;//bottom collision
+            playerVY = 0;
+        }
+    }
+    let image_data = screen.getImageData(
+        player_right,
+        player_top,
+        1,
+        64
+    );
+    let data = image_data.data;
+    for (let i = 3; i < data.length; i += 4) {
+        // i = 3, 7, 11, etc. (alpha values)
+        if (data[i] !== 0) {
+            playerX = playerX - 1;//right collision
+            playerVX = 0;
+        }
+    }
+    let image_data = screen.getImageData(
+        player_left,
+        player_top,
+        32,
+        1
+    );
+    let data = image_data.data;
+    for (let i = 3; i < data.length; i += 4) {
+        // i = 3, 7, 11, etc. (alpha values)
+        if (data[i] !== 0) {
+            playerY = playerY + 1;//top collision
+            playerVY = 0;
+        }
+    }
+    let image_data = screen.getImageData(
+        player_left,
+        player_top,
+        1,
+        64
+    );
+    let data = image_data.data;
+    for (let i = 3; i < data.length; i += 4) {
+        // i = 3, 7, 11, etc. (alpha values)
+        if (data[i] !== 0) {
+            playerX = playerX + 1;//left collision
+            playerVX = 0;
+        }
+    }
+}
+
 if (!in_correctURL) {
     playerHP = 0;
     death_reason = death.incorrectURL
@@ -413,33 +476,7 @@ async function game_update() {
             playerX = playerX + playerVX * delta_time;
             playerY = playerY + playerVY * delta_time;
     
-            //collisions
-            //horisontally
-            //left
-            if (blocks[`${Math.ceil(playerX / 32) - 1}, ${Math.ceil(playerY / 32) - 1}`] !== 3 ||
-                blocks[`${Math.ceil(playerX / 32) - 1}, ${Math.floor(playerY / 32)}`] !== 3) {
-                playerX = Math.ceil(playerX / 32) * 32;
-                playerVX = Math.min(playerVX, 0);
-            }
-            //right
-            if (blocks[`${Math.floor(playerX / 32) + 1}, ${Math.ceil(playerY / 32) - 1}`] !== 3 ||
-                blocks[`${Math.floor(playerX / 32) + 1}, ${Math.floor(playerY / 32)}`] !== 3) {
-                playerX = Math.floor(playerX / 32) * 32;
-                playerVX = Math.max(playerVX, 0);
-            }
-            //vertically
-            //bottom
-            if (blocks[`${Math.floor(playerX / 32)}, ${Math.floor(playerY / 32) + 1}`] !== 3 ||
-                blocks[`${Math.ceil(playerX / 32)}, ${Math.floor(playerY / 32) + 1}`] !== 3) {
-                playerY = Math.floor(playerY / 32) * 32;
-                playerVY = Math.min(playerVY, 0);
-            }
-            //top
-            if (blocks[`${Math.floor(playerX / 32)}, ${Math.ceil(playerY / 32) - 2}`] !== 3 ||
-                blocks[`${Math.ceil(playerX / 32)}, ${Math.ceil(playerY / 32) - 2}`] !== 3) {
-                playerY = Math.ceil(playerY / 32) * 32;
-                playerVY = Math.max(playerVY, 0);
-            }
+            collisions();
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
                 for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
