@@ -326,7 +326,7 @@ document.addEventListener('mousedown', (event) => {
 
         if (selectedBlock) {
             blocks[`${selectedBlock.x}, ${selectedBlock.y}`] = 3;
-            inventory.push(itemIDs.0[blocks[`${selectedBlock.x}, ${selectedBlock.y}`].drop]);
+            //inventory.push(itemIDs.0[blocks[`${selectedBlock.x}, ${selectedBlock.y}`].drop]);
         }
     }
 });
