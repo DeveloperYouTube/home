@@ -25,7 +25,7 @@ import {utils} from '../../utilities.js';
 const username = prompt('Enter your Username');
 const seed = Math.random() * 10000;
 const screen = document.getElementById('screen');
-const pen = screen.getContext('2d');
+const pen = screen.getContext('2d', {willReadFrequently: true});
 const background = document.body;
 const position_text = document.querySelector('.position');
 const FPStext = document.querySelector('.FPS');
