@@ -103,7 +103,8 @@ button, .more_games, .inventory canvas {
 .inventory canvas {
     width: 32px;
     height: 32px;
-    background-color: #80808080;
+    background-color: #40404080;
+    margin: 0px;
 }
 button:active, .more_games:active {
     border-style: inset;
