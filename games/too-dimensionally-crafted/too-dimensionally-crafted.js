@@ -306,6 +306,15 @@ function render_blocks() {
     }
 }
 
+function checkCollision(rect1, rect2) {
+    return (
+        rect1.x < rect2.x + rect2.width &&
+        rect1.x + rect1.width > rect2.x &&
+        rect1.y < rect2.y + rect2.height &&
+        rect1.y + rect1.height > rect2.y
+    );
+}
+
 //mouse things(for player controls)
 document.addEventListener('mousemove', (event) => {
     mouseX = event.clientX - offset_centerX;
@@ -388,36 +397,8 @@ async function game_update() {
             if (is_pressed('a')) {
                 player_movement = -138.144;
             }
-            image_data = pen.getImageData(
-                player_left,
-                player_top,
-                1,
-                64
-            );
-            data = image_data.data;
-            for (let i = 3; i < data.length; i += 4) {
-                // i = 3, 7, 11, etc. (alpha values)
-                if (data[i] !== 0) {
-                    playerX = playerX + 1;//left collision
-                    playerVX = 0;
-                }
-            }
             if (is_pressed('d')) {
                 player_movement = 138.144;
-            }
-            image_data = pen.getImageData(
-                player_right,
-                player_top,
-                1,
-                64
-            );
-            data = image_data.data;
-            for (let i = 3; i < data.length; i += 4) {
-                // i = 3, 7, 11, etc. (alpha values)
-                if (data[i] !== 0) {
-                    playerX = playerX - 1;//right collision
-                    playerVX = 0;
-                }
             }
             if ((!(is_pressed('a') || is_pressed('d'))) || (is_pressed('a') && is_pressed('d'))) {
                 player_movement = 0;
@@ -429,79 +410,61 @@ async function game_update() {
                     blocks[`${Math.ceil(playerX / 32)}, ${Math.floor(playerY / 32) + 1}`] !== 3)) {
                     playerVY = -Math.sqrt(40960);
                 }
-                image_data = pen.getImageData(
-                    player_left,
-                    player_top,
-                    32,
-                    1
-                );
-                data = image_data.data;
-                for (let i = 3; i < data.length; i += 4) {
-                    // i = 3, 7, 11, etc. (alpha values)
-                    if (data[i] !== 0) {
-                        playerY = playerY + 1;//top collision
-                        playerVY = 0;
-                    }
-                }
                 if (playerVY < 2240) {
                     playerVY = playerVY + 512 * delta_time;
                 } else {
                     playerVY = playerVY + 256 * delta_time;
-                }
-                image_data = pen.getImageData(
-                    player_left,
-                    player_bottom,
-                    32,
-                    1
-                );
-                data = image_data.data;
-                for (let i = 3; i < data.length; i += 4) {
-                    // i = 3, 7, 11, etc. (alpha values)
-                    if (data[i] !== 0) {
-                        playerY = playerY - 1;//bottom collision
-                        playerVY = 0;
-                    }
                 }
             } else {
                 playerVY = 0;
                 if (is_pressed(' ')) {
                     playerVY = playerVY - 138.144;
                 }
-                image_data = pen.getImageData(
-                    player_left,
-                    player_top,
-                    32,
-                    1
-                );
-                data = image_data.data;
-                for (let i = 3; i < data.length; i += 4) {
-                    // i = 3, 7, 11, etc. (alpha values)
-                    if (data[i] !== 0) {
-                        playerY = playerY + 1;//top collision
-                        playerVY = 0;
-                    }
-                }
                 if (is_pressed('Shift')) {
                     playerVY = playerVY + 138.144;
                 }
-                image_data = pen.getImageData(
-                    player_left,
-                    player_bottom,
-                    32,
-                    1
-                );
-                data = image_data.data;
-                for (let i = 3; i < data.length; i += 4) {
-                    // i = 3, 7, 11, etc. (alpha values)
-                    if (data[i] !== 0) {
-                        playerY = playerY - 1;//bottom collision
-                        playerVY = 0;
+            }
+
+            playerVX = player_movement + ((player_movement - playerVX) / 2);
+            let newPlayerX = playerX + playerVX * delta_time;
+            let newPlayerY = playerY + playerVY * delta_time;
+
+            // Collision Detection
+            let playerRect = { x: newPlayerX, y: newPlayerY, width: 32, height: 64 }; //player hitbox size
+            let collided = false;
+
+            for (const [key, blockID] of Object.entries(blocks)) {
+                if (blockID !== 3) { // Check for solid blocks
+                    const [blockX, blockY] = key.split(', ').map(Number);
+                    let blockRect = { x: blockX * 32, y: blockY * 32, width: 32, height: 32 };
+
+                    if (checkCollision(playerRect, blockRect)) {
+                        collided = true;
+                        // Collision Response (Push player out of the block)
+                        let overlapX = Math.min(playerRect.x + playerRect.width, blockRect.x + blockRect.width) - Math.max(playerRect.x, blockRect.x);
+                        let overlapY = Math.min(playerRect.y + playerRect.height, blockRect.y + blockRect.height) - Math.max(playerRect.y, blockRect.y);
+
+                        if (overlapX < overlapY) {
+                            if (playerRect.x < blockRect.x) {
+                                newPlayerX = blockRect.x - playerRect.width;
+                            } else {
+                                newPlayerX = blockRect.x + blockRect.width;
+                            }
+                            playerVX = 0; // Stop horizontal movement
+                        } else {
+                            if (playerRect.y < blockRect.y) {
+                                newPlayerY = blockRect.y - playerRect.height;
+                            } else {
+                                newPlayerY = blockRect.y + blockRect.height;
+                            }
+                            playerVY = 0; // Stop vertical movement
+                        }
                     }
                 }
             }
-            playerVX = player_movement + ((player_movement - playerVX) / 2);
-            playerX = playerX + playerVX * delta_time;
-            playerY = playerY + playerVY * delta_time;
+
+            playerX = newPlayerX;
+            playerY = newPlayerY;
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
                 for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
