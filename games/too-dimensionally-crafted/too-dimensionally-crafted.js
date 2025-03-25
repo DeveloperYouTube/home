@@ -306,6 +306,7 @@ function render_blocks() {
     }
 }
 
+//collisions
 function checkPixelCollision(playerX, playerY, blockX, blockY, blockID) {
     const playerCanvas = document.createElement('canvas');
     playerCanvas.width = 32;
