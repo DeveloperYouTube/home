@@ -33,8 +33,7 @@ const death = {
     void: `${username} fell out of the world`,
     incorrectURL: `death.error.404.\${username} broke whilst trying to escape me breaking it for user being in ${url}<br>
     If you want the player back go <a href="${correctURL}">here</a>`,
-    FPS_NaN: "death.physics.unstable",
-    not_subscribed: `I destroyed the player as user wasn't subscribed to the developer of me`
+    FPS_NaN: "death.physics.unstable"
 };
 const death_screen = document.querySelector('.death_screen');
 const death_message = document.querySelector('.deathID');
