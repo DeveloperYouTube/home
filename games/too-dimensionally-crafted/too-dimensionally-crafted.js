@@ -474,7 +474,7 @@ async function game_update() {
             // Draw selector around selected block
             if (selectedBlock) {
                 pen.strokeStyle = '#000000'; 
-                pen.lineWidth = window.devicePixelRatio;
+                pen.lineWidth = 1 / window.devicePixelRatio * 2;
                 pen.beginPath();
                 pen.rect((selectedBlock.x * 32) + offsetX - 16, ((selectedBlock.y - 1) * 32) + offsetY, 32, 32); 
                 pen.closePath(); 
