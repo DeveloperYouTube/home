@@ -64,6 +64,7 @@ let player_top;
 let player_bottom;
 let player_left;
 let player_right;
+let can_jump = false;
 //fps and delta time
 let FPS = 0;
 let last_frame = 0;
@@ -80,8 +81,6 @@ let lastPressTime = 0;
 //other
 let death_reason;
 let game_running = false;
-let image_data;
-let data;
 
 main_menu.style.display = 'flex';
 pause_screen.style.display = 'none';
@@ -360,6 +359,61 @@ document.addEventListener('contextmenu', function(event) {
     }
 });
 
+
+function left_collision() {
+    const data = pen.getImageData(player_left, player_top, 1, 64).data;
+    for (let i = 3; i < data.length; i+=4) {
+        if (data[i] != 0) {
+            return true;
+        }
+    }
+}
+function right_collision() {
+    const data = pen.getImageData(player_right, player_top, 1, 64).data;
+    for (let i = 3; i < data.length; i+=4) {
+        if (data[i] != 0) {
+            return true;
+        }
+    }
+}
+function top_collision() {
+    const data = pen.getImageData(player_left, player_top, 32, 1).data;
+    for (let i = 3; i < data.length; i+=4) {
+        if (data[i] != 0) {
+            return true;
+        }
+    }
+}
+function bottom_collision() {
+    const data = pen.getImageData(player_left, player_bottom, 32, 1).data;
+    for (let i = 3; i < data.length; i+=4) {
+        if (data[i] != 0) {
+            return true;
+        }
+    }
+}
+
+
+function collisions(left, right, top, bottom) {
+    // Adjust player velocity based on collisions
+    if (bottom) {
+        playerVY = Math.min(0, playerVY); // Stop downward movement
+        can_jump = true; // Player can jump if on the ground
+    } else {
+        can_jump = false; // Player cannot jump if not on the ground
+    }
+    if (right) {
+        playerVX = Math.min(0, playerVX); // Stop rightward movement
+    }
+    if (top) {
+        playerVY = Math.max(0, playerVY); // Stop upward movement
+    }
+    if (left) {
+        playerVX = Math.max(0, playerVX); // Stop leftward movement
+    }
+}
+
+
 if (!in_correctURL) {
     playerHP = 0;
     death_reason = death.incorrectURL
@@ -396,9 +450,7 @@ async function game_update() {
             }
             //vertical
             if (!fly) {
-                if (is_pressed(' ') && 
-                    (blocks[`${Math.floor(playerX / 32)}, ${Math.floor(playerY / 32) + 1}`] !== 3 ||
-                    blocks[`${Math.ceil(playerX / 32)}, ${Math.floor(playerY / 32) + 1}`] !== 3)) {
+                if (is_pressed(' ') && can_jump) {
                     playerVY = -Math.sqrt(40960);
                 }
                 if (playerVY < 2240) {
@@ -415,28 +467,7 @@ async function game_update() {
                     playerVY = playerVY + 138.144;
                 }
             }
-            
-            let collisions = [];
-            const pixel = pen.getImageData(offset_centerX - 16, offset_centerY - 32, 32, 64);
-            for (let i = 3; i < 2047; i+=4) {
-                if (pixel.data[i] != 0) {
-                    collisions.push({
-                        x: i % 32 - 16,
-                        y: Math.floor(i / 32) - 32
-                    });
-                }
-            }
-            let dir = [];
-            collisions.forEach(element => {
-                dir.push(Math.atan2(element.y, element.x));
-            });
-            let direction = 0;
-            dir.forEach(element => {
-                direction += element;
-            });
-            direction = direction / dir.length;
-            const dirX = Math.cos(direction);
-            const dirY = Math.sin(direction);
+            collisions(left_collision(), right_collision(), top_collision(), bottom_collision());
 
             playerVX = player_movement + ((player_movement - playerVX) / 2);
             playerX = playerX + playerVX * delta_time + dirX;
