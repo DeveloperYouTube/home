@@ -429,16 +429,16 @@ async function game_update() {
                     }
                 }
             }
-
-            playerVX = player_movement + ((player_movement - playerVX) / 2);
-            playerX = playerX + playerVX * delta_time;
-            playerY = playerY + playerVY * delta_time;
-
+            
             collisions.forEach(element => {
                 const dir = Math.atan2(element.y, element.x);
                 playerX -= Math.cos(dir);
                 playerY -= Math.sin(dir);
-            });
+            })
+
+            playerVX = player_movement + ((player_movement - playerVX) / 2);
+            playerX = playerX + playerVX * delta_time;
+            playerY = playerY + playerVY * delta_time;
 
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
