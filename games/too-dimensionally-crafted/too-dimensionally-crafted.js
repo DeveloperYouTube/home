@@ -306,71 +306,6 @@ function render_blocks() {
     }
 }
 
-//collisions
-function checkPixelSolid(pixelX, pixelY) {
-    // Ensure pixelX and pixelY are within canvas bounds
-    if (pixelX >= 0 && pixelX < screen.width && pixelY >= 0 && pixelY < screen.height) {
-        const pixel = pen.getImageData(pixelX, pixelY, 1, 1);
-        // Check if the alpha value is greater than 0 (not transparent)
-        if (pixel.data[3] > 0) {
-            return true; // Pixel is solid
-        }
-    }
-    return false; // Pixel is transparent or out of bounds
-}
-
-function checkPerimeterCollisions(playerX, playerY, playerVX, playerVY) {
-    const playerWidth = 32;
-    const playerHeight = 64;
-    const innerOffset = 1;
-    const outerOffset = 1;
-    const checkPoints = [];
-
-    // Define check points around the player
-    checkPoints.push({ x: 0, y: 0 - innerOffset }); // Top inner
-    checkPoints.push({ x: 0, y: 0 - outerOffset }); // Top outer
-    checkPoints.push({ x: 0, y: playerHeight - 1 + innerOffset }); // Bottom inner
-    checkPoints.push({ x: 0, y: playerHeight - 1 + outerOffset }); // Bottom outer
-    checkPoints.push({ x: 0 - innerOffset, y: 0 }); // Left inner
-    checkPoints.push({ x: 0 - outerOffset, y: 0 }); // Left outer
-    checkPoints.push({ x: playerWidth - 1 + innerOffset, y: 0 }); // Right inner
-    checkPoints.push({ x: playerWidth - 1 + outerOffset, y: 0 }); // Right outer
-
-    let newPlayerX = playerX;
-    let newPlayerY = playerY;
-    let newPlayerVX = playerVX;
-    let newPlayerVY = playerVY;
-
-    for (const point of checkPoints) {
-        const checkX = Math.round(playerX + point.x);
-        const checkY = Math.round(playerY + point.y);
-
-        if (checkPixelSolid(checkX, checkY)) {
-            const collisionX = checkX;
-            const collisionY = checkY;
-            const isInner = (point.x === 0 && (point.y === 0 - innerOffset || point.y === playerHeight - 1 + innerOffset)) ||
-                (point.y === 0 && (point.x === 0 - innerOffset || point.x === playerWidth - 1 + innerOffset));
-
-            if (isInner) {
-                // Move player away from collision
-                const pushDir = Math.atan2(playerY - collisionY, playerX - collisionX);
-                newPlayerX += Math.cos(pushDir);
-                newPlayerY += Math.sin(pushDir);
-            } else {
-                // Stop velocity in collision direction
-                if (point.x === 0 - outerOffset || point.x === playerWidth - 1 + outerOffset) {
-                    newPlayerVX = 0;
-                }
-                if (point.y === 0 - outerOffset || point.y === playerHeight - 1 + outerOffset) {
-                    newPlayerVY = 0;
-                }
-            }
-        }
-    }
-
-    return { x: newPlayerX, y: newPlayerY, vx: newPlayerVX, vy: newPlayerVY };
-}
-
 //mouse things(for player controls)
 document.addEventListener('mousemove', (event) => {
     mouseX = event.clientX - offset_centerX;
@@ -485,12 +420,25 @@ async function game_update() {
             playerX = playerX + playerVX * delta_time;
             playerY = playerY + playerVY * delta_time;
 
-            // Collision detection and response using perimeter checks
-            const collisionResponse = checkPerimeterCollisions(playerX, playerY, playerVX, playerVY);
-            playerX = collisionResponse.x;
-            playerY = collisionResponse.y;
-            playerVX = collisionResponse.vx;
-            playerVY = collisionResponse.vy;
+            let collisions = []
+            for (let x = offset_centerX - 16; x < offset_centerX + 16; x++) {
+                for (let y = offset_centerY - 32; y < offset_centerY + 32; y++) {
+                    const pixel = pen.getImageData(x, y, 1, 1);
+                    const pixelA = pixel.data[3];
+                    if (pixelA != 0) {
+                        collisions.push({
+                            x: x - offset_centerX,
+                            y: y - offset_centerY
+                        });
+                    }
+                }
+            }
+            collisions.forEach(element => {
+                const dir = Math.atan2(element.y, element.x);
+                playerVX += Math.cos(dir);
+                playerVY += Math.sin(dir);
+            });
+
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
                 for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
