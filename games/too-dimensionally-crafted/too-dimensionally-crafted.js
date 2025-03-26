@@ -415,11 +415,7 @@ async function game_update() {
                     playerVY = playerVY + 138.144;
                 }
             }
-
-            playerVX = player_movement + ((player_movement - playerVX) / 2);
-            playerX = playerX + playerVX * delta_time;
-            playerY = playerY + playerVY * delta_time;
-
+            
             let collisions = []
             for (let x = offset_centerX - 16; x < offset_centerX + 16; x++) {
                 for (let y = offset_centerY - 32; y < offset_centerY + 32; y++) {
@@ -433,6 +429,11 @@ async function game_update() {
                     }
                 }
             }
+
+            playerVX = player_movement + ((player_movement - playerVX) / 2);
+            playerX = playerX + playerVX * delta_time;
+            playerY = playerY + playerVY * delta_time;
+
             collisions.forEach(element => {
                 const dir = Math.atan2(element.y, element.x);
                 playerVX += Math.cos(dir);
