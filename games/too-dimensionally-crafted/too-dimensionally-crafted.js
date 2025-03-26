@@ -397,18 +397,22 @@ function bottom_collision() {
 function collisions(left, right, top, bottom) {
     // Adjust player velocity based on collisions
     if (bottom) {
+        playerY -= playerVY;
         playerVY = Math.min(0, playerVY); // Stop downward movement
         can_jump = true; // Player can jump if on the ground
     } else {
         can_jump = false; // Player cannot jump if not on the ground
     }
     if (right) {
+        playerX -= playerVX;
         playerVX = Math.min(0, playerVX); // Stop rightward movement
     }
     if (top) {
+        playerY -= playerVY;
         playerVY = Math.max(0, playerVY); // Stop upward movement
     }
     if (left) {
+        playerX -= playerVX;
         playerVX = Math.max(0, playerVX); // Stop leftward movement
     }
 }
