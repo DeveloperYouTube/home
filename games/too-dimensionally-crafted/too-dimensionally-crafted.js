@@ -416,17 +416,14 @@ async function game_update() {
                 }
             }
             
-            let collisions = []
-            for (let x = offset_centerX - 16; x < offset_centerX + 16; x++) {
-                for (let y = offset_centerY - 32; y < offset_centerY + 32; y++) {
-                    const pixel = pen.getImageData(x, y, 1, 1);
-                    const pixelA = pixel.data[3];
-                    if (pixelA != 0) {
-                        collisions.push({
-                            x: x - offset_centerX,
-                            y: y - offset_centerY
-                        });
-                    }
+            let collisions = [];
+            const pixel = pen.getImageData(offset_centerX - 16, offset_centerY - 32, 32, 64);
+            for (let i = 3; i < 2047; i+=4) {
+                if (pixel.data[i] != 0) {
+                    collisions.push({
+                        x: i % 32 - 16,
+                        y: Math.floor(i / 32) - 32
+                    });
                 }
             }
             
@@ -434,7 +431,7 @@ async function game_update() {
                 const dir = Math.atan2(element.y, element.x);
                 playerX -= Math.cos(dir);
                 playerY -= Math.sin(dir);
-            })
+            });
 
             playerVX = player_movement + ((player_movement - playerVX) / 2);
             playerX = playerX + playerVX * delta_time;
