@@ -470,8 +470,8 @@ async function game_update() {
             collisions(left_collision(), right_collision(), top_collision(), bottom_collision());
 
             playerVX = player_movement + ((player_movement - playerVX) / 2);
-            playerX = playerX + playerVX * delta_time + dirX;
-            playerY = playerY + playerVY * delta_time + dirY;
+            playerX = playerX + playerVX * delta_time;
+            playerY = playerY + playerVY * delta_time;
 
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
