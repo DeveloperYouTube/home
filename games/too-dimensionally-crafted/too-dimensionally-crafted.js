@@ -307,73 +307,69 @@ function render_blocks() {
 }
 
 //collisions
-function checkPixelCollision(playerX, playerY, blockX, blockY, blockID) {
-    const playerCanvas = document.createElement('canvas');
-    playerCanvas.width = 32;
-    playerCanvas.height = 64;
-    const playerCtx = playerCanvas.getContext('2d');
-    playerCtx.fillStyle = '#3f8c9f';
-    playerCtx.fillRect(0, 0, 32, 64); // Draw player's hitbox on canvas
-
-    const playerData = playerCtx.getImageData(0, 0, 32, 64).data;
-    const blockData = blockTextureCanvases[blockID].getContext('2d').getImageData(0, 0, 32, 32).data;
-
-    for (let playerPixelY = 0; playerPixelY < 64; playerPixelY++) {
-        for (let playerPixelX = 0; playerPixelX < 32; playerPixelX++) {
-            const playerPixelIndex = (playerPixelY * 32 + playerPixelX) * 4;
-            if (playerData[playerPixelIndex + 3] > 0) { // Check if player pixel is not transparent
-                const blockPixelX = playerPixelX + (playerX - blockX);
-                const blockPixelY = playerPixelY + (playerY - blockY);
-
-                if (blockPixelX >= 0 && blockPixelX < 32 && blockPixelY >= 0 && blockPixelY < 32) {
-                    const blockPixelIndex = (blockPixelY * 32 + blockPixelX) * 4;
-                    if (blockData[blockPixelIndex + 3] > 0) { // Check if block pixel is not transparent
-                        return true; // Collision detected
-                    }
-                }
-            }
+function checkPixelSolid(pixelX, pixelY) {
+    // Ensure pixelX and pixelY are within canvas bounds
+    if (pixelX >= 0 && pixelX < screen.width && pixelY >= 0 && pixelY < screen.height) {
+        const pixel = pen.getImageData(pixelX, pixelY, 1, 1);
+        // Check if the alpha value is greater than 0 (not transparent)
+        if (pixel.data[3] > 0) {
+            return true; // Pixel is solid
         }
     }
-    return false; // No collision
+    return false; // Pixel is transparent or out of bounds
 }
 
-function handlePixelCollision(playerX, playerY, blockX, blockY, blockID, playerVX, playerVY) {
+function checkPerimeterCollisions(playerX, playerY, playerVX, playerVY) {
+    const playerWidth = 32;
+    const playerHeight = 64;
+    const innerOffset = 1;
+    const outerOffset = 1;
+    const checkPoints = [];
+
+    // Define check points around the player
+    checkPoints.push({ x: 0, y: 0 - innerOffset }); // Top inner
+    checkPoints.push({ x: 0, y: 0 - outerOffset }); // Top outer
+    checkPoints.push({ x: 0, y: playerHeight - 1 + innerOffset }); // Bottom inner
+    checkPoints.push({ x: 0, y: playerHeight - 1 + outerOffset }); // Bottom outer
+    checkPoints.push({ x: 0 - innerOffset, y: 0 }); // Left inner
+    checkPoints.push({ x: 0 - outerOffset, y: 0 }); // Left outer
+    checkPoints.push({ x: playerWidth - 1 + innerOffset, y: 0 }); // Right inner
+    checkPoints.push({ x: playerWidth - 1 + outerOffset, y: 0 }); // Right outer
+
     let newPlayerX = playerX;
     let newPlayerY = playerY;
     let newPlayerVX = playerVX;
     let newPlayerVY = playerVY;
 
-    // Calculate overlap
-    const dx = (playerX + 16) - (blockX + 16);
-    const dy = (playerY + 32) - (blockY + 16);
-    const width = 32 + 32;
-    const height = 64 + 32;
-    const crossWidth = width * dy;
-    const crossHeight = height * dx;
+    for (const point of checkPoints) {
+        const checkX = Math.round(playerX + point.x);
+        const checkY = Math.round(playerY + point.y);
 
-    // Determine collision side and resolve overlap
-    if (Math.abs(dx) <= width / 2 && Math.abs(dy) <= height / 2) {
-        if (Math.abs(crossWidth) > Math.abs(crossHeight)) { // Horizontal collision
-            if (crossWidth > 0) { // Right collision
-                newPlayerX = blockX + 32;
-                newPlayerVX = 0;
-            } else { // Left collision
-                newPlayerX = blockX - 32;
-                newPlayerVX = 0;
-            }
-        } else { // Vertical collision
-            if (crossHeight > 0) { // Bottom collision
-                newPlayerY = blockY + 32;
-                newPlayerVY = 0;
-            } else { // Top collision
-                newPlayerY = blockY - 64;
-                newPlayerVY = 0;
+        if (checkPixelSolid(checkX, checkY)) {
+            const collisionX = checkX;
+            const collisionY = checkY;
+            const isInner = (point.x === 0 && (point.y === 0 - innerOffset || point.y === playerHeight - 1 + innerOffset)) ||
+                (point.y === 0 && (point.x === 0 - innerOffset || point.x === playerWidth - 1 + innerOffset));
+
+            if (isInner) {
+                // Move player away from collision
+                const pushDir = Math.atan2(playerY - collisionY, playerX - collisionX);
+                newPlayerX += Math.cos(pushDir);
+                newPlayerY += Math.sin(pushDir);
+            } else {
+                // Stop velocity in collision direction
+                if (point.x === 0 - outerOffset || point.x === playerWidth - 1 + outerOffset) {
+                    newPlayerVX = 0;
+                }
+                if (point.y === 0 - outerOffset || point.y === playerHeight - 1 + outerOffset) {
+                    newPlayerVY = 0;
+                }
             }
         }
     }
+
     return { x: newPlayerX, y: newPlayerY, vx: newPlayerVX, vy: newPlayerVY };
 }
-
 
 //mouse things(for player controls)
 document.addEventListener('mousemove', (event) => {
@@ -489,24 +485,12 @@ async function game_update() {
             playerX = playerX + playerVX * delta_time;
             playerY = playerY + playerVY * delta_time;
 
-            // Pixel-perfect collision detection and response
-            const playerBlockX = Math.floor(playerX / 32);
-            const playerBlockY = Math.floor(playerY / 32);
-
-            for (let x = playerBlockX - 1; x <= playerBlockX + 1; x++) {
-                for (let y = playerBlockY - 2; y <= playerBlockY + 1; y++) {
-                    const blockKey = `${x}, ${y}`;
-                    if (blocks[blockKey] !== 3 && blocks[blockKey] !== undefined) {
-                        if (checkPixelCollision(playerX, playerY, x * 32, y * 32, blocks[blockKey])) {
-                            const collisionResponse = handlePixelCollision(playerX, playerY, x * 32, y * 32, blocks[blockKey], playerVX, playerVY);
-                            playerX = collisionResponse.x;
-                            playerY = collisionResponse.y;
-                            playerVX = collisionResponse.vx;
-                            playerVY = collisionResponse.vy;
-                        }
-                    }
-                }
-            }
+            // Collision detection and response using perimeter checks
+            const collisionResponse = checkPerimeterCollisions(playerX, playerY, playerVX, playerVY);
+            playerX = collisionResponse.x;
+            playerY = collisionResponse.y;
+            playerVX = collisionResponse.vx;
+            playerVY = collisionResponse.vy;
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
                 for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
