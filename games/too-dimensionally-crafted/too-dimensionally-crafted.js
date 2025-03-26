@@ -459,10 +459,8 @@ async function game_update() {
                 if (is_pressed(' ') && can_jump) {
                     playerVY = -Math.sqrt(40960);
                 }
-                if (playerVY < 2240) {
+                if (!can_jump) {
                     playerVY = playerVY + 512 * delta_time;
-                } else {
-                    playerVY = playerVY + 256 * delta_time;
                 }
             } else {
                 playerVY = 0;
