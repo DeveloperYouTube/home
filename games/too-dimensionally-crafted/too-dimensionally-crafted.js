@@ -367,6 +367,7 @@ function left_collision() {
             return true;
         }
     }
+    return false;
 }
 function right_collision() {
     const data = pen.getImageData(player_right, player_top, 1, 64).data;
@@ -375,6 +376,7 @@ function right_collision() {
             return true;
         }
     }
+    return false;
 }
 function top_collision() {
     const data = pen.getImageData(player_left, player_top, 32, 1).data;
@@ -383,14 +385,18 @@ function top_collision() {
             return true;
         }
     }
+    return false;
 }
 function bottom_collision() {
     const data = pen.getImageData(player_left, player_bottom, 32, 1).data;
     for (let i = 3; i < data.length; i+=4) {
         if (data[i] != 0) {
+            can_jump = true;
             return true;
         }
     }
+    can_jump = false;
+    return false;
 }
 
 
