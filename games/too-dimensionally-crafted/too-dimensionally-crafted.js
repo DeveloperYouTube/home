@@ -436,8 +436,8 @@ async function game_update() {
 
             collisions.forEach(element => {
                 const dir = Math.atan2(element.y, element.x);
-                playerVX += Math.cos(dir);
-                playerVY += Math.sin(dir);
+                playerX -= Math.cos(dir);
+                playerY -= Math.sin(dir);
             });
 
     
