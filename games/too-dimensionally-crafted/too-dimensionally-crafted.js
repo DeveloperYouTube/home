@@ -425,8 +425,10 @@ async function game_update() {
                     }
                 }
             }
+            can_jump = false;
             if (pixels.length != 0) {
                 new_playerY = Math.min(...pixels) + playerY;
+                can_jump = true
             }
             pixels = [];
             for (let i = 0; i < playerVX * delta_time; i++) {
