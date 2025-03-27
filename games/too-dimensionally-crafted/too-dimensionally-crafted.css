@@ -109,7 +109,7 @@ button, .inventory canvas, a {
     width: 18px;
     height: 18px;
     border: none;
-    margin: 8px;
+    margin: 0px, 8px, 2px;
     cursor: default;
     padding: 0px;
 }
