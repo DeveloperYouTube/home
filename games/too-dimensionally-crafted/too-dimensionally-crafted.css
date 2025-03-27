@@ -19,7 +19,7 @@ body {
     font-size: 15px;
 }
 
-canvas {
+.screen {
     display: block;
     z-index: 10;
     cursor: crosshair;
@@ -27,7 +27,9 @@ canvas {
     bottom: 0px;
     right: 0px;
     left: 0px;
+    position: fixed;
 }
+
 .position {
     background-color: rgba(0, 0, 0, 0.5);
     display: inline-block;
@@ -57,7 +59,11 @@ canvas {
     font-size: 50px;
     z-index: 100;
 }
-div {
+.hotbar {
+    background-color: #00000000;
+    z-index: 11;
+}
+.main_menu, .pause_screen, .how2play, .hotbar, .death_screen {
     top: 0px;
     bottom: 0px;
     right: 0px;
@@ -91,16 +97,17 @@ button, .inventory canvas, a {
     font-weight: 400;
 }
 .inventory canvas {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     background-color: #404040b0;
     margin: 0px;
+    padding: 0px;
 }
 .HP canvas {
-    width: 10px;
-    height: 10px;
+    width: 18px;
+    height: 18px;
     border: none;
-    margin: 5px;
+    margin: 8px;
     cursor: default;
     padding: 0px;
 }
