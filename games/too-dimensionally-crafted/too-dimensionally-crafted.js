@@ -415,7 +415,6 @@ async function game_update() {
             playerX = playerX + playerVX * delta_time;
             playerY = playerY + playerVY * delta_time;
 
-            // Collision detection
             const playerLeft = playerX;
             const playerTop = playerY;
             const playerRight = playerX + 32;
@@ -429,8 +428,9 @@ async function game_update() {
             for (let x = blockLeft; x < blockRight; x++) {
                 for (let y = blockTop; y < blockBottom; y++) {
                     const blockKey = `${x}, ${y}`;
-                    if (blocks[blockKey] !== 3) { // Check if it's not an air block
-                        const blockTexture = blockIDs[blocks[blockKey]].texture;
+                    const blockID = blocks[blockKey];
+                    if (blockID !== 3 && blockID !== undefined) { // Check if it's not an air block AND blockID is defined
+                        const blockTexture = blockIDs[blockID].texture;
                         const blockX = x * 32;
                         const blockY = y * 32;
 
