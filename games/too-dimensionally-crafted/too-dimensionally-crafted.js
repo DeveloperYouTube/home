@@ -425,8 +425,10 @@ async function game_update() {
             const blockRight = Math.ceil(playerRight / 32);
             const blockBottom = Math.ceil(playerBottom / 32);
 
+            let onGround = false; // Flag to check if the player is on the ground
+
             for (let x = blockLeft; x < blockRight; x++) {
-                for (let y = blockTop; y < blockBottom; y++) {
+                for (let y = blockTop; y < blockBottom + 1; y++) { // Check one block below
                     const blockKey = `${x}, ${y}`;
                     const blockID = blocks[blockKey];
                     if (blockID !== 3 && blockID !== undefined) { // Check if it's not an air block AND blockID is defined
@@ -434,16 +436,22 @@ async function game_update() {
                         const blockX = x * 32;
                         const blockY = y * 32;
 
-                        if (playerRight > blockX && playerLeft < blockX + 32 && playerBottom > blockY && playerTop < blockY + 32) {
+                        if (playerRight > blockX && playerLeft < blockX + 32 && playerBottom >= blockY && playerTop < blockY + 32) {
                             // Collision detected, now perform pixel-perfect collision check
                             if (checkPixelCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY, blockTexture)) {
                                 // Resolve collision
                                 resolveCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY);
+                                if (playerBottom === blockY) {
+                                    onGround = true; // Player is on the ground
+                                }
                             }
                         }
                     }
                 }
             }
+
+            can_jump = onGround; // Update can_jump based on onGround flag
+
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
                 for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
