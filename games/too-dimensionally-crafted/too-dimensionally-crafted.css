@@ -62,7 +62,7 @@ body {
 .hotbar {
     background-color: #00000000;
     z-index: 11;
-    padding-top: calc(100vh - 100px);
+    padding-top: calc(100vh - 200px);
 }
 .main_menu, .pause_screen, .how2play, .hotbar, .death_screen {
     top: 0px;
