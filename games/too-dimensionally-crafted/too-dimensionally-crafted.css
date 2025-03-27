@@ -48,7 +48,7 @@ canvas {
     position: fixed;
     z-index: 20;
 }
-.death_screen, .main_menu, .pause_screen {
+.death_screen, .main_menu, .pause_screen, .hotbar {
     background-color: rgba(255, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
@@ -75,13 +75,7 @@ div {
     flex-direction: row;
     z-index: 200;
 }
-.hotbar {
-    bottom: 64px;
-    left: calc(50vw - 50%);
-    display: inline-flex;
-    z-index: 10;
-}
-button, .more_games, .inventory canvas {
+button, .more_games, .inventory canvas, a {
     color: #ffffff;
     background-color: #808080;
     border-color: #404040;
@@ -99,10 +93,18 @@ button, .more_games, .inventory canvas {
 .inventory canvas {
     width: 32px;
     height: 32px;
-    background-color: #40404080;
+    background-color: #404040b0;
     margin: 0px;
 }
-button:active, .more_games:active {
+.HP canvas {
+    width: 10px;
+    height: 10px;
+    border: none;
+    margin: 5px;
+    cursor: default;
+    padding: 0px;
+}
+button:active, .more_games:active, a:active {
     border-style: inset;
 }
 .deathID {
