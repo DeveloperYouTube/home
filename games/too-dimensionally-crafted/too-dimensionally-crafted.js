@@ -429,6 +429,7 @@ async function game_update() {
             if (pixels.length != 0) {
                 new_playerY = Math.min(...pixels) + playerY;
                 can_jump = true
+                playerVY = Math.min(0, playerVY);
             }
             pixels = [];
             for (let i = 0; i < playerVX * delta_time; i++) {
@@ -442,6 +443,7 @@ async function game_update() {
             }
             if (pixels.length != 0) {
                 new_playerX = Math.min(...pixels) + playerX;
+                playerVX = Math.min(0, playerVX);
             }
             pixels = [];
             for (let i = 0; i > playerVY * delta_time; i--) {
@@ -455,6 +457,7 @@ async function game_update() {
             }
             if (pixels.length != 0) {
                 new_playerY = Math.max(...pixels) + playerY;
+                playerVY = Math.max(0, playerVY);
             }
             pixels = [];
             for (let i = 0; i > playerVX * delta_time; i--) {
@@ -468,6 +471,7 @@ async function game_update() {
             }
             if (pixels.length != 0) {
                 new_playerX = Math.max(...pixels) + playerX;
+                playerVX = Math.max(0, playerVX);
             }
 
             playerX = new_playerX;
