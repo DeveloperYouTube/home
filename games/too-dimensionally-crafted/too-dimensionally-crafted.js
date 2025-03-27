@@ -480,7 +480,7 @@ async function game_update() {
             render_blocks();
             //draw player
             pen.fillStyle = '#3f8c9f';
-            pen.fillRect(offset_centerX - 16, offset_centerY - 64, 32, 64);
+            pen.fillRect(offset_centerX - 16, offset_centerY - 32, 32, 64);
     
             // Draw selector around selected block
             if (selectedBlock) {
