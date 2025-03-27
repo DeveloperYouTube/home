@@ -468,6 +468,9 @@ async function game_update() {
                 new_playerX = Math.max(...pixels) + playerX;
             }
 
+            playerX = new_playerX;
+            playerY = new_playerY;
+
 
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
