@@ -75,7 +75,7 @@ div {
     flex-direction: row;
     z-index: 200;
 }
-button, .more_games, .inventory canvas, a {
+button, .inventory canvas, a {
     color: #ffffff;
     background-color: #808080;
     border-color: #404040;
@@ -104,7 +104,7 @@ button, .more_games, .inventory canvas, a {
     cursor: default;
     padding: 0px;
 }
-button:active, .more_games:active, a:active {
+button:active, a:active {
     border-style: inset;
 }
 .deathID {
