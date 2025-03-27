@@ -540,7 +540,6 @@ function checkPixelCollision(playerLeft, playerTop, playerRight, playerBottom, b
     return false; // No collision
 }
 
-// Function to resolve collision
 function resolveCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY) {
     const overlapX = Math.min(playerRight, blockX + 32) - Math.max(playerLeft, blockX);
     const overlapY = Math.min(playerBottom, blockY + 32) - Math.max(playerTop, blockY);
@@ -557,11 +556,15 @@ function resolveCollision(playerLeft, playerTop, playerRight, playerBottom, bloc
         } else {
             if (playerTop < blockY) {
                 playerY = blockY - 64;
-                playerVY = 0;
-                can_jump = true;
+                if (playerVY >= 0) { // Only set playerVY to 0 if downward or close to zero
+                    playerVY = 0;
+                    can_jump = true;
+                }
             } else {
                 playerY = blockY + 32;
-                playerVY = 0;
+                if (playerVY <= 0){
+                    playerVY = 0;
+                }
             }
         }
     }
