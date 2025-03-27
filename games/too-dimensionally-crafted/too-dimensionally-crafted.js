@@ -359,67 +359,6 @@ document.addEventListener('contextmenu', function(event) {
     }
 });
 
-
-function left_collision() {
-    const data = pen.getImageData(player_left, player_top, 1, 64).data;
-    for (let i = 3; i < data.length; i+=4) {
-        if (data[i] != 0) {
-            return true;
-        }
-    }
-    return false;
-}
-function right_collision() {
-    const data = pen.getImageData(player_right, player_top, 1, 64).data;
-    for (let i = 3; i < data.length; i+=4) {
-        if (data[i] != 0) {
-            return true;
-        }
-    }
-    return false;
-}
-function top_collision() {
-    const data = pen.getImageData(player_left, player_top, 32, 1).data;
-    for (let i = 3; i < data.length; i+=4) {
-        if (data[i] != 0) {
-            return true;
-        }
-    }
-    return false;
-}
-function bottom_collision() {
-    const data = pen.getImageData(player_left, player_bottom, 32, 1).data;
-    for (let i = 3; i < data.length; i+=4) {
-        if (data[i] != 0) {
-            can_jump = true;
-            return true;
-        }
-    }
-    can_jump = false;
-    return false;
-}
-
-
-function collisions(left, right, top, bottom) {
-    // Adjust player velocity based on collisions
-    if (bottom) {
-        playerVY = Math.min(0, playerVY); // Stop downward movement
-        can_jump = true; // Player can jump if on the ground
-    } else {
-        can_jump = false; // Player cannot jump if not on the ground
-    }
-    if (right) {
-        playerVX = Math.min(0, playerVX); // Stop rightward movement
-    }
-    if (top) {
-        playerVY = Math.max(0, playerVY); // Stop upward movement
-    }
-    if (left) {
-        playerVX = Math.max(0, playerVX); // Stop leftward movement
-    }
-}
-
-
 if (!in_correctURL) {
     playerHP = 0;
     death_reason = death.incorrectURL
@@ -471,11 +410,64 @@ async function game_update() {
                     playerVY = playerVY + 138.144;
                 }
             }
-            collisions(left_collision(), right_collision(), top_collision(), bottom_collision());
 
             playerVX = player_movement + ((player_movement - playerVX) / 2);
-            playerX = playerX + playerVX * delta_time;
-            playerY = playerY + playerVY * delta_time;
+            let new_playerX = playerX + playerVX * delta_time;
+            let new_playerY = playerY + playerVY * delta_time;
+            let data;
+            let pixels = [];
+            for (let i = 0; i < playerVY * delta_time; i++) {
+                data = pen.getImageData(player_left, player_bottom + i, 32, 1);
+                for (let index = 3; index < data.length; index+=4) {
+                    if (data[index] != 0) {
+                        pixels.push(i);
+                        break;
+                    }
+                }
+            }
+            if (pixels.length != 0) {
+                new_playerY = Math.min(...pixels) + playerY;
+            }
+            pixels = [];
+            for (let i = 0; i < playerVX * delta_time; i++) {
+                data = pen.getImageData(player_right + i, player_top, 1, 64);
+                for (let index = 3; index < data.length; index+=4) {
+                    if (data[index] != 0) {
+                        pixels.push(i);
+                        break;
+                    }
+                }
+            }
+            if (pixels.length != 0) {
+                new_playerX = Math.min(...pixels) + playerX;
+            }
+            pixels = [];
+            for (let i = 0; i > playerVY * delta_time; i--) {
+                data = pen.getImageData(player_left, player_top - i, 32, 1);
+                for (let index = 3; index < data.length; index+=4) {
+                    if (data[index] != 0) {
+                        pixels.push(i);
+                        break;
+                    }
+                }
+            }
+            if (pixels.length != 0) {
+                new_playerY = Math.max(...pixels) + playerY;
+            }
+            pixels = [];
+            for (let i = 0; i > playerVX * delta_time; i--) {
+                data = pen.getImageData(player_left - i, player_top, 1, 64);
+                for (let index = 3; index < data.length; index+=4) {
+                    if (data[index] != 0) {
+                        pixels.push(i);
+                        break;
+                    }
+                }
+            }
+            if (pixels.length != 0) {
+                new_playerX = Math.max(...pixels) + playerX;
+            }
+
 
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
