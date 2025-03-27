@@ -441,7 +441,7 @@ async function game_update() {
                             if (checkPixelCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY, blockTexture)) {
                                 // Resolve collision
                                 resolveCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY);
-                                if (playerBottom === blockY) {
+                                if (Math.abs(playerBottom - blockY) < 1) { // Tolerance of 1 pixel
                                     onGround = true; // Player is on the ground
                                 }
                             }
@@ -449,9 +449,8 @@ async function game_update() {
                     }
                 }
             }
-
-            can_jump = onGround; // Update can_jump based on onGround flag
-
+            can_jump = onGround;
+            
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
                 for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
