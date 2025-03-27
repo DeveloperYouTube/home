@@ -412,72 +412,38 @@ async function game_update() {
             }
 
             playerVX = player_movement + ((player_movement - playerVX) / 2);
-            let new_playerX = playerX + playerVX * delta_time;
-            let new_playerY = playerY + playerVY * delta_time;
-            let data;
-            let pixels = [];
-            for (let i = 0; i < playerVY * delta_time; i++) {
-                data = pen.getImageData(player_left, player_bottom + i, 32, 1);
-                for (let index = 3; index < data.length; index+=4) {
-                    if (data[index] != 0) {
-                        pixels.push(i);
-                        break;
-                    }
-                }
-            }
-            can_jump = false;
-            if (pixels.length != 0) {
-                new_playerY = Math.min(...pixels) + playerY;
-                can_jump = true
-                playerVY = Math.min(0, playerVY);
-            }
-            pixels = [];
-            for (let i = 0; i < playerVX * delta_time; i++) {
-                data = pen.getImageData(player_right + i, player_top, 1, 64);
-                for (let index = 3; index < data.length; index+=4) {
-                    if (data[index] != 0) {
-                        pixels.push(i);
-                        break;
-                    }
-                }
-            }
-            if (pixels.length != 0) {
-                new_playerX = Math.min(...pixels) + playerX;
-                playerVX = Math.min(0, playerVX);
-            }
-            pixels = [];
-            for (let i = 0; i > playerVY * delta_time; i--) {
-                data = pen.getImageData(player_left, player_top - i, 32, 1);
-                for (let index = 3; index < data.length; index+=4) {
-                    if (data[index] != 0) {
-                        pixels.push(i);
-                        break;
-                    }
-                }
-            }
-            if (pixels.length != 0) {
-                new_playerY = Math.max(...pixels) + playerY;
-                playerVY = Math.max(0, playerVY);
-            }
-            pixels = [];
-            for (let i = 0; i > playerVX * delta_time; i--) {
-                data = pen.getImageData(player_left - i, player_top, 1, 64);
-                for (let index = 3; index < data.length; index+=4) {
-                    if (data[index] != 0) {
-                        pixels.push(i);
-                        break;
-                    }
-                }
-            }
-            if (pixels.length != 0) {
-                new_playerX = Math.max(...pixels) + playerX;
-                playerVX = Math.max(0, playerVX);
-            }
+            playerX = playerX + playerVX * delta_time;
+            playerY = playerY + playerVY * delta_time;
 
-            playerX = new_playerX;
-            playerY = new_playerY;
+            // Collision detection
+            const playerLeft = playerX;
+            const playerTop = playerY;
+            const playerRight = playerX + 32;
+            const playerBottom = playerY + 64;
 
+            const blockLeft = Math.floor(playerLeft / 32);
+            const blockTop = Math.floor(playerTop / 32);
+            const blockRight = Math.ceil(playerRight / 32);
+            const blockBottom = Math.ceil(playerBottom / 32);
 
+            for (let x = blockLeft; x < blockRight; x++) {
+                for (let y = blockTop; y < blockBottom; y++) {
+                    const blockKey = `${x}, ${y}`;
+                    if (blocks[blockKey] !== 3) { // Check if it's not an air block
+                        const blockTexture = blockIDs[blocks[blockKey]].texture;
+                        const blockX = x * 32;
+                        const blockY = y * 32;
+
+                        if (playerRight > blockX && playerLeft < blockX + 32 && playerBottom > blockY && playerTop < blockY + 32) {
+                            // Collision detected, now perform pixel-perfect collision check
+                            if (checkPixelCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY, blockTexture)) {
+                                // Resolve collision
+                                resolveCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY);
+                            }
+                        }
+                    }
+                }
+            }
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
                 for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
@@ -554,6 +520,45 @@ async function game_update() {
 }
 
 game_update();
+// Function to check pixel-perfect collision
+function checkPixelCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY, blockTexture) {
+    for (let py = Math.max(0, playerTop - blockY); py < Math.min(32, playerBottom - blockY); py++) {
+        for (let px = Math.max(0, playerLeft - blockX); px < Math.min(32, playerRight - blockX); px++) {
+            const blockColor = blockTexture[Math.floor(py / 2)][Math.floor(px / 2)];
+            if (blockColor !== '#00000000') { // Check if the block pixel is not transparent
+                return true; // Collision detected
+            }
+        }
+    }
+    return false; // No collision
+}
+
+// Function to resolve collision
+function resolveCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY) {
+    const overlapX = Math.min(playerRight, blockX + 32) - Math.max(playerLeft, blockX);
+    const overlapY = Math.min(playerBottom, blockY + 32) - Math.max(playerTop, blockY);
+
+    if (overlapX > 0 && overlapY > 0) {
+        if (overlapX < overlapY) {
+            if (playerLeft < blockX) {
+                playerX = blockX - 32;
+                playerVX = 0;
+            } else {
+                playerX = blockX + 32;
+                playerVX = 0;
+            }
+        } else {
+            if (playerTop < blockY) {
+                playerY = blockY - 64;
+                playerVY = 0;
+                can_jump = true;
+            } else {
+                playerY = blockY + 32;
+                playerVY = 0;
+            }
+        }
+    }
+}
 
 //stuff for html things
 window.respawnPlayer = function() {
