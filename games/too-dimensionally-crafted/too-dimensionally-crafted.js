@@ -516,6 +516,18 @@ async function game_update() {
                 }
             }
         }
+        document.querySelectorAll('.HP canvas').forEach((element, index) => {
+            const heart = element.getContext('2d');
+            heart.fillStyle = '#000000';
+            heart.fillRect(0, 0, element.width, element.height);
+            if (Math.ceil(playerHP / 2) >= index) {
+                heart.fillStyle = '#ff0000';
+                heart.fillRect(2, 2, element.width/2, element.height - 2);
+                if (Math.floor(playerHP / 2) >= index) {
+                    heart.fillRect(2, 2, element.width - 2, element.height - 2);
+                }
+            }
+        });
         if (playerHP <= 0) {
             death_message.innerHTML = death_reason;
             death_screen.style.display = 'flex';
