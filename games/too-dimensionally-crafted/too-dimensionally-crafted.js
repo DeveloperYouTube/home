@@ -387,7 +387,7 @@ block_drops.forEach((element, index) => {
     if (blockIDs[index]) {
         blockIDs[index].drop = function() {
             entities.push({
-                texture: this.texture
+                texture: this.texture,
                 behavior: {
                     X: 0,
                     Y: 0,
