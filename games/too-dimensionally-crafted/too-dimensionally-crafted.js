@@ -155,6 +155,24 @@ const blockIDs = {
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
+        ],
+        solid: [
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
         ]
     }, 
     1: {
@@ -176,6 +194,24 @@ const blockIDs = {
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
+        ],
+        solid: [
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
         ]
     }, 
     2: {
@@ -197,6 +233,24 @@ const blockIDs = {
             ['#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080'],
             ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
             ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
+        ],
+        solid: [
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
         ]
     }, 
     3: {
@@ -218,6 +272,24 @@ const blockIDs = {
             ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
             ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
             ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+        ],
+        solid: [
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
         ]
     }, 
     4: {
@@ -239,6 +311,24 @@ const blockIDs = {
             ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
             ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
             ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
+        ],
+        solid: [
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
         ]
     },
     5: {
@@ -260,6 +350,24 @@ const blockIDs = {
             ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
             ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
             ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
+        ],
+        solid: [
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
         ]
     },
     6: {
@@ -281,6 +389,24 @@ const blockIDs = {
             ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
             ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
             ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
+        ],
+        solid: [
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
         ]
     },
     7: {
@@ -302,6 +428,24 @@ const blockIDs = {
             ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
             ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
             ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
+        ],
+        solid: [
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
         ]
     },
     8: {
@@ -323,6 +467,24 @@ const blockIDs = {
             ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
             ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
+        ],
+        solid: [
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
         ]
     },
     9: {
@@ -344,10 +506,28 @@ const blockIDs = {
             ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
             ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
             ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+        ],
+        solid: [
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
         ]
     },
     10: {
-        name: 'Oak Planks',
+        name: 'Sand',
         texture: [
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
             ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
@@ -365,7 +545,26 @@ const blockIDs = {
             ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
             ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-        ]
+        ],
+        solid: [
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
+        ],
+        fallingBlockEntity: true
     }
 };
 const itemIDs = {
@@ -557,11 +756,12 @@ function checkCollisions(entityX, entityY, entityWidth, entityHeight) {
             const blockID = blocks[blockKey];
             if (blockID !== 3 && blockID !== undefined) {
                 const blockTexture = blockIDs[blockID].texture;
+                const blockSolid = blockIDs[blockID].solid;
                 const blockX = x * 32;
                 const blockY = y * 32;
 
                 if (entityRight > blockX && entityLeft < blockX + 32 && entityBottom >= blockY && entityTop < blockY + 32) {
-                    if (checkPixelCollision(entityLeft, entityTop, entityRight, entityBottom, blockX, blockY, blockTexture)) {
+                    if (checkPixelCollision(entityLeft, entityTop, entityRight, entityBottom, blockX, blockY, blockTexture, blockSolid)) {
                         collided = true;
                         collisionX = blockX;
                         collisionY = blockY;
@@ -583,12 +783,13 @@ function checkCollisions(entityX, entityY, entityWidth, entityHeight) {
     };
 }
 
-// Function to check pixel-perfect collision
-function checkPixelCollision(entityLeft, entityTop, entityRight, entityBottom, blockX, blockY, blockTexture) {
+function checkPixelCollision(entityLeft, entityTop, entityRight, entityBottom, blockX, blockY, blockTexture, blockSolid) {
     for (let py = Math.max(0, entityTop - blockY); py < Math.min(32, entityBottom - blockY); py++) {
         for (let px = Math.max(0, entityLeft - blockX); px < Math.min(32, entityRight - blockX); px++) {
             const blockColor = blockTexture[Math.floor(py / 2)][Math.floor(px / 2)];
-            if (blockColor !== '#00000000') {
+            const solidX = Math.floor(px / 2);
+            const solidY = Math.floor(py / 2);
+            if (blockColor !== '#00000000' && blockSolid[solidY][solidX]) {
                 return true;
             }
         }
@@ -699,15 +900,15 @@ async function game_update() {
             playerX = playerX + playerVX * delta_time;
             playerY = playerY + playerVY * delta_time;
             
-            const collisionResult = checkCollisions(playerX, playerY, 32, 64);
-            can_jump = collisionResult.onGround;
+            const playerCollision = checkCollisions(playerX, playerY, 32, 64);
+            can_jump = playerCollision.onGround;
 
-            if (collisionResult.collided) {
-                const resolvedPosition = resolveCollision(playerX, playerY, 32, 64, collisionResult.collisionX, collisionResult.collisionY, playerVX, playerVY);
-                playerX = resolvedPosition.x;
-                playerY = resolvedPosition.y;
-                playerVX = resolvedPosition.vx;
-                playerVY = resolvedPosition.vy;
+            if (playerCollision.collided) {
+                const resolvedPlayerPosition = resolveCollision(playerX, playerY, 32, 64, playerCollision.collisionX, playerCollision.collisionY, playerVX, playerVY);
+                playerX = resolvedPlayerPosition.x;
+                playerY = resolvedPlayerPosition.y;
+                playerVX = resolvedPlayerPosition.vx;
+                playerVY = resolvedPlayerPosition.vy;
             }
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
