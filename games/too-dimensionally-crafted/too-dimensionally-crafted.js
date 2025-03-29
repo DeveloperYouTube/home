@@ -385,18 +385,28 @@ const block_drops = [
 ];
 block_drops.forEach((element, index) => {
     if (blockIDs[index]) {
-        blockIDs[index].drop = function() {
+        blockIDs[index].drop = function(x, y) {
             entities.push({
                 texture: this.texture,
                 behavior: {
-                    X: 0,
-                    Y: 0,
+                    X: x,
+                    Y: y,
                     VY: 0,
                     VX: 0,
                     code: function() {
                         this.VY += 512 * delta_time;
                         this.X += this.VX * delta_time;
                         this.Y += this.VY * delta_time;
+                        const drawX = this.X - playerX;
+                        const drawY = this.Y - playerY;
+                        if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
+                            for (let y = 0; y < 16; y++) {
+                                for (let x = 0; x < 16; x++) {
+                                    pen.fillStyle = texture[y][x];
+                                    pen.fillRect(x, y, 1, 1);
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -517,6 +527,114 @@ document.addEventListener('contextmenu', function(event) {
     }
 });
 
+function checkCollisions(entityX, entityY, entityWidth, entityHeight) {
+    const entityLeft = entityX;
+    const entityTop = entityY;
+    const entityRight = entityX + entityWidth;
+    const entityBottom = entityY + entityHeight;
+
+    const blockLeft = Math.floor(entityLeft / 32);
+    const blockTop = Math.floor(entityTop / 32);
+    const blockRight = Math.ceil(entityRight / 32);
+    const blockBottom = Math.ceil(entityBottom / 32);
+
+    let onGround = false;
+    let collided = false;
+    let collisionX = 0;
+    let collisionY = 0;
+
+    for (let x = blockLeft; x < blockRight; x++) {
+        for (let y = blockTop; y < blockBottom + 1; y++) {
+            const blockKey = `${x}, ${y}`;
+            const blockID = blocks[blockKey];
+            if (blockID !== 3 && blockID !== undefined) {
+                const blockTexture = blockIDs[blockID].texture;
+                const blockX = x * 32;
+                const blockY = y * 32;
+
+                if (entityRight > blockX && entityLeft < blockX + 32 && entityBottom >= blockY && entityTop < blockY + 32) {
+                    if (checkPixelCollision(entityLeft, entityTop, entityRight, entityBottom, blockX, blockY, blockTexture)) {
+                        collided = true;
+                        collisionX = blockX;
+                        collisionY = blockY;
+
+                        if (Math.abs(entityBottom - blockY) < 1) {
+                            onGround = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return {
+        collided: collided,
+        collisionX: collisionX,
+        collisionY: collisionY,
+        onGround: onGround,
+    };
+}
+
+// Function to check pixel-perfect collision
+function checkPixelCollision(entityLeft, entityTop, entityRight, entityBottom, blockX, blockY, blockTexture) {
+    for (let py = Math.max(0, entityTop - blockY); py < Math.min(32, entityBottom - blockY); py++) {
+        for (let px = Math.max(0, entityLeft - blockX); px < Math.min(32, entityRight - blockX); px++) {
+            const blockColor = blockTexture[Math.floor(py / 2)][Math.floor(px / 2)];
+            if (blockColor !== '#00000000') {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Function to resolve collision
+function resolveCollision(entityX, entityY, entityWidth, entityHeight, blockX, blockY, entityVX, entityVY) {
+    const entityLeft = entityX;
+    const entityTop = entityY;
+    const entityRight = entityX + entityWidth;
+    const entityBottom = entityY + entityHeight;
+
+    const overlapX = Math.min(entityRight, blockX + 32) - Math.max(entityLeft, blockX);
+    const overlapY = Math.min(entityBottom, blockY + 32) - Math.max(entityTop, blockY);
+
+    let newEntityX = entityX;
+    let newEntityY = entityY;
+    let newEntityVX = entityVX;
+    let newEntityVY = entityVY;
+
+    if (overlapX > 0 && overlapY > 0) {
+        if (overlapX < overlapY) {
+            if (entityLeft < blockX) {
+                newEntityX = blockX - entityWidth;
+                newEntityVX = 0;
+            } else {
+                newEntityX = blockX + 32;
+                newEntityVX = 0;
+            }
+        } else {
+            if (entityTop < blockY) {
+                newEntityY = blockY - entityHeight;
+                if (entityVY >= 0) {
+                    newEntityVY = 0;
+                }
+            } else {
+                newEntityY = blockY + 32;
+                if (entityVY <= 0) {
+                    newEntityVY = 0;
+                }
+            }
+        }
+    }
+
+    return {
+        x: newEntityX,
+        y: newEntityY,
+        vx: newEntityVX,
+        vy: newEntityVY,
+    };
+}
+
 if (!in_correctURL) {
     playerHP = 0;
     death_reason = death.incorrectURL
@@ -572,43 +690,17 @@ async function game_update() {
             playerVX = player_movement + ((player_movement - playerVX) / 2);
             playerX = playerX + playerVX * delta_time;
             playerY = playerY + playerVY * delta_time;
-
-            const playerLeft = playerX;
-            const playerTop = playerY;
-            const playerRight = playerX + 32;
-            const playerBottom = playerY + 64;
-
-            const blockLeft = Math.floor(playerLeft / 32);
-            const blockTop = Math.floor(playerTop / 32);
-            const blockRight = Math.ceil(playerRight / 32);
-            const blockBottom = Math.ceil(playerBottom / 32);
-
-            let onGround = false; // Flag to check if the player is on the ground
-
-            for (let x = blockLeft; x < blockRight; x++) {
-                for (let y = blockTop; y < blockBottom + 1; y++) { // Check one block below
-                    const blockKey = `${x}, ${y}`;
-                    const blockID = blocks[blockKey];
-                    if (blockID !== 3 && blockID !== undefined) { // Check if it's not an air block AND blockID is defined
-                        const blockTexture = blockIDs[blockID].texture;
-                        const blockX = x * 32;
-                        const blockY = y * 32;
-
-                        if (playerRight > blockX && playerLeft < blockX + 32 && playerBottom >= blockY && playerTop < blockY + 32) {
-                            // Collision detected, now perform pixel-perfect collision check
-                            if (checkPixelCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY, blockTexture)) {
-                                // Resolve collision
-                                resolveCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY);
-                                if (Math.abs(playerBottom - blockY) < 1) { // Tolerance of 1 pixel
-                                    onGround = true; // Player is on the ground
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            can_jump = onGround;
             
+            const collisionResult = checkCollisions(playerX, playerY, 32, 64);
+            can_jump = collisionResult.onGround;
+
+            if (collisionResult.collided) {
+                const resolvedPosition = resolveCollision(playerX, playerY, 32, 64, collisionResult.collisionX, collisionResult.collisionY, playerVX, playerVY);
+                playerX = resolvedPosition.x;
+                playerY = resolvedPosition.y;
+                playerVX = resolvedPosition.vx;
+                playerVY = resolvedPosition.vy;
+            }
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
                 for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
@@ -697,48 +789,6 @@ async function game_update() {
 }
 
 game_update();
-// Function to check pixel-perfect collision
-function checkPixelCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY, blockTexture) {
-    for (let py = Math.max(0, playerTop - blockY); py < Math.min(32, playerBottom - blockY); py++) {
-        for (let px = Math.max(0, playerLeft - blockX); px < Math.min(32, playerRight - blockX); px++) {
-            const blockColor = blockTexture[Math.floor(py / 2)][Math.floor(px / 2)];
-            if (blockColor !== '#00000000') { // Check if the block pixel is not transparent
-                return true; // Collision detected
-            }
-        }
-    }
-    return false; // No collision
-}
-
-function resolveCollision(playerLeft, playerTop, playerRight, playerBottom, blockX, blockY) {
-    const overlapX = Math.min(playerRight, blockX + 32) - Math.max(playerLeft, blockX);
-    const overlapY = Math.min(playerBottom, blockY + 32) - Math.max(playerTop, blockY);
-
-    if (overlapX > 0 && overlapY > 0) {
-        if (overlapX < overlapY) {
-            if (playerLeft < blockX) {
-                playerX = blockX - 32;
-                playerVX = 0;
-            } else {
-                playerX = blockX + 32;
-                playerVX = 0;
-            }
-        } else {
-            if (playerTop < blockY) {
-                playerY = blockY - 64;
-                if (playerVY >= 0) { // Only set playerVY to 0 if downward or close to zero
-                    playerVY = 0;
-                    can_jump = true;
-                }
-            } else {
-                playerY = blockY + 32;
-                if (playerVY <= 0){
-                    playerVY = 0;
-                }
-            }
-        }
-    }
-}
 
 //stuff for html things
 window.respawnPlayer = function() {
