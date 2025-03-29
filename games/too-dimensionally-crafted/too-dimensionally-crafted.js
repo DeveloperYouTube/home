@@ -397,13 +397,21 @@ block_drops.forEach((element, index) => {
                         this.VY += 512 * delta_time;
                         this.X += this.VX * delta_time;
                         this.Y += this.VY * delta_time;
-                        const drawX = this.X - playerX;
-                        const drawY = this.Y - playerY;
+                        const collision = checkCollisions(this.X, this.Y, 16, 16);
+                        if (collision.collided) {
+                            const resolvedPosition = resolveCollision(this.X, this.Y, 16, 16, collision.collisionX, collision.collisionY, this.VX, this.VY);
+                            this.X = resolvedPosition.x;
+                            this.Y = resolvedPosition.y;
+                            this.VX = resolvedPosition.vx;
+                            this.VY = resolvedPosition.vy;
+                        }
                         if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
+                            const drawX = this.X - playerX;
+                            const drawY = this.Y - playerY;
                             for (let y = 0; y < 16; y++) {
                                 for (let x = 0; x < 16; x++) {
                                     pen.fillStyle = texture[y][x];
-                                    pen.fillRect(x, y, 1, 1);
+                                    pen.fillRect(x + drawX, y + drawY, 1, 1);
                                 }
                             }
                         }
@@ -498,8 +506,8 @@ document.addEventListener('mousedown', (event) => {
         }
 
         if (selectedBlock) {
+            blockIDs[blocks[`${selectedBlock.x}, ${selectedBlock.y}`]].drop(selectedBlock.x * 32 - 16, selectedBlock.y * 32 - 16)
             blocks[`${selectedBlock.x}, ${selectedBlock.y}`] = 3;
-            //inventory.push(itemIDs.0[blocks[`${selectedBlock.x}, ${selectedBlock.y}`].drop]);
         }
     }
 });
@@ -727,6 +735,10 @@ async function game_update() {
             // Clear the canvas before drawing anything
             pen.clearRect(0, 0, screen.width, screen.height); 
             render_blocks();
+            //entities
+            entities.forEach(element => {
+                element.behavior.code();
+            });
             //draw player
             pen.fillStyle = '#3f8c9f';
             pen.fillRect(offset_centerX - 16, offset_centerY - 32, 32, 64);
