@@ -688,24 +688,44 @@ document.addEventListener('mousemove', (event) => {
 });
 document.addEventListener('mousedown', (event) => {
     if (event.button === 0) {
-        //break block
+        // Break block
         const mouseXrad = Math.cos(mouse_dir);
         const mouseYrad = Math.sin(mouse_dir);
 
         let selectedBlock = null;
 
         for (let px = 0; px < 160; px++) {
-            if (blocks[`${Math.round((playerX + mouseXrad * px) / 32)}, ${Math.round((playerY + mouseYrad * px) / 32)}`] !== 3) {
-                selectedBlock = {
-                    x: Math.round((playerX + mouseXrad * px) / 32), 
-                    y: Math.round((playerY + mouseYrad * px) / 32)
+            const blockX = Math.round((playerX + mouseXrad * px) / 32);
+            const blockY = Math.round((playerY + mouseYrad * px) / 32);
+            const blockKey = `${blockX}, ${blockY}`;
+
+            if (blocks[blockKey] !== undefined) { // Check if the block exists
+                const blockID = blocks[blockKey];
+                const blockSolid = blockIDs[blockID].solid;
+
+                // Check if any part of the block is solid
+                let isSolid = false;
+                for (let y = 0; y < 16; y++) {
+                    for (let x = 0; x < 16; x++) {
+                        if (blockSolid[y][x]) {
+                            isSolid = true;
+                            break; // Exit inner loop if solid pixel found
+                        }
+                    }
+                    if (isSolid) {
+                        break; // Exit outer loop if solid pixel found
+                    }
                 }
-                break;
+
+                if (isSolid) {
+                    selectedBlock = { x: blockX, y: blockY };
+                    break; // Exit loop after selecting a solid block
+                }
             }
         }
 
         if (selectedBlock) {
-            blockIDs[blocks[`${selectedBlock.x}, ${selectedBlock.y}`]].drop(selectedBlock.x * 32 - 16, selectedBlock.y * 32 - 16)
+            blockIDs[blocks[`${selectedBlock.x}, ${selectedBlock.y}`]].drop(selectedBlock.x * 32 - 16, selectedBlock.y * 32 - 16);
             blocks[`${selectedBlock.x}, ${selectedBlock.y}`] = 3;
         }
     }
