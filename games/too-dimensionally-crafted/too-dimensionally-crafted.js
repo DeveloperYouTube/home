@@ -609,7 +609,7 @@ block_drops.forEach((element, index) => {
                         if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
                             for (let y = 0; y < 16; y++) {
                                 for (let x = 0; x < 16; x++) {
-                                    pen.fillStyle = texture[y][x];
+                                    pen.fillStyle = this.texture[y][x];
                                     pen.fillRect(x + drawX, y + drawY, 1, 1);
                                 }
                             }
