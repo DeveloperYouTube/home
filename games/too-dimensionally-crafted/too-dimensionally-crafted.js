@@ -604,9 +604,9 @@ block_drops.forEach((element, index) => {
                             this.VX = resolvedPosition.vx;
                             this.VY = resolvedPosition.vy;
                         }
+                        const drawX = this.X - playerX;
+                        const drawY = this.Y - playerY;
                         if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
-                            const drawX = this.X - playerX;
-                            const drawY = this.Y - playerY;
                             for (let y = 0; y < 16; y++) {
                                 for (let x = 0; x < 16; x++) {
                                     pen.fillStyle = texture[y][x];
