@@ -15,7 +15,7 @@ export const utils = {
           // 1. Gradient Vectors (Simplified)
           function getGradient(ix, iy, seed) {
             // Pseudo-random gradient generation
-            const random = (x, y, seed) => {
+            const random = (seed) => {
               let value = (ix * 397) ^ (iy * 613) ^ seed;
               value = (value * value * value * 60493) % 4932800;
               return value / 4932800;

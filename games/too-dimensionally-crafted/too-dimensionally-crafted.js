@@ -592,7 +592,7 @@ block_drops.forEach((element, index) => {
                     Y: y,
                     VY: 0,
                     VX: 0,
-                    code: function() {
+                    code: () => {
                         this.VY += 512 * delta_time;
                         this.X += this.VX * delta_time;
                         this.Y += this.VY * delta_time;
