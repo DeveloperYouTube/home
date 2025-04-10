@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas style="
+            top: 0px;
+            bottom: 0px;
+            right: 0px;
+            left: 0px;
+        "></canvas>
+        <script>
+            const canvas = document.querySelector('canvas');
+            const context = canvas.getContext('2d');
+            function loop () {
+                for (let x = 0; x < canvas.width; x++) {
+                    for (let y = 0; y < canvas.height; y++) {
+                        context.fillStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`
+                        context.fillRect(x, y, 1, 1);
+                    }  
+                }
+                requestAnimationFrame(loop);
+            }
+            requestAnimationFrame(loop);
+        </script>
+    </body>
+</html>
