@@ -582,39 +582,98 @@ const block_drops = [
     itemIDs[0][8],
     itemIDs[0][9]
 ];
+const blockTextureCanvases = {};
+function preRenderBlockTextures() {
+    for (const blockID in blockIDs) {
+        const block = blockIDs[blockID];
+        const canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 32;
+        const ctx = canvas.getContext('2d');
+        const texture = block.texture;
+
+        for (let y = 0; y < 16; y++) {
+            for (let x = 0; x < 16; x++) {
+                ctx.fillStyle = texture[y][x];
+                ctx.fillRect(x * 2, y * 2, 2, 2);
+            }
+        }
+        blockTextureCanvases[blockID] = canvas;
+    }
+}
+preRenderBlockTextures();
+const itemTextureCanvases = {};
+function preRenderItemTextures() {
+    for (const blockID in itemIDs) {
+        if (blockID != blockIDs) {
+            const block = blockIDs[blockID];
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            const texture = block.texture;
+
+            for (let y = 0; y < 16; y++) {
+                for (let x = 0; x < 16; x++) {
+                    ctx.fillStyle = texture[y][x];
+                    ctx.fillRect(x * 2, y * 2, 2, 2);
+                }
+            }
+            itemTextureCanvases[blockID] = canvas;
+        }
+    }
+}
+preRenderItemTextures();
+
+function item_entity (x, y, vx, vy, id, block) {
+    if (block) {
+        entities.push({
+            texture: blockTextureCanvases[id],
+            behavior: {
+                X: x,
+                Y: y,
+                VX: vx,
+                VY: vy,
+                code: function () {
+                    const drawX = x * 32 + offsetX - 16;
+                    const drawY = y * 32 + offsetY - 32;
+    
+                    if (drawX + 32 > 0 && drawX < screen.width && drawY + 32 > 0 && drawY < screen.height){
+                        pen.drawImage(texture, drawX, drawY, 16, 16);
+                    }
+                }
+            }
+        });
+    } else {
+        entities.push({
+            texture: itemTextureCanvases[id],
+            behavior: {
+                X: x,
+                Y: y,
+                VX: vx,
+                VY: vy,
+                code: function () {
+                    const drawX = x * 32 + offsetX - 16;
+                    const drawY = y * 32 + offsetY - 32;
+    
+                    if (drawX + 32 > 0 && drawX < screen.width && drawY + 32 > 0 && drawY < screen.height){
+                        pen.drawImage(texture, drawX, drawY, 16, 16);
+                    }
+                }
+            }
+        });
+    }
+}
+
 block_drops.forEach((element, index) => {
     if (blockIDs[index]) {
-        blockIDs[index].drop = function(x, y) {
+        blockIDs[index].drop = function(x, y, index) {
             entities.push({
                 texture: this.texture,
                 behavior: {
                     X: x,
                     Y: y,
-                    VY: 0,
-                    VX: 0,
-                    code: () => {
-                        this.VY += 512 * delta_time;
-                        this.X += this.VX * delta_time;
-                        this.Y += this.VY * delta_time;
-                        const collision = checkCollisions(this.X, this.Y, 16, 16);
-                        if (collision.collided) {
-                            const resolvedPosition = resolveCollision(this.X, this.Y, 16, 16, collision.collisionX, collision.collisionY, this.VX, this.VY);
-                            this.X = resolvedPosition.x;
-                            this.Y = resolvedPosition.y;
-                            this.VX = resolvedPosition.vx;
-                            this.VY = resolvedPosition.vy;
-                        }
-                        const drawX = this.X - playerX;
-                        const drawY = this.Y - playerY;
-                        if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
-                            for (let y = 0; y < 16; y++) {
-                                for (let x = 0; x < 16; x++) {
-                                    pen.fillStyle = this.texture[y][x];
-                                    pen.fillRect(x + drawX, y + drawY, 1, 1);
-                                }
-                            }
-                        }
-                    }
+
                 }
             });
         };
@@ -644,29 +703,6 @@ function load_blocks(x, y) {
         }
     }
 }
-
-const blockTextureCanvases = {};
-
-function preRenderBlockTextures() {
-    for (const blockID in blockIDs) {
-        const block = blockIDs[blockID];
-        const canvas = document.createElement('canvas');
-        canvas.width = 32;
-        canvas.height = 32;
-        const ctx = canvas.getContext('2d');
-        const texture = block.texture;
-
-        for (let y = 0; y < 16; y++) {
-            for (let x = 0; x < 16; x++) {
-                ctx.fillStyle = texture[y][x];
-                ctx.fillRect(x * 2, y * 2, 2, 2);
-            }
-        }
-        blockTextureCanvases[blockID] = canvas;
-    }
-}
-
-preRenderBlockTextures();
 
 function render_blocks() {
     for (const [key, blockID] of Object.entries(blocks)) {
@@ -701,23 +737,13 @@ document.addEventListener('mousedown', (event) => {
 
             if (blocks[blockKey] !== undefined) { // Check if the block exists
                 const blockID = blocks[blockKey];
-                const blockSolid = blockIDs[blockID].solid;
+                const blockSolid2D = blockIDs[blockID].solid;
+
+                // Condense the 2D solid array into a 1D array
+                const blockSolid1D = blockSolid2D.flat();
 
                 // Check if any part of the block is solid
-                let isSolid = false;
-                for (let y = 0; y < 16; y++) {
-                    for (let x = 0; x < 16; x++) {
-                        if (blockSolid[y][x]) {
-                            isSolid = true;
-                            break; // Exit inner loop if solid pixel found
-                        }
-                    }
-                    if (isSolid) {
-                        break; // Exit outer loop if solid pixel found
-                    }
-                }
-
-                if (isSolid) {
+                if (utils.logic.ors(...blockSolid1D)) {
                     selectedBlock = { x: blockX, y: blockY };
                     break; // Exit loop after selecting a solid block
                 }
@@ -736,21 +762,25 @@ document.addEventListener('contextmenu', function(event) {
     //place block
     const mouseXrad = Math.cos(mouse_dir);
     const mouseYrad = Math.sin(mouse_dir);
-
     let selectedBlock = null;
 
     for (let px = 0; px < 160; px++) {
-        if (blocks[`${Math.round((playerX + mouseXrad * px) / 32)}, ${Math.round((playerY + mouseYrad * px) / 32)}`] !== 3) {
-            selectedBlock = {
-                x: Math.round((playerX + mouseXrad * (px - 1)) / 32), 
-                y: Math.round((playerY + mouseYrad * (px - 1)) / 32)
-            }
-            break;
-        }
-    }
+        const blockX = Math.round((playerX + mouseXrad * px) / 32);
+        const blockY = Math.round((playerY + mouseYrad * px) / 32);
+        const blockKey = `${blockX}, ${blockY}`;
+        if (blocks[blockKey] !== undefined) { // Check if the block exists
+            const blockID = blocks[blockKey];
+            const blockSolid2D = blockIDs[blockID].solid;
 
-    if (selectedBlock) {
-        blocks[`${selectedBlock.x}, ${selectedBlock.y}`] = 2;
+            // Condense the 2D solid array into a 1D array
+            const blockSolid1D = blockSolid2D.flat();
+
+            // Check if any part of the block is solid
+            if (utils.logic.ors(...blockSolid1D)) {
+                selectedBlock = { x: blockX, y: blockY };
+                break; // Exit loop after selecting a solid block
+            }
+        }
     }
 });
 

@@ -58,5 +58,15 @@ export const utils = {
     
           return i1 + sy * (i2 - i1);
         }
-    }
+    },
+	logic: {
+		ors: function(...booleans) {
+			for (const element of booleans) {
+				if (element) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
 };
