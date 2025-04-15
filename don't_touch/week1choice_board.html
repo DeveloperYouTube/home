@@ -6,8 +6,8 @@
     </head>
     <body style="
         margin: 0px;
-        padding: 0px;
-        padding-top: 50px;
+        padding: 15px;
+        padding-top: 75px;
         border: none;
     ">
         <div style="
@@ -27,16 +27,111 @@
                     home
                 </i>
             </a>
+        </div>
+        <div>
+            <canvas class="profile-picture" style="width: 100px; height: 100px; border-radius: 50px;">
+                <script>
+                    const canvas = document.querySelector('.profile-picture');
+                    const ctx = canvas.getContext('2d');
+                    const radius = 50; // Radius of the circle
+                    const centerX = radius;
+                    const centerY = radius;
 
-            <input type="text" placeholder="Search..." style="
-                width: 1fr;
-                height: 30px;
-                border-radius: 15px;
-                border-color: #00ff00;
-                background-color: #004000;
-                border-width: 2px;
-                border-style: none;
-            ">
+                    // --- Helper Functions ---
+
+                    function drawCircle(x, y, r, color) {
+                        ctx.beginPath();
+                        ctx.arc(x, y, r, 0, 2 * Math.PI);
+                        ctx.fillStyle = color;
+                        ctx.fill();
+                    }
+
+                    function drawEllipse(x, y, rx, ry, rotation, color) {
+                        ctx.save(); // Save the current context state
+                        ctx.translate(x, y);
+                        ctx.rotate(rotation);
+                        ctx.scale(rx, ry);
+                        ctx.beginPath();
+                        ctx.arc(0, 0, 1, 0, 2 * Math.PI);
+                        ctx.fillStyle = color;
+                        ctx.fill();
+                        ctx.restore(); // Restore the context to its original state
+                    }
+
+                    function drawGradientCircle(x, y, r, startColor, endColor) {
+                        const gradient = ctx.createRadialGradient(x, y, 0, x, y, r);
+                        gradient.addColorStop(0, startColor); // Center color
+                        gradient.addColorStop(1, endColor);   // Outer color
+                        ctx.beginPath();
+                        ctx.arc(x, y, r, 0, 2 * Math.PI);
+                        ctx.fillStyle = gradient;
+                        ctx.fill();
+                    }
+
+
+                    // --- Drawing the Face ---
+
+                    // 1. Base Skin
+                    drawGradientCircle(centerX, centerY, radius, '#FDD0A2', '#E5B78D'); // Light skin, gradient for depth
+
+                    // 2. Eyes
+                    const eyeRadius = 7;
+                    const eyeSpacing = 18;
+                    const eyeYOffset = -10;
+                    drawCircle(centerX - eyeSpacing, centerY + eyeYOffset, eyeRadius, '#FFFFFF'); // Left Eye White
+                    drawCircle(centerX + eyeSpacing, centerY + eyeYOffset, eyeRadius, '#FFFFFF'); // Right Eye White
+
+                    //Pupils
+                    const pupilRadius = 2.5;
+                    drawCircle(centerX - eyeSpacing, centerY + eyeYOffset, pupilRadius, '#333333'); // Left Pupil
+                    drawCircle(centerX + eyeSpacing, centerY + eyeYOffset, pupilRadius, '#333333'); // Right Pupil
+
+                    // 3. Nose
+                    const noseWidth = 5;
+                    const noseHeight = 10;
+                    const noseXOffset = 0;
+                    const noseYOffset = 8;
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + noseXOffset, centerY + noseYOffset);
+                    ctx.lineTo(centerX + noseXOffset - noseWidth / 2, centerY + noseYOffset + noseHeight);
+                    ctx.lineTo(centerX + noseXOffset + noseWidth / 2, centerY + noseYOffset + noseHeight);
+                    ctx.closePath();
+                    ctx.fillStyle = '#D29173'; // Slightly darker nose
+                    ctx.fill();
+
+
+                    // 4. Mouth
+                    const mouthWidth = 16;
+                    const mouthHeight = 6;
+                    const mouthXOffset = 0;
+                    const mouthYOffset = 20;
+                    drawEllipse(centerX + mouthXOffset, centerY + mouthYOffset, mouthWidth / 2, mouthHeight / 2, 0, '#C87C6B'); // Mouth color
+
+                    //Optional: Draw a subtle lip line
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + mouthXOffset - mouthWidth / 2, centerY + mouthYOffset);
+                    ctx.lineTo(centerX + mouthXOffset + mouthWidth / 2, centerY + mouthYOffset);
+                    ctx.strokeStyle = '#995947';
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+
+
+                    // 5. Eyebrows
+                    const eyebrowWidth = 12;
+                    const eyebrowHeight = 2;
+                    const eyebrowYOffset = -18;
+                    ctx.fillStyle = '#333333'; // Eyebrow color
+                    drawEllipse(centerX - eyeSpacing, centerY + eyebrowYOffset, eyebrowWidth / 2, eyebrowHeight / 2, -0.2, '#333333'); // Left Eyebrow
+                    drawEllipse(centerX + eyeSpacing, centerY + eyebrowYOffset, eyebrowWidth / 2, eyebrowHeight / 2, 0.2, '#333333'); // Right Eyebrow
+
+                    // 6. Optional: Blush (Subtle)
+                    const blushRadius = 5;
+                    const blushXOffset = 25; // Adjust position
+                    const blushYOffset = 10;
+                    drawCircle(centerX - blushXOffset, centerY + blushYOffset, blushRadius, 'rgba(255, 160, 170, 0.4)'); // Left Blush - transparent red
+                    drawCircle(centerX + blushXOffset, centerY + blushYOffset, blushRadius, 'rgba(255, 160, 170, 0.4)'); // Right Blush
+                </script>
+            </canvas>
         </div>
     </body>
 </html>
