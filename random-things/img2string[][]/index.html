@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Image to 2D Pixel Array</title>
+<style>
+  #imageCanvas {
+    display: none; /* Hide the canvas element */
+  }
+  #result {
+    margin-top: 20px;
+    font-family: monospace;
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow-x: auto;  /* Add horizontal scrollbar if text is too wide */
+  }
+</style>
+</head>
+<body>
+
+<input type="file" id="imageInput" accept="image/*">
+<canvas id="imageCanvas"></canvas>
+<div id="result"></div>
+
+<script>
+const imageInput = document.getElementById('imageInput');
+const canvas = document.getElementById('imageCanvas');
+const resultDiv = document.getElementById('result');
+const ctx = canvas.getContext('2d');
+
+imageInput.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const pixelArray = getImagePixelArray(canvas);
+      displayResult(pixelArray);
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+function getImagePixelArray(canvas) {
+  const context = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const imageData = context.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  const pixelArray = [];
+
+  for (let i = 0; i < height; i++) {
+    const row = [];
+    for (let j = 0; j < width; j++) {
+      const index = (i * width + j) * 4;
+      const r = data[index];
+      const g = data[index + 1];
+      const b = data[index + 2];
+      const a = data[index + 3];
+      const colorString = `rgba(${r},${g},${b},${a / 255})`; // Convert alpha to 0-1 range
+      row.push(colorString);
+    }
+    pixelArray.push(row);
+  }
+  return pixelArray;
+}
+
+function displayResult(pixelArray) {
+  let resultText = "[\n";
+  for (let i = 0; i < pixelArray.length; i++) {
+    resultText += "  [";
+    for (let j = 0; j < pixelArray[i].length; j++) {
+      resultText += `"${pixelArray[i][j]}"`;
+      if (j < pixelArray[i].length - 1) {
+        resultText += ", ";
+      }
+    }
+    resultText += "]";
+    if (i < pixelArray.length - 1) {
+      resultText += ",\n";
+    }
+  }
+  resultText += "\n]";
+  resultDiv.textContent = resultText;
+}
+</script>
+
+</body>
+</html>
