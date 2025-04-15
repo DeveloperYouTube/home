@@ -88,24 +88,24 @@ function generateFaceImage(width, height, skinColor, hairColor, eyeColor, mouthC
 
 
 // Example Usage:
-const imageWidth = 60;
-const imageHeight = 40;
+const imageWidth = 100;
+const imageHeight = 100;
 const myFace = generateFaceImage(
   imageWidth,
   imageHeight,
   "rgb(255, 222, 173)", // Skin
   "rgb(75, 48, 36)",   // Hair
   "rgb(0, 0, 255)",    // Eyes
-  "red",              // Mouth
-  "lightskyblue"      // Background
+  "#ff0000",              // Mouth
+  "#c0c0c0"      // Background
 );
 
 
 //  Helper function to display the 2D array (for demonstration purposes in a browser)
-function displayImage(imageArray, containerId = "imageContainer") {
-  const container = document.getElementById(containerId);
+function displayImage(imageArray, container) {
+  const container = container;
   if (!container) {
-    console.error(`Container with ID "${containerId}" not found.`);
+    console.error(`Container not found.`);
     return;
   }
 
