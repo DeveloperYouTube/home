@@ -102,32 +102,19 @@ const myFace = generateFaceImage(
 
 
 //  Helper function to display the 2D array (for demonstration purposes in a browser)
-function displayImage(imageArray, container) {
-  const container = container;
-  if (!container) {
-    console.error(`Container not found.`);
-    return;
-  }
-
-  container.innerHTML = ""; // Clear any previous content
+function displayImage(imageArray, canvas_context) {
+  const pen = canvas_context;
 
   for (let row = 0; row < imageArray.length; row++) {
-    const rowDiv = document.createElement("div");
-    rowDiv.style.display = "flex"; // Important for horizontal alignment
     for (let col = 0; col < imageArray[row].length; col++) {
-      const pixelDiv = document.createElement("div");
-      pixelDiv.style.width = "10px"; // Adjust pixel size as needed
-      pixelDiv.style.height = "10px";
-      pixelDiv.style.backgroundColor = imageArray[row][col];
-      pixelDiv.style.boxSizing = "border-box"; // Prevents pixel size from being affected by padding/border (optional)
-      rowDiv.appendChild(pixelDiv);
+      ctx.fillStyle = imageArray[row][col];
+      ctx.fillRect(col, row, 1, 1);
     }
-    container.appendChild(rowDiv);
   }
 }
 
 // Call the display function after generating the image
-displayImage(myFace);
+displayImage(myFace, ctx);
                 </script>
             </canvas>
         </div>
