@@ -68,5 +68,24 @@ export const utils = {
 			}
 			return false;
 		}
-	}
+	},
+    arrays: {
+        scale2Darray_up2: function (array, scaleX, scaleY) {
+            const multiplierX = Math.max(Math.round(scaleX / array.length), 1);
+            const multiplierY = Math.max(Math.round(scaleY / array[1].length), 1);
+            let result = [];
+            array.forEach(array2 => {
+                let row = [];
+                array2.forEach(element => {
+                    for (let index = 0; index < multiplierX; index++) {
+                        row.push(element);
+                    }
+                });
+                for (let index = 0; index < multiplierY; index++) {
+                    result.push(row);
+                }
+            });
+            return result;
+        }
+    }
 };
