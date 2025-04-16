@@ -1,94 +1,133 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Image to 2D Pixel Color Array</title>
-<style>
-  #imageCanvas {
-    display: none; /* Hide the canvas element */
-  }
-  #result {
-    margin-top: 20px;
-    font-family: monospace;
-    white-space: nowrap; /* Prevent text wrapping */
-    overflow-x: auto;  /* Add horizontal scrollbar if text is too wide */
-  }
-</style>
+    <title>Image Processing and Pixel Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 10px;
+            display: none; /* Initially hidden */
+            max-width: 80%; /* Ensure canvas doesn't overflow */
+            height: auto;    /* Maintain aspect ratio */
+        }
+        #processButton {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: none; /* Initially hidden */
+        }
+        #output {
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 80%;
+        }
+        #loadingText {
+            margin-top: 20px;
+            color: #888;
+            display: none; /* initially hidden */
+        }
+    </style>
 </head>
 <body>
+    <input type="file" id="imageUpload" accept="image/*">
+    <canvas id="myCanvas"></canvas>
+    <button id="processButton">Process Image</button>
+    <div id="loadingText">Processing...</div>
+    <div id="output"></div>
 
-<input type="file" id="imageInput" accept="image/*">
-<canvas id="imageCanvas"></canvas>
-<div id="result"></div>
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true }); // Important for pixel data access
+        const processButton = document.getElementById('processButton');
+        const output = document.getElementById('output');
+        const loadingText = document.getElementById('loadingText');
 
-<script>
-const imageInput = document.getElementById('imageInput');
-const canvas = document.getElementById('imageCanvas');
-const resultDiv = document.getElementById('result');
-const ctx = canvas.getContext('2d');
+        let img = new Image();
+        let pixelData = [];
+        let frameCount = 0;
+        let isProcessing = false;
 
-imageInput.addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
 
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const img = new Image();
-    img.onload = function() {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
+            reader.onload = function(event) {
+                img.onload = function() {
+                    canvas.style.display = 'block'; // Show the canvas
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    processButton.style.display = 'block'; // Show the process button
+                    output.textContent = ''; // Clear previous output
+                    pixelData = [];       // Clear any previous pixel data
+                    frameCount = 0;
+                    isProcessing = false;
+                };
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
 
-      const pixelArray = getImagePixelArray(canvas);
-      displayResult(pixelArray);
-    };
-    img.src = event.target.result;
-  };
-  reader.readAsDataURL(file);
-});
+        processButton.addEventListener('click', function() {
+            if (!isProcessing) {
+                isProcessing = true;
+                output.textContent = '';
+                loadingText.style.display = 'block'; // Show loading text
+                processImage(); // Start the processing
+            }
+        });
 
-function getImagePixelArray(canvas) {
-  const context = canvas.getContext('2d');
-  const width = canvas.width;
-  const height = canvas.height;
-  const imageData = context.getImageData(0, 0, width, height);
-  const data = imageData.data;
-  const pixelArray = [];
+        function processImage() {
+            if (!isProcessing) return;
 
-  for (let i = 0; i < height; i++) {
-    const row = [];
-    for (let j = 0; j < width; j++) {
-      const index = (i * width + j) * 4;
-      const r = data[index];
-      const g = data[index + 1];
-      const b = data[index + 2];
-      const a = data[index + 3];
-      const colorString = `rgba(${r},${g},${b},${a / 255})`; // Convert alpha to 0-1 range
-      row.push(colorString);
-    }
-    pixelArray.push(row);
-  }
-  return pixelArray;
-}
+            const width = canvas.width;
+            const height = canvas.height;
+            const imageData = ctx.getImageData(0, 0, width, height).data;
+            const row = [];
 
-function displayResult(pixelArray) {
-  let resultText = "[\n";
-  for (let i = 0; i < pixelArray.length; i++) {
-    resultText += "  [";
-    for (let j = 0; j < pixelArray[i].length; j++) {
-      resultText += `"${pixelArray[i][j]}"`;
-      if (j < pixelArray[i].length - 1) {
-        resultText += ", ";
-      }
-    }
-    resultText += "]";
-    if (i < pixelArray.length - 1) {
-      resultText += ",\n";
-    }
-  }
-  resultText += "\n]";
-  resultDiv.textContent = resultText;
-}
-</script>
+            // Process a portion of the image data each frame
+            const pixelsPerFrame = 100; // Adjust for performance
+            let processedPixels = 0;
 
+            while (processedPixels < pixelsPerFrame && frameCount < width * height) {
+                const x = frameCount % width;
+                const y = Math.floor(frameCount / width);
+                const pixelIndex = (x + y * width) * 4;
+
+                const r = imageData[pixelIndex];
+                const g = imageData[pixelIndex + 1];
+                const b = imageData[pixelIndex + 2];
+                const a = imageData[pixelIndex + 3];
+                row.push([r, g, b, a]); // Store RGBA values
+
+                processedPixels++;
+                frameCount++;
+            }
+            pixelData.push(row);
+
+            if (frameCount < width * height) {
+                // Continue processing in the next frame
+                requestAnimationFrame(processImage);
+            } else {
+                // All pixels processed
+                loadingText.style.display = 'none'; // Hide loading text
+                output.textContent = JSON.stringify(pixelData, null, 2); // Display the result
+                isProcessing = false; // Reset
+            }
+        }
+    </script>
 </body>
 </html>
