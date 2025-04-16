@@ -9,6 +9,7 @@
         padding: 15px;
         padding-top: 75px;
         border: none;
+        font-family: monospace;
     ">
         <div style="
             height: 50px;
@@ -29,6 +30,11 @@
             </a>
         </div>
         <div>
+            <p style="
+                font-family: sans-serif;
+                font-size: 50px;
+                font-weight: bolder;
+            ">Steven Kumalo</p>
             <canvas id="profile-pic" style="width: 100px; height: 100px; border-radius: 50px;"></canvas>
             <script>
                 const profile_pic_pen = document.getElementById('profile-pic').getContext('2d');
@@ -38,7 +44,7 @@
                     profile_pic_pen.fillStyle = pixel;
                     const x = i % 100;
                     const y = Math.floor(i / 100);
-                    profile_pic_pen.fillRect(x*3, y*1.5, 3, 1.5);
+                    profile_pic_pen.fillRect(x*3, y*1.5, 3, 2);
                     i++;
                 });
             </script>
