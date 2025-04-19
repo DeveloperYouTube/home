@@ -1,59 +1,65 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Dev Alex pizzeria</title>
+        <title>Dev Alex's pizzeria</title>
     </head>
     <body>
         <p><strong>Pizza:</strong></p>
         <p>Base:</p>
         <label><input type="checkbox" checked>
-        Tomato sauce $0.49</label>
+        Tomato sauce $1.00</label><br>
         <label><input type="checkbox" checked>
-        Cheese (melted) $0.99</label>
+        Mozzarella cheese $2.50</label><br>
         <p>Toppings:</p>
         <label><input type="checkbox" checked>
-        Pepperoni $1.49</label>
+        Pepperoni $2.75</label><br>
         <label><input type="checkbox">
-        Mushrooms (not poisonous) $2.49</label>
+        Mushrooms $2.00</label><br>
         <label><input type="checkbox">
-        Onions (that won't make you cry) $1.99</label>
+        Onions $1.50</label><br>
         <label><input type="checkbox">
-        Sausage $4.99</label>
+        Italian Sausage $3.50</label><br>
         <label><input type="checkbox">
-        Bacon $4.99</label>
+        Bacon $3.75</label><br>
         <label><input type="checkbox">
-        Extra cheese $0.99</label>
+        Extra cheese $1.50</label><br>
         <label><input type="checkbox">
-        Olives (black) $2.99</label>
+        Black Olives $2.25</label><br>
         <label><input type="checkbox">
-        Peppers (bell) $2.99</label>
+        Green Peppers $2.00</label><br>
         <label><input type="checkbox">
-        Pineapple $1.99</label>
+        Pineapple $1.75</label><br>
         <label><input type="checkbox">
-        Spinach $2.99</label>
+        Spinach $2.25</label><br>
+        <label><input type="checkbox">
+        Ham $3.00</label><br>
+        <label><input type="checkbox">
+        Tomatoes $1.50</label><br>
+        <label><input type="checkbox">
+        Jalapeños $1.25</label><br>
 
         <p>Enter your location:</p>
-        <input type="text" placeholder="Country">
-        <input type="text" placeholder="City">
-        <input type="text" placeholder="Street">
-        <input type="text" placeholder="Postal code">
-        <input type="text" placeholder="Unit">
+        <input type="text" placeholder="Country"><br>
+        <input type="text" placeholder="City"><br>
+        <input type="text" placeholder="Street"><br>
+        <input type="text" placeholder="Postal code"><br>
+        <input type="text" placeholder="Unit"><br>
         
         <p>Payment method</p>
-        <input type="text" placeholder="Credit card number">
-        <p>Crust: $3.99</p>
+        <input type="text" placeholder="Credit card number"><br>
+        <p>Crust: $5.99</p>
         <p id="base-toppings_price">Base/Toppings: $??.??</p>
-        <p id="ingredients_price">Ingredients: $3.99+$??.??=$??.??</p>
+        <p id="ingredients_price">Ingredients: $5.99+$??.??=$??.??</p>
         <p id="tax_price">Tax (12%): 0.12($??.??)=$??.??</p>
         <p id="total_price">Total: $??.??+$??.??=$??.??</p>
 
-        <button>Order pizza</button>
+        <button style="display:none;">Order pizza</button>
 
         <script>
             const order_button = document.querySelector('button');
             const text_inputs = document.querySelectorAll('input[type="text"]');
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            const checkbox_prices = [0.49, 0.99, 1.49, 2.49, 1.99, 4.99, 4.99, 0.99, 2.99, 2.99, 1.99, 2.99];
+            const checkbox_prices = [1.00, 2.50, 2.75, 2.00, 1.50, 3.50, 3.75, 1.50, 2.25, 2.00, 1.75, 2.25, 3.00, 1.50, 1.25];
             const base_toppings_price_text = document.getElementById('base-toppings_price');
             const ingredients_price_text = document.getElementById('ingredients_price');
             const tax_price_text = document.getElementById('tax_price');
@@ -71,16 +77,16 @@
                         base_toppings_price += checkbox_prices[index];
                     }
                 });
-                const ingredients_price = base_toppings_price + 3.99;
+                const ingredients_price = base_toppings_price + 5.99;
                 const tax_price = ingredients_price * 0.12;
                 const total_price = ingredients_price + tax_price;
                 base_toppings_price_text.innerHTML = `Base/Toppings: $${base_toppings_price.toFixed(2)}`;
-                ingredients_price_text.innerHTML = `Ingredients: $3.99+$${base_toppings_price.toFixed(2)}=$${ingredients_price.toFixed(2)}`;
+                ingredients_price_text.innerHTML = `Ingredients: $5.99+$${base_toppings_price.toFixed(2)}=$${ingredients_price.toFixed(2)}`;
                 tax_price_text.innerHTML = `Tax (12%): 0.12($${ingredients_price.toFixed(2)})=$${tax_price.toFixed(2)}`;
                 total_price_text.innerHTML = `Total: $${ingredients_price.toFixed(2)}+$${tax_price.toFixed(2)}=$${total_price.toFixed(2)}`;
             }
             update_prices();
-          
+          
             text_inputs.forEach(input => {
                 input.addEventListener('input', function() {
                     let all_filled = true;
