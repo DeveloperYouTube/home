@@ -1,60 +1,60 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Dev Alex's pizzeria</title>
+        <title>Pizzeria de Dev Alex</title>
         <link href="../../deafault-css.css" type="stylesheet">
     </head>
     <body>
-        <p><strong>Pizza:</strong></p>
-        <p>Base:</p>
+        <p><strong>Pizza :</strong></p>
+        <p>Base :</p>
         <label><input type="checkbox" checked>
-        Tomato sauce $1.00</label><br>
+        Sauce tomate 1.00 $</label><br>
         <label><input type="checkbox" checked>
-        Mozzarella cheese $2.50</label><br>
-        <p>Toppings:</p>
+        Fromage mozzarella 2.50 $</label><br>
+        <p>Garnitures :</p>
         <label><input type="checkbox" checked>
-        Pepperoni $2.75</label><br>
+        Pepperoni 2.75 $</label><br>
         <label><input type="checkbox">
-        Mushrooms $2.00</label><br>
+        Champignons 2.00 $</label><br>
         <label><input type="checkbox">
-        Onions $1.50</label><br>
+        Oignons 1.50 $</label><br>
         <label><input type="checkbox">
-        Italian Sausage $3.50</label><br>
+        Saucisse italienne 3.50 $</label><br>
         <label><input type="checkbox">
-        Bacon $3.75</label><br>
+        Bacon 3.75 $</label><br>
         <label><input type="checkbox">
-        Extra cheese $1.50</label><br>
+        Extra fromage 1.50 $</label><br>
         <label><input type="checkbox">
-        Black Olives $2.25</label><br>
+        Olives noires 2.25 $</label><br>
         <label><input type="checkbox">
-        Green Peppers $2.00</label><br>
+        Poivrons verts 2.00 $</label><br>
         <label><input type="checkbox">
-        Pineapple $1.75</label><br>
+        Ananas 1.75 $</label><br>
         <label><input type="checkbox">
-        Spinach $2.25</label><br>
+        Épinards 2.25 $</label><br>
         <label><input type="checkbox">
-        Ham $3.00</label><br>
+        Jambon 3.00 $</label><br>
         <label><input type="checkbox">
-        Tomatoes $1.50</label><br>
+        Tomates 1.50 $</label><br>
         <label><input type="checkbox">
-        Jalapeños $1.25</label><br>
+        Piments jalapeños 1.25 $</label><br>
 
-        <p>Enter your location:</p>
-        <input type="text" placeholder="Country"><br>
-        <input type="text" placeholder="City"><br>
-        <input type="text" placeholder="Street"><br>
-        <input type="text" placeholder="Postal code"><br>
-        <input type="text" placeholder="Unit"><br>
+        <p>Entrez votre emplacement :</p>
+        <input type="text" placeholder="Pays"><br>
+        <input type="text" placeholder="Ville"><br>
+        <input type="text" placeholder="Rue"><br>
+        <input type="text" placeholder="Code postal"><br>
+        <input type="text" placeholder="Unité"><br>
         
-        <p>Payment method</p>
-        <input type="text" placeholder="Credit card number"><br>
-        <p>Crust: $5.99</p>
-        <p id="base-toppings_price">Base/Toppings: $??.??</p>
-        <p id="ingredients_price">Ingredients: $5.99+$??.??=$??.??</p>
-        <p id="tax_price">Tax (12%): 0.12($??.??)=$??.??</p>
-        <p id="total_price">Total: $??.??+$??.??=$??.??</p>
+        <p>Méthode de paiement</p>
+        <input type="text" placeholder="Numéro de carte de crédit"><br>
+        <p>Croûte : 5.99 $</p>
+        <p id="base-toppings_price">Base/Garnitures : ??.$$</p>
+        <p id="ingredients_price">Ingrédients : 5.99 $ + ??.$$ = ??.?? $</p>
+        <p id="tax_price">Taxe (12 %) : 0.12(??.?? $) = ??.?? $</p>
+        <p id="total_price">Total : ??.?? $ + ??.?? $ = ??.?? $</p>
 
-        <button style="display:none;">Order pizza</button>
+        <button style="display:none;">Commander la pizza</button>
 
         <script>
             const order_button = document.querySelector('button');
@@ -81,10 +81,10 @@
                 const ingredients_price = base_toppings_price + 5.99;
                 const tax_price = ingredients_price * 0.12;
                 const total_price = ingredients_price + tax_price;
-                base_toppings_price_text.innerHTML = `Base/Toppings: $${base_toppings_price.toFixed(2)}`;
-                ingredients_price_text.innerHTML = `Ingredients: $5.99+$${base_toppings_price.toFixed(2)}=$${ingredients_price.toFixed(2)}`;
-                tax_price_text.innerHTML = `Tax (12%): 0.12($${ingredients_price.toFixed(2)})=$${tax_price.toFixed(2)}`;
-                total_price_text.innerHTML = `Total: $${ingredients_price.toFixed(2)}+$${tax_price.toFixed(2)}=$${total_price.toFixed(2)}`;
+                base_toppings_price_text.innerHTML = `Base/Garnitures : ${base_toppings_price.toFixed(2)} $`;
+                ingredients_price_text.innerHTML = `Ingrédients : 5.99 $ + ${base_toppings_price.toFixed(2)} $ = ${ingredients_price.toFixed(2)} $`;
+                tax_price_text.innerHTML = `Taxe (12 %) : 0.12(${ingredients_price.toFixed(2)} $) = ${tax_price.toFixed(2)} $`;
+                total_price_text.innerHTML = `Total : ${ingredients_price.toFixed(2)} $ + ${tax_price.toFixed(2)} $ = ${total_price.toFixed(2)} $`;
             }
             update_prices();
         
