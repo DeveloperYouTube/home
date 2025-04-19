@@ -8,71 +8,124 @@
         <p>Base:</p>
         <div>
             <input type="checkbox" checked>
-            <label>Tomato sauce</label>
+            <label>Tomato sauce $0.49</label>
         </div>
         <div>
             <input type="checkbox" checked>
-            <label>Cheese (melted)</label>
+            <label>Cheese (melted) $0.99</label>
         </div>
         <p>Toppings:</p>
         <div>
             <input type="checkbox" checked>
-            <label>Pepperoni</label>
+            <label>Pepperoni $1.49</label>
         </div>
         <div>
             <input type="checkbox">
-            <label>Mushrooms (not poisonous)</label>
+            <label>Mushrooms (not poisonous) $2.49</label>
         </div>
         <div>
             <input type="checkbox">
-            <label>Onions (that won't make you cry)</label>
+            <label>Onions (that won't make you cry) $1.99</label>
         </div>
         <div>
             <input type="checkbox">
-            <label>Sausage</label>
+            <label>Sausage $4.99</label>
         </div>
         <div>
             <input type="checkbox">
-            <label>Bacon</label>
+            <label>Bacon $4.99</label>
         </div>
         <div>
             <input type="checkbox">
-            <label>Extra cheese</label>
+            <label>Extra cheese $0.99</label>
         </div>
         <div>
             <input type="checkbox">
-            <label>Olives (black)</label>
+            <label>Olives (black) $2.99</label>
         </div>
         <div>
             <input type="checkbox">
-            <label>Peppers (bell)</label>
+            <label>Peppers (bell) $2.99</label>
         </div>
         <div>
             <input type="checkbox">
-            <label>Pineapple</label>
+            <label>Pineapple $1.99</label>
         </div>
         <div>
             <input type="checkbox">
-            <label>Spinach</label>
+            <label>Spinach $2.99</label>
         </div>
 
         <p>Enter your location:</p>
-        <input type="text" placeholder="country">
-        <input type="text" placeholder="city">
-        <input type="text" placeholder="street">
-        <input type="text" placeholder="postal code">
-        <input type="text" placeholder="unit">
+        <input type="text" placeholder="Country">
+        <input type="text" placeholder="City">
+        <input type="text" placeholder="Street">
+        <input type="text" placeholder="Postal code">
+        <input type="text" placeholder="Unit">
+        
+        <p>Payment method</p>
+        <input type="text" placeholder="Credit card number">
+        <p>Crust: $3.99</p>
+        <p id="base-toppings_price">Base/Toppings: $??.??</p>
+        <p id="ingredients_price">Ingredients: $3.99+$??.??=$??.??</p>
+        <p id="tax_price">Tax (12%): 0.12($??.??)=$??.??</p>
+        <p id="total_price">Total: $??.??+$??.??=$??.??</p>
 
-        <button>Order</button>
+        <button>Order pizza</button>
 
         <script>
             const order_button = document.querySelector('button');
-            const inputs = document.querySelectorAll('input');
-            let text_inputs = [];
-            inputs.forEach(input => {
-                if (input.getAttribute('type') === "text") {
-                    text_inputs.push(input);
-                }
+            const text_inputs = document.querySelectorAll('input[type="text"]');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checkbox_prices = [0.49, 0.99, 1.49, 2.49, 1.99, 4.99, 4.99, 0.99, 2.99, 2.99, 1.99, 2.99];
+            const base_toppings_price_text = document.getElementById('base-toppings_price');
+            const ingredients_price_text = document.getElementById('ingredients_price');
+            const tax_price_text = document.getElementById('tax_price');
+            const total_price_text = document.getElementById('total_price');
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    update_prices();
+                });
+            });
+            function update_prices () {
+                let base_toppings_price = 0
+                checkboxes.forEach((checkbox, index) => {
+                    if (checkbox.checked) {
+                        base_toppings_price += checkbox_prices[index];
+                    }
+                });
+                const ingredients_price = base_toppings_price + 3.99;
+                const tax_price = ingredients_price * 0.12;
+                const total_price = ingredients_price + tax_price;
+                base_toppings_price_text.innerHTML = `Base/Toppings: $${base_toppings_price.toFixed(2)}`;
+                ingredients_price_text.innerHTML = `Ingredients: $3.99+$${base_toppings_price.toFixed(2)}=$${ingredients_price.toFixed(2)}`;
+                tax_price_text.innerHTML = `Tax (12%): 0.12($${ingredients_price.toFixed(2)})=$${tax_price.toFixed(2)}`;
+                total_price_text.innerHTML = `Total: $${ingredients_price.toFixed(2)}+$${tax_price.toFixed(2)}=$${total_price.toFixed(2)}`;
+            }
+            update_prices();
+          
+            text_inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    let all_filled = true;
+                    text_inputs.forEach(text_input => {
+                    if (text_input.value.trim() === '') {
+                        all_filled = false;
+                    }
+                    });
+            
+                    order_button.style.display = all_filled ? 'block' : 'none';
+                });
+            });
+
+            window.addEventListener('load', () => {
+                let all_filled = true;
+                text_inputs.forEach(input => {
+                    if (input.value.trim() === '') {
+                        all_filled = false;
+                    }
+                });
+                order_button.style.display = all_filled ? 'block' : 'none';
             });
         </script>
     </body>
