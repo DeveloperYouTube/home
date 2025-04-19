@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dev Alex pizzeria</title>
+    </head>
+    <body>
+        <p><strong>Pizza:</strong></p>
+        <p>Base:</p>
+        <div>
+            <input type="checkbox" checked>
+            <label>Tomato sauce</label>
+        </div>
+        <div>
+            <input type="checkbox" checked>
+            <label>Cheese (melted)</label>
+        </div>
+        <p>Toppings:</p>
+        <div>
+            <input type="checkbox" checked>
+            <label>Pepperoni</label>
+        </div>
+        <div>
+            <input type="checkbox">
+            <label>Mushrooms (not poisonous)</label>
+        </div>
+        <div>
+            <input type="checkbox">
+            <label>Onions (that won't make you cry)</label>
+        </div>
+        <div>
+            <input type="checkbox">
+            <label>Sausage</label>
+        </div>
+        <div>
+            <input type="checkbox">
+            <label>Bacon</label>
+        </div>
+        <div>
+            <input type="checkbox">
+            <label>Extra cheese</label>
+        </div>
+        <div>
+            <input type="checkbox">
+            <label>Olives (black)</label>
+        </div>
+        <div>
+            <input type="checkbox">
+            <label>Peppers (bell)</label>
+        </div>
+        <div>
+            <input type="checkbox">
+            <label>Pineapple</label>
+        </div>
+        <div>
+            <input type="checkbox">
+            <label>Spinach</label>
+        </div>
+
+        <p>Enter your location:</p>
+        <input type="text" placeholder="country">
+        <input type="text" placeholder="city">
+        <input type="text" placeholder="street">
+        <input type="text" placeholder="postal code">
+        <input type="text" placeholder="unit">
+
+        <button>Order</button>
+
+        <script>
+            const order_button = document.querySelector('button');
+            const inputs = document.querySelectorAll('input');
+            let text_inputs = [];
+            inputs.forEach(input => {
+                if (input.getAttribute('type') === "text") {
+                    text_inputs.push(input);
+                }
+            });
+        </script>
+    </body>
+</html>
