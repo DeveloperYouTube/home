@@ -2,6 +2,16 @@
 <html>
     <head>
         <title>Dev Alex's pizzeria</title>
+        <style>
+            * {
+                background-color: black;
+                color: #00ff00;
+                border-color: #00ff00;
+                border-width: 1px;
+                font-family: monospace;
+                border-style: solid;
+            }
+        </style>
     </head>
     <body>
         <p><strong>Pizza:</strong></p>
@@ -86,7 +96,7 @@
                 total_price_text.innerHTML = `Total: $${ingredients_price.toFixed(2)}+$${tax_price.toFixed(2)}=$${total_price.toFixed(2)}`;
             }
             update_prices();
-          
+        
             text_inputs.forEach(input => {
                 input.addEventListener('input', function() {
                     let all_filled = true;
