@@ -55,16 +55,11 @@ let playerX = respawnX;
 let playerY = respawnY;
 let playerVY = 0;
 let playerVX = 0;
-let player_movement = 0;
 let playerHP = 20;
 let can_player_take_damage = true;
 let fly = false;
 let inventory = [];
-let player_top;
-let player_bottom;
-let player_left;
-let player_right;
-let can_jump = false;
+let on_ground = false;
 //fps and delta time
 let FPS = 0;
 let last_frame = 0;
@@ -139,80 +134,17 @@ const blockIDs = {
     0: {
         name: 'Grass Block',
         texture: [
-            ['#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00'],
-            ['#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00'],
-            ['#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00', '#00ff00'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
+            ['#00ff00'],
+            ['#804000'],
+            ['#804000'],
+            ['#804000'],
         ],
-        solid: [
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
-        ]
+        solid: [[true]]
     }, 
     1: {
         name: 'Dirt',
-        texture: [
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-        ],
-        solid: [
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
-        ]
+        texture: [['#804000']],
+        solid: [[true]]
     }, 
     2: {
         name: 'Cobblestone',
@@ -234,219 +166,32 @@ const blockIDs = {
             ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
             ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
         ],
-        solid: [
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
-        ]
+        solid: [[true]]
     }, 
     3: {
         name: 'Air',
-        texture: [
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
-        ],
-        solid: [
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-        ]
+        texture: [['#00000000']],
+        solid: [[false]]
     }, 
     4: {
         name: 'Stone',
-        texture: [
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
-        ],
-        solid: [
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
-        ]
+        texture: [['#808080']],
+        solid: [[true]]
     },
     5: {
         name: 'Bedrock',
-        texture: [
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-            ['#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020', '#202020'],
-        ],
-        solid: [
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
-        ]
+        texture: [['#202020']],
+        solid: [[true]]
     },
     6: {
         name: 'Water',
-        texture: [
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-            ['#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080', '#0000f080'],
-        ],
-        solid: [
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-        ]
+        texture: [['#0000f080']],
+        solid: [[false]]
     },
     7: {
         name: 'Lava',
-        texture: [
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-            ['#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020', '#ff6020'],
-        ],
-        solid: [
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-        ]
+        texture: [['#ff6020']],
+        solid: [[false]]
     },
     8: {
         name: 'Oak Planks',
@@ -468,24 +213,7 @@ const blockIDs = {
             ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
             ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
         ],
-        solid: [
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
-        ]
+        solid: [[true]]
     },
     9: {
         name: 'Oak Sapling',
@@ -507,63 +235,12 @@ const blockIDs = {
             ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
             ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
         ],
-        solid: [
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-        ]
+        solid: [[false]]
     },
     10: {
         name: 'Sand',
-        texture: [
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
-            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
-            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
-            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
-            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
-            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
-            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
-            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
-            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
-            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
-            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
-            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
-        ],
-        solid: [
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-            [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
-        ],
+        texture: [['#c0a080']],
+        solid: [[true]],
         fallingBlockEntity: true
     }
 };
@@ -580,7 +257,8 @@ const block_drops = [
     null,
     null,
     itemIDs[0][8],
-    itemIDs[0][9]
+    itemIDs[0][9],
+    itemIDs[0][10]
 ];
 const blockTextureCanvases = {};
 function preRenderBlockTextures() {
@@ -590,7 +268,7 @@ function preRenderBlockTextures() {
         canvas.width = 32;
         canvas.height = 32;
         const ctx = canvas.getContext('2d');
-        const texture = block.texture;
+        const texture = utils.arrays.scale2Darray_up2(block.texture, 16, 16);
 
         for (let y = 0; y < 16; y++) {
             for (let x = 0; x < 16; x++) {
@@ -606,17 +284,17 @@ const itemTextureCanvases = {};
 function preRenderItemTextures() {
     for (const blockID in itemIDs) {
         if (blockID != blockIDs) {
-            const block = blockIDs[blockID];
+            const block = itemIDs[blockID];
             const canvas = document.createElement('canvas');
-            canvas.width = 32;
-            canvas.height = 32;
+            canvas.width = 16;
+            canvas.height = 16;
             const ctx = canvas.getContext('2d');
             const texture = block.texture;
 
             for (let y = 0; y < 16; y++) {
                 for (let x = 0; x < 16; x++) {
                     ctx.fillStyle = texture[y][x];
-                    ctx.fillRect(x * 2, y * 2, 2, 2);
+                    ctx.fillRect(x, y, 1, 1);
                 }
             }
             itemTextureCanvases[blockID] = canvas;
@@ -635,6 +313,7 @@ function item_entity (x, y, vx, vy, id, block) {
                 VX: vx,
                 VY: vy,
                 code: function () {
+
                     const drawX = x * 32 + offsetX - 16;
                     const drawY = y * 32 + offsetY - 32;
     
@@ -784,114 +463,76 @@ document.addEventListener('contextmenu', function(event) {
     }
 });
 
-function checkCollisions(entityX, entityY, entityWidth, entityHeight) {
-    const entityLeft = entityX;
-    const entityTop = entityY;
-    const entityRight = entityX + entityWidth;
-    const entityBottom = entityY + entityHeight;
+function checkCollision(x, y, sizeX, sizeY, vx, vy, map = blocks, blockInfo = blockIDs, blockSize = 32) {
+  const collidingObject = { collision: false };
 
-    const blockLeft = Math.floor(entityLeft / 32);
-    const blockTop = Math.floor(entityTop / 32);
-    const blockRight = Math.ceil(entityRight / 32);
-    const blockBottom = Math.ceil(entityBottom / 32);
+  // Calculate the bounding box of the moving object
+  const objectLeft = x;
+  const objectRight = x + sizeX;
+  const objectTop = y;
+  const objectBottom = y + sizeY;
 
-    let onGround = false;
-    let collided = false;
-    let collisionX = 0;
-    let collisionY = 0;
+  // Determine the range of map tiles to check based on the object's potential movement
+  const minX = Math.floor(Math.min(objectLeft, objectLeft + vx) / blockSize);
+  const maxX = Math.ceil(Math.max(objectRight, objectRight + vx) / blockSize);
+  const minY = Math.floor(Math.min(objectTop, objectTop + vy) / blockSize);
+  const maxY = Math.ceil(Math.max(objectBottom, objectBottom + vy) / blockSize);
 
-    for (let x = blockLeft; x < blockRight; x++) {
-        for (let y = blockTop; y < blockBottom + 1; y++) {
-            const blockKey = `${x}, ${y}`;
-            const blockID = blocks[blockKey];
-            if (blockID !== 3 && blockID !== undefined) {
-                const blockTexture = blockIDs[blockID].texture;
-                const blockSolid = blockIDs[blockID].solid;
-                const blockX = x * 32;
-                const blockY = y * 32;
+  for (let mapX = minX; mapX <= maxX; mapX++) {
+    for (let mapY = minY; mapY <= maxY; mapY++) {
+      const mapKey = `${mapX},${mapY}`;
+      if (map.hasOwnProperty(mapKey)) {
+        const blockId = map[mapKey];
+        if (blockInfo.hasOwnProperty(blockId) && blockInfo[blockId].solid && blockInfo[blockId].solid[0][0]) {
+          // Calculate the boundaries of the map square
+          const tileLeft = mapX * blockSize;
+          const tileRight = (mapX + 1) * blockSize;
+          const tileTop = mapY * blockSize;
+          const tileBottom = (mapY + 1) * blockSize;
 
-                if (entityRight > blockX && entityLeft < blockX + 32 && entityBottom >= blockY && entityTop < blockY + 32) {
-                    if (checkPixelCollision(entityLeft, entityTop, entityRight, entityBottom, blockX, blockY, blockTexture, blockSolid)) {
-                        collided = true;
-                        collisionX = blockX;
-                        collisionY = blockY;
+          // Check for overlap
+          if (objectRight > tileLeft &&
+              objectLeft < tileRight &&
+              objectBottom > tileTop &&
+              objectTop < tileBottom) {
+            collidingObject.collision = true;
+            collidingObject.tileX = mapX;
+            collidingObject.tileY = mapY;
+            collidingObject.blockId = blockId;
 
-                        if (Math.abs(entityBottom - blockY) < 1) {
-                            onGround = true;
-                        }
-                    }
-                }
+            // Calculate overlap on each side
+            const overlapLeft = objectRight - tileLeft;
+            const overlapRight = tileRight - objectLeft;
+            const overlapTop = objectBottom - tileTop;
+            const overlapBottom = tileBottom - objectTop;
+
+            collidingObject.overlapX = Math.min(overlapLeft, overlapRight);
+            collidingObject.overlapY = Math.min(overlapTop, overlapBottom);
+
+            // Determine collision direction to help with resolution
+            collidingObject.directionX = 0;
+            collidingObject.directionY = 0;
+
+            if (vx > 0 && overlapLeft < overlapRight) {
+              collidingObject.directionX = -1; // Colliding from the left
+            } else if (vx < 0 && overlapRight < overlapLeft) {
+              collidingObject.directionX = 1;  // Colliding from the right
             }
+
+            if (vy > 0 && overlapTop < overlapBottom) {
+              collidingObject.directionY = -1; // Colliding from the top
+            } else if (vy < 0 && overlapBottom < overlapTop) {
+              collidingObject.directionY = 1;  // Colliding from the bottom
+            }
+
+            return collidingObject; // Return the first collision found for simplicity
+          }
         }
+      }
     }
+  }
 
-    return {
-        collided: collided,
-        collisionX: collisionX,
-        collisionY: collisionY,
-        onGround: onGround,
-    };
-}
-
-function checkPixelCollision(entityLeft, entityTop, entityRight, entityBottom, blockX, blockY, blockTexture, blockSolid) {
-    for (let py = Math.max(0, entityTop - blockY); py < Math.min(32, entityBottom - blockY); py++) {
-        for (let px = Math.max(0, entityLeft - blockX); px < Math.min(32, entityRight - blockX); px++) {
-            const blockColor = blockTexture[Math.floor(py / 2)][Math.floor(px / 2)];
-            const solidX = Math.floor(px / 2);
-            const solidY = Math.floor(py / 2);
-            if (blockColor !== '#00000000' && blockSolid[solidY][solidX]) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-// Function to resolve collision
-function resolveCollision(entityX, entityY, entityWidth, entityHeight, blockX, blockY, entityVX, entityVY) {
-    const entityLeft = entityX;
-    const entityTop = entityY;
-    const entityRight = entityX + entityWidth;
-    const entityBottom = entityY + entityHeight;
-
-    const overlapX = Math.min(entityRight, blockX + 32) - Math.max(entityLeft, blockX);
-    const overlapY = Math.min(entityBottom, blockY + 32) - Math.max(entityTop, blockY);
-
-    let newEntityX = entityX;
-    let newEntityY = entityY;
-    let newEntityVX = entityVX;
-    let newEntityVY = entityVY;
-
-    if (overlapX > 0 && overlapY > 0) {
-        if (overlapX < overlapY) {
-            if (entityLeft < blockX) {
-                newEntityX = blockX - entityWidth;
-                newEntityVX = 0;
-            } else {
-                newEntityX = blockX + 32;
-                newEntityVX = 0;
-            }
-        } else {
-            if (entityTop < blockY) {
-                newEntityY = blockY - entityHeight;
-                if (entityVY >= 0) {
-                    newEntityVY = 0;
-                }
-            } else {
-                newEntityY = blockY + 32;
-                if (entityVY <= 0) {
-                    newEntityVY = 0;
-                }
-            }
-        }
-    }
-
-    return {
-        x: newEntityX,
-        y: newEntityY,
-        vx: newEntityVX,
-        vy: newEntityVY,
-    };
+  return collidingObject; // No collision
 }
 
 if (!in_correctURL) {
@@ -920,21 +561,21 @@ async function game_update() {
             //movement
             //horisontal
             if (is_pressed('a')) {
-                player_movement = -138.144;
+                playerVX = -138.144;
             }
             if (is_pressed('d')) {
-                player_movement = 138.144;
+                playerVX = 138.144;
             }
             if ((!(is_pressed('a') || is_pressed('d'))) || (is_pressed('a') && is_pressed('d'))) {
-                player_movement = 0;
+                playerVX = 0;
             }
             //vertical
             if (!fly) {
-                if (is_pressed(' ') && can_jump) {
-                    playerVY = -Math.sqrt(40960);
+                if (is_pressed(' ') && on_ground) {
+                    playerVY = -Math.sqrt(81920);
                 }
-                if (!can_jump) {
-                    playerVY = playerVY + 512 * delta_time;
+                if (!on_ground) {
+                    playerVY = playerVY + 1024 * delta_time;
                 }
             } else {
                 playerVY = 0;
@@ -946,12 +587,19 @@ async function game_update() {
                 }
             }
 
-            playerVX = player_movement + ((player_movement - playerVX) / 2);
+            playerVX = playerVX - 36 * playerVX * delta_time;
+            playerVY = playerVY - 8 * playerVY * delta_time;
+            const playerVdirection = Math.atan2(playerVY, playerVX);
+            let playerV = utils.math.pythagorean_theorem(playerVX^2 + playerVY^2);
+            playerV = Math.min(playerV, 78.4);
+            playerVX = Math.cos(playerVdirection) * playerV;
+            playerVY = Math.sin(playerVdirection) * playerV;
+
             playerX = playerX + playerVX * delta_time;
             playerY = playerY + playerVY * delta_time;
             
-            const playerCollision = checkCollisions(playerX, playerY, 32, 64);
-            can_jump = playerCollision.onGround;
+            const playerCollision = checkCollision(playerX - 16, playerY - 32, 32, 64, playerVX, playerVY);
+            on_ground = playerCollision.directionY === 1;
 
             if (playerCollision.collided) {
                 const resolvedPlayerPosition = resolveCollision(playerX, playerY, 32, 64, playerCollision.collisionX, playerCollision.collisionY, playerVX, playerVY);

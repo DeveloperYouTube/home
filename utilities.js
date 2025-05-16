@@ -5,6 +5,9 @@ export const utils = {
         },
         convert_deg2rad: function(degrees) {
             return degrees * (Math.PI / 180);
+        },
+        pythagorean_theorem: function(a, b) {
+            return Math.sqrt(a^2 + b^2);
         }
     },
     pause: function (ms) {
