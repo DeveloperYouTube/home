@@ -75,7 +75,7 @@ export const utils = {
     arrays: {
         scale2Darray_up2: function (array, scaleX, scaleY) {
             const multiplierX = Math.max(Math.round(scaleX / array.length), 1);
-            const multiplierY = Math.max(Math.round(scaleY / array[1].length), 1);
+            const multiplierY = Math.max(Math.round(scaleY / array[0].length), 1);
             let result = [];
             array.forEach(array2 => {
                 let row = [];
