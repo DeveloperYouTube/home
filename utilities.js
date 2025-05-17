@@ -7,7 +7,18 @@ export const utils = {
             return degrees * (Math.PI / 180);
         },
         pythagorean_theorem: function(a, b) {
-            return Math.sqrt(a^2 + b^2);
+            return Math.sqrt(a ** 2 + b ** 2);
+        },
+        range: function(...numbers) {
+            let max = numbers[0];
+            numbers.forEach(number => {
+                max = Math.max(max, number)
+            });
+            let min = numbers[0];
+            numbers.forEach(number => {
+                min = Math.min(min, number)
+            });
+            return max - min;
         }
     },
     pause: function (ms) {
@@ -70,7 +81,10 @@ export const utils = {
 				}
 			}
 			return false;
-		}
+		},
+        ands: function(...booleans) {
+            return !this.ors(...!booleans);
+        }
 	},
     arrays: {
         scale2Darray_up2: function (array, scaleX, scaleY) {

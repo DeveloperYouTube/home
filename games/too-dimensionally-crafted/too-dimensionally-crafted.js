@@ -311,7 +311,7 @@ function summon_item_entity (x, y, vx, vy, id, block) {
                 this.VX = this.VX - 8 * this.VX * delta_time;
                 this.VY = this.VY - 8 * this.VY * delta_time;
                 this.Vdirection = Math.atan2(this.VY, this.VX);
-                this.V = utils.math.pythagorean_theorem(this.VX^2 + this.VY^2);
+                this.V = utils.math.pythagorean_theorem(this.VX, this.VY);
                 this.V = Math.min(this.V, 39.2);
                 this.VX = Math.cos(this.Vdirection) * this.V;
                 this.VY = Math.sin(this.Vdirection) * this.V;
@@ -340,6 +340,17 @@ function summon_item_entity (x, y, vx, vy, id, block) {
                 if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
                     pen.drawImage(this.texture, drawX, drawY, 16, 16);
                 }
+
+                if (utils.math.range(this.X, playerX) < 24 && utils.math.range(this.Y, playerY) < 24) {
+                    entities = entities.filter(entity =>
+                        !(entity.X === this.X &&
+                        entity.Y === this.Y &&
+                        entity.VX === this.VX &&
+                        entity.VY === this.VY &&
+                        entity.texture === this.texture)
+                    );
+                    inventory.push({block: id, ammount: 1, max: 64});
+                }
             }
         });
     } else {
@@ -351,11 +362,11 @@ function summon_item_entity (x, y, vx, vy, id, block) {
             VY: vy,
             code: function () {
                 this.VY = this.VY + 512 * delta_time;
-                this.VX = this.VX - 36 * this.VX * delta_time;
+                this.VX = this.VX - 8 * this.VX * delta_time;
                 this.VY = this.VY - 8 * this.VY * delta_time;
                 this.Vdirection = Math.atan2(this.VY, this.VX);
-                this.V = utils.math.pythagorean_theorem(this.VX^2 + this.VY^2);
-                this.V = Math.min(this.V, 78.4);
+                this.V = utils.math.pythagorean_theorem(this.VX, this.VY);
+                this.V = Math.min(this.V, 39.2);
                 this.VX = Math.cos(this.Vdirection) * this.V;
                 this.VY = Math.sin(this.Vdirection) * this.V;
 
@@ -382,6 +393,17 @@ function summon_item_entity (x, y, vx, vy, id, block) {
     
                 if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
                     pen.drawImage(this.texture, drawX, drawY, 16, 16);
+                }
+
+                if (utils.math.range(this.X, playerX) < 24 && utils.math.range(this.Y, playerY) < 24) {
+                    entities = entities.filter(entity =>
+                        !(entity.X === this.X &&
+                        entity.Y === this.Y &&
+                        entity.VX === this.VX &&
+                        entity.VY === this.VY &&
+                        entity.texture === this.texture)
+                    );
+                    inventory.push({item: id, ammount: 1, max: 64});
                 }
             }
         });
@@ -629,7 +651,7 @@ async function game_update() {
             playerVX = playerVX - 36 * playerVX * delta_time;
             playerVY = playerVY - 8 * playerVY * delta_time;
             const playerVdirection = Math.atan2(playerVY, playerVX);
-            let playerV = utils.math.pythagorean_theorem(playerVX^2 + playerVY^2);
+            let playerV = utils.math.pythagorean_theorem(playerVX ** 2 + playerVY ** 2);
             playerV = Math.min(playerV, 78.4);
             playerVX = Math.cos(playerVdirection) * playerV;
             playerVY = Math.sin(playerVdirection) * playerV;
