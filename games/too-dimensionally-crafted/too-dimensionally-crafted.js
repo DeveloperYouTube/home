@@ -119,11 +119,6 @@ function resizeCanvas() {
     screen.height = window.innerHeight;
     offset_centerX = screen.width / 2;
     offset_centerY = screen.height / 2;
-    
-    player_left = offset_centerX - 16;
-    player_top = offset_centerY - 32;
-    player_right = player_left + 32;
-    player_bottom = player_top + 64;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
@@ -303,41 +298,36 @@ function preRenderItemTextures() {
 }
 preRenderItemTextures();
 
-function item_entity (x, y, vx, vy, id, block) {
+function summon_item_entity (x, y, vx, vy, id, block) {
     if (block) {
         entities.push({
             texture: blockTextureCanvases[id],
-            behavior: {
-                X: x,
-                Y: y,
-                VX: vx,
-                VY: vy,
-                code: function () {
+            X: x,
+            Y: y,
+            VX: vx,
+            VY: vy,
+            code: function () {
+                const drawX = x * 32 + offsetX - 16;
+                const drawY = y * 32 + offsetY - 32;
 
-                    const drawX = x * 32 + offsetX - 16;
-                    const drawY = y * 32 + offsetY - 32;
-    
-                    if (drawX + 32 > 0 && drawX < screen.width && drawY + 32 > 0 && drawY < screen.height){
-                        pen.drawImage(texture, drawX, drawY, 16, 16);
-                    }
+                if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
+                    pen.drawImage(this.texture, drawX, drawY, 16, 16);
                 }
             }
         });
     } else {
         entities.push({
             texture: itemTextureCanvases[id],
-            behavior: {
-                X: x,
-                Y: y,
-                VX: vx,
-                VY: vy,
-                code: function () {
-                    const drawX = x * 32 + offsetX - 16;
-                    const drawY = y * 32 + offsetY - 32;
+            X: x,
+            Y: y,
+            VX: vx,
+            VY: vy,
+            code: function () {
+                const drawX = x * 32 + offsetX - 16;
+                const drawY = y * 32 + offsetY - 32;
     
-                    if (drawX + 32 > 0 && drawX < screen.width && drawY + 32 > 0 && drawY < screen.height){
-                        pen.drawImage(texture, drawX, drawY, 16, 16);
-                    }
+                if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
+                    pen.drawImage(this.texture, drawX, drawY, 16, 16);
                 }
             }
         });
@@ -346,15 +336,12 @@ function item_entity (x, y, vx, vy, id, block) {
 
 block_drops.forEach((element, index) => {
     if (blockIDs[index]) {
-        blockIDs[index].drop = function(x, y, index) {
-            entities.push({
-                texture: this.texture,
-                behavior: {
-                    X: x,
-                    Y: y,
-
-                }
-            });
+        blockIDs[index].drop = function(x, y) {
+            if (block_drops[0]) {
+                
+            } else {
+                
+            }
         };
     }
 });
@@ -595,18 +582,22 @@ async function game_update() {
             playerVX = Math.cos(playerVdirection) * playerV;
             playerVY = Math.sin(playerVdirection) * playerV;
 
-            playerX = playerX + playerVX * delta_time;
-            playerY = playerY + playerVY * delta_time;
-            
-            const playerCollision = checkCollision(playerX - 16, playerY - 32, 32, 64, playerVX, playerVY);
-            on_ground = playerCollision.directionY === 1;
+            const collisionResult = checkCollision(playerX, playerY, playerSizeX, playerSizeY, playerVelocityX, playerVelocityY, mapData, blockDetails);
 
-            if (playerCollision.collided) {
-                const resolvedPlayerPosition = resolveCollision(playerX, playerY, 32, 64, playerCollision.collisionX, playerCollision.collisionY, playerVX, playerVY);
-                playerX = resolvedPlayerPosition.x;
-                playerY = resolvedPlayerPosition.y;
-                playerVX = resolvedPlayerPosition.vx;
-                playerVY = resolvedPlayerPosition.vy;
+            if (collisionResult.collision) {
+                // Resolve the collision
+                if (collisionResult.directionX !== 0) {
+                    playerX -= collisionResult.overlapX * collisionResult.directionX;
+                    playerVX = 0;
+                }
+                if (collisionResult.directionY !== 0) {
+                    playerY -= collisionResult.overlapY * collisionResult.directionY;
+                    playerVY = 0;
+                }
+            } else {
+                // Apply velocity if no collision
+                playerX += playerVX * delta_time;
+                playerY += playerVY * delta_time;
             }
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
