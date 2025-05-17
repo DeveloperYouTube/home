@@ -284,7 +284,7 @@ function preRenderItemTextures() {
             canvas.width = 16;
             canvas.height = 16;
             const ctx = canvas.getContext('2d');
-            const texture = block.texture;
+            const texture = utils.arrays.scale2Darray_up2(block.texture, 16, 16);
 
             for (let y = 0; y < 16; y++) {
                 for (let x = 0; x < 16; x++) {
@@ -307,8 +307,35 @@ function summon_item_entity (x, y, vx, vy, id, block) {
             VX: vx,
             VY: vy,
             code: function () {
-                const drawX = x * 32 + offsetX - 16;
-                const drawY = y * 32 + offsetY - 32;
+                this.VY = this.VY + 512 * delta_time;
+                this.VX = this.VX - 8 * this.VX * delta_time;
+                this.VY = this.VY - 8 * this.VY * delta_time;
+                this.Vdirection = Math.atan2(this.VY, this.VX);
+                this.V = utils.math.pythagorean_theorem(this.VX^2 + this.VY^2);
+                this.V = Math.min(this.V, 39.2);
+                this.VX = Math.cos(this.Vdirection) * this.V;
+                this.VY = Math.sin(this.Vdirection) * this.V;
+
+                const collisionResult = checkCollision(this.X, this.Y, 16, 16, this.VX, this.VY);
+
+                if (collisionResult.collision) {
+                    // Resolve the collision
+                    if (collisionResult.directionX !== 0) {
+                        this.X -= collisionResult.overlapX * collisionResult.directionX;
+                        this.VX = 0;
+                    }
+                    if (collisionResult.directionY !== 0) {
+                        this.Y -= collisionResult.overlapY * collisionResult.directionY;
+                        this.VY = 0;
+                    }
+                } else {
+                    // Apply velocity if no collision
+                    this.X += this.VX * delta_time;
+                    this.Y += this.VY * delta_time;
+                }
+
+                const drawX = this.X * 32 + offsetX - 16;
+                const drawY = this.Y * 32 + offsetY - 32;
 
                 if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
                     pen.drawImage(this.texture, drawX, drawY, 16, 16);
@@ -323,8 +350,35 @@ function summon_item_entity (x, y, vx, vy, id, block) {
             VX: vx,
             VY: vy,
             code: function () {
-                const drawX = x * 32 + offsetX - 16;
-                const drawY = y * 32 + offsetY - 32;
+                this.VY = this.VY + 512 * delta_time;
+                this.VX = this.VX - 36 * this.VX * delta_time;
+                this.VY = this.VY - 8 * this.VY * delta_time;
+                this.Vdirection = Math.atan2(this.VY, this.VX);
+                this.V = utils.math.pythagorean_theorem(this.VX^2 + this.VY^2);
+                this.V = Math.min(this.V, 78.4);
+                this.VX = Math.cos(this.Vdirection) * this.V;
+                this.VY = Math.sin(this.Vdirection) * this.V;
+
+                const collisionResult = checkCollision(this.X, this.Y, 16, 16, this.VX, this.VY);
+
+                if (collisionResult.collision) {
+                    // Resolve the collision
+                    if (collisionResult.directionX !== 0) {
+                        this.X -= collisionResult.overlapX * collisionResult.directionX;
+                        this.VX = 0;
+                    }
+                    if (collisionResult.directionY !== 0) {
+                        this.Y -= collisionResult.overlapY * collisionResult.directionY;
+                        this.VY = 0;
+                    }
+                } else {
+                    // Apply velocity if no collision
+                    this.X += this.VX * delta_time;
+                    this.Y += this.VY * delta_time;
+                }
+
+                const drawX = this.X * 32 + offsetX - 16;
+                const drawY = this.Y * 32 + offsetY - 32;
     
                 if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
                     pen.drawImage(this.texture, drawX, drawY, 16, 16);
@@ -336,11 +390,9 @@ function summon_item_entity (x, y, vx, vy, id, block) {
 
 block_drops.forEach((element, index) => {
     if (blockIDs[index]) {
-        blockIDs[index].drop = function(x, y) {
-            if (block_drops[0]) {
-                
-            } else {
-                
+        blockIDs[index].drop = function(x, y, id) {
+            if (block_drops[index]) {
+                summon_item_entity(x, y, 0, 0, id, block_drops[index].solid);
             }
         };
     }
@@ -417,7 +469,7 @@ document.addEventListener('mousedown', (event) => {
         }
 
         if (selectedBlock) {
-            blockIDs[blocks[`${selectedBlock.x}, ${selectedBlock.y}`]].drop(selectedBlock.x * 32 - 16, selectedBlock.y * 32 - 16);
+            blockIDs[blocks[`${selectedBlock.x}, ${selectedBlock.y}`]].drop(selectedBlock.x * 32 - 16, selectedBlock.y * 32 - 16, blocks[`${selectedBlock.x}, ${selectedBlock.y}`]);
             blocks[`${selectedBlock.x}, ${selectedBlock.y}`] = 3;
         }
     }
@@ -582,7 +634,7 @@ async function game_update() {
             playerVX = Math.cos(playerVdirection) * playerV;
             playerVY = Math.sin(playerVdirection) * playerV;
 
-            const collisionResult = checkCollision(playerX, playerY, playerSizeX, playerSizeY, playerVelocityX, playerVelocityY, mapData, blockDetails);
+            const collisionResult = checkCollision(playerX, playerY, 32, 64, playerVX, playerVY);
 
             if (collisionResult.collision) {
                 // Resolve the collision
