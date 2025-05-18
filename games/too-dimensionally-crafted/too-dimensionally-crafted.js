@@ -277,22 +277,24 @@ function preRenderBlockTextures() {
 preRenderBlockTextures();
 const itemTextureCanvases = {};
 function preRenderItemTextures() {
-    for (const blockID in itemIDs) {
-        if (blockID != blockIDs) {
-            const block = itemIDs[blockID];
-            const canvas = document.createElement('canvas');
-            canvas.width = 16;
-            canvas.height = 16;
-            const ctx = canvas.getContext('2d');
-            const texture = utils.arrays.scale2Darray_up2(block.texture, 16, 16);
-
-            for (let y = 0; y < 16; y++) {
-                for (let x = 0; x < 16; x++) {
-                    ctx.fillStyle = texture[y][x];
-                    ctx.fillRect(x, y, 1, 1);
+    for (const itemID in itemIDs) {
+        if (itemIDs.hasOwnProperty((itemID))) {
+            if (itemIDs[itemID] != blockIDs) {
+                const item = itemIDs[itemID];
+                const canvas = document.createElement('canvas');
+                canvas.width = 16;
+                canvas.height = 16;
+                const ctx = canvas.getContext('2d');
+                const texture = utils.arrays.scale2Darray_up2(item.texture, 16, 16);
+    
+                for (let y = 0; y < 16; y++) {
+                    for (let x = 0; x < 16; x++) {
+                        ctx.fillStyle = texture[y][x];
+                        ctx.fillRect(x, y, 1, 1);
+                    }
                 }
+                itemTextureCanvases[itemID] = canvas;
             }
-            itemTextureCanvases[blockID] = canvas;
         }
     }
 }
