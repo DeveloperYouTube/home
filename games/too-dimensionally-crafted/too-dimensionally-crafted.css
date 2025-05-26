@@ -1,137 +1,27 @@
-/*oooooooo.                                    .o.       oooo                        
-`888'   `Y8b                                  .888.      `888                        
- 888      888  .ooooo.  oooo    ooo          .8"888.      888   .ooooo.  oooo    ooo 
- 888      888 d88' `88b  `88.  .8'          .8' `888.     888  d88' `88b  `88b..8P'  
- 888      888 888ooo888   `88..8'          .88ooo8888.    888  888ooo888    Y888'    
- 888     d88' 888    .o    `888'          .8'     `888.   888  888    .o  .o8"'88b   
-o888bood8P'   `Y8bod8P'     `8'          o88o     o8888o o888o `Y8bod8P' o88'   88*/
-
 @font-face {
-    font-family: 'Minecraftia';
-    src: url('../../fonts/simplistic-pixelation-sans-mono.woff2') format('truetype');
+    font-family: 'simplistic-pixelation-sans-mono';
+    src: url('../../fonts/simplistic-pixelation-sans-mono.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
 }
-body {
-    margin: 0px;
-    padding: 0px;
-    z-index: 5;
-    font-family: 'Minecraftia';
-    color: #ffffff;
-    font-size: 15px;
-}
-
 .screen {
-    display: block;
-    z-index: 10;
-    cursor: crosshair;
     top: 0px;
     bottom: 0px;
-    right: 0px;
     left: 0px;
-    position: fixed;
-}
-
-.position {
-    background-color: rgba(0, 0, 0, 0.5);
-    display: inline-block;
-    padding: 0px 5px;
-    top: 0px;
-    left: 0px;
-    margin: 0px;
-    position: fixed;
-    z-index: 20;
-}
-.FPS {
-    background-color: rgba(0, 0, 0, 0.5);
-    display: inline-block;
-    padding: 0px 5px;
-    top: 0px;
     right: 0px;
-    margin: 0px;
-    position: fixed;
-    z-index: 20;
 }
-.death_screen, .main_menu, .pause_screen, .hotbar {
-    background-color: rgba(255, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 50px;
-    z-index: 100;
-}
-.hotbar {
-    background-color: #00000000;
-    z-index: 11;
-    padding-top: calc(100vh - 200px);
-}
-.main_menu, .pause_screen, .how2play, .hotbar, .death_screen {
-    top: 0px;
-    bottom: 0px;
-    right: 0px;
-    left: 0px;
-    position: fixed;
-}
-.main_menu {
-    background-color: rgba(0, 0, 0, 1);
-}
-.pause_screen {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-.how2play {
-    background-color: #404040;
-    flex-direction: row;
-    z-index: 200;
-}
-button, .inventory canvas, a {
-    color: #ffffff;
-    background-color: #808080;
-    border-color: #404040;
-    border-width: 4px;
+button {
+    border-width: 5px;
     border-style: outset;
-    display: inline-block;
-    width: 500px;
-    height: 50px;
-    font-size: 20px;
-    font-family: 'Minecraftia';
-    margin: 10px;
+    background-color: #808080;
+    border-color: #808080;
     cursor: pointer;
-    font-weight: 400;
 }
-.inventory canvas {
-    width: 48px;
-    height: 48px;
-    background-color: #404040b0;
-    margin: 0px;
-    padding: 0px;
-    border-width: 8px;
-}
-.HP canvas {
-    width: 18px;
-    height: 18px;
-    border: none;
-    margin: 0px 8px 2px;
-    cursor: default;
-    padding: 0px;
-}
-button:active, a:active {
+button:active {
     border-style: inset;
 }
-.deathID {
-    font-size: 25px;
-    margin: 50px;
-}
-p {
-    margin: 0px;
-    padding: 0px;
-}
-noscript {
-    color: black;
-    font-weight: bold;
-}
-
-.aside {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
+* {
+    font-family: 'simplistic-pixelation-sans-mono';
+    font-size: medium;
+    color: white;
 }
