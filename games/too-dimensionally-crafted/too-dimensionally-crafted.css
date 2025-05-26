@@ -25,3 +25,6 @@ button:active {
     font-size: medium;
     color: white;
 }
+select {
+    background-color: black;
+}
