@@ -1,7 +1,7 @@
 /*fonts*/
 @font-face {
     font-family: 'Minecraftia';
-    src: url('../fonts/Minecraftia.ttf') format('truetype');
+    src: url('../fonts/simplistic-pixelation-sans-mono.woff2') format('truetype');
 }
 .mc2d {
     font-family: 'Minecraftia';

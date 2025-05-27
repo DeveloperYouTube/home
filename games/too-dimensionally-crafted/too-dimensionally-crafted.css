@@ -4,6 +4,12 @@
     font-weight: normal;
     font-style: normal;
 }
+@font-face {
+    font-family: 'simplistic-pixelation-sans-mono';
+    src: url('../../fonts/') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
 .screen {
     top: 0px;
     bottom: 0px;
