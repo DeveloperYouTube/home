@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Too Dimensionally Crafted</title>
+        <title>Too Dimensionally Crafted: Sign in</title>
         <link rel="icon" href="../../images/grass_block.png" type="image/png">
         <link rel="stylesheet" href="too-dimensionally-crafted.css">
     </head>
@@ -13,99 +13,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;" class="screen">
-                <div id="auth-container">
-                    <button id="login-button">Sign in</button>
-                </div>
-
-                <div id="user-info">
-                    <h2>Welcome, <span id="user-display-name"></span>!</h2>
-                    <p>Email: <span id="user-email"></span></p>
-                    <img id="user-photo" src="" alt="User Photo" width="50" height="50" style="border-radius: 50%;">
-                    <button id="logout-button">Sign out</button>
-                </div>
-
-                <script src="https://cdn.auth0.com/js/auth0-spa-js/2.2.0/auth0-spa-js.production.js"></script>
-                <script>
-                    // Your Auth0 Application settings
-                    // REPLACE THESE WITH YOUR ACTUAL VALUES FROM STEP 1
-                    const auth0_domain = "dev-nqa35ctfvn2ib35x.ca.auth0.com";     // e.g., dev-xxxxxxx.us.auth0.com
-                    const auth0_client_id = "jjLXKuhFI0AaEoAKKMJ1zJX8YQ2Lu8Pf"; // e.g., AbcDefGhiJklMnoPqrStuVwxYz12345
-
-                    let auth0Client = null; // Will be initialized after the page loads
-
-                    // Get HTML elements
-                    const loginButton = document.getElementById('login-button');
-                    const logoutButton = document.getElementById('logout-button');
-                    const authContainer = document.getElementById('auth-container');
-                    const userInfoDiv = document.getElementById('user-info');
-                    const userDisplayName = document.getElementById('user-display-name');
-                    const userEmail = document.getElementById('user-email');
-                    const userPhoto = document.getElementById('user-photo');
-
-                    // Function to update the UI based on authentication status
-                    const updateUI = async () => {
-                        const isAuthenticated = await auth0Client.isAuthenticated();
-
-                        if (isAuthenticated) {
-                            authContainer.style.display = 'none'; // Hide login button
-                            userInfoDiv.style.display = 'block';   // Show user info
-
-                            const user = await auth0Client.getUser();
-                            userDisplayName.textContent = user.name || user.nickname || user.email;
-                            userEmail.textContent = user.email;
-                            userPhoto.src = user.picture || ''; // Use user's profile picture
-                        } else {
-                            authContainer.style.display = 'block'; // Show login button
-                            userInfoDiv.style.display = 'none';    // Hide user info
-                            userDisplayName.textContent = '';
-                            userEmail.textContent = '';
-                            userPhoto.src = '';
-                        }
-                    };
-
-                    // Initialize Auth0 client and handle redirect
-                    const configureAuth0 = async () => {
-                        auth0Client = await auth0spa.createAuth0Client({
-                            domain: auth0_domain,
-                            clientId: auth0_client_id,
-                            authorizationParams: {
-                                redirect_uri: window.location.origin // Your callback URL
-                            }
-                        });
-
-                        // Handle the redirect from Auth0 after login
-                        const query = window.location.search;
-                        if (query.includes("code=") && query.includes("state=")) {
-                            await auth0Client.handleRedirectCallback();
-                            window.history.replaceState({}, document.title, window.location.pathname);
-                        }
-
-                        await updateUI(); // Update UI initially
-                    };
-
-                    // --- Event Listeners ---
-
-                    loginButton.addEventListener('click', async () => {
-                        await auth0Client.loginWithRedirect({
-                            authorizationParams: {
-                                redirect_uri: window.location.origin // Where to redirect after login
-                            }
-                        });
-                    });
-
-                    logoutButton.addEventListener('click', async () => {
-                        await auth0Client.logout({
-                            logoutParams: {
-                                returnTo: window.location.origin // Where to redirect after logout
-                            }
-                        });
-                    });
-
-                    // Initialize Auth0 when the page loads
-                    window.addEventListener('load', configureAuth0);
-                </script>
-
-            <button>Use local storage instead</button>
+            <button>Use local storage</button>
         </div>
     </body>
 </html>
