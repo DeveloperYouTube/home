@@ -22,11 +22,8 @@ button:active {
 }
 * {
     font-family: 'simplistic-pixelation-sans-mono';
-    font-size: medium;
+    font-size: large;
     color: white;
-}
-select {
-    background-color: black;
 }
 body {
     margin: 0px;
