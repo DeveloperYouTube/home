@@ -6,13 +6,23 @@
     </head>
     <body>
         <div class="screen" style="background-color: black;">
+            <p>Worlds: </p>
             <div style="right: 0px; left: 0px;" id="world-displayer"></div>
             <button>Create new world</button>
         </div>
         <script>
             const world_displayer = document.getElementById('world-displayer');
-            const worlds = localStorage.getItem('singlePworlds');
-            
+            const worldsSTR = localStorage.getItem('singlePworlds');
+            let worlds;
+            if (!worldsSTR) {
+                worldsSTR = '{}'
+                localStorage.setItem('singlePworlds', '{}');
+            }
+            worlds = JSON.parse(worldsSTR);
+            let display = Object.keys(worlds);
+            display.forEach(element => {
+                world_displayer.innerHTML += `<br><button class="select">${element}</button>`;
+            });
         </script>
     </body>
 </html>
