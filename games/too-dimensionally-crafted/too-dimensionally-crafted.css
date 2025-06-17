@@ -24,6 +24,7 @@ button:active {
     font-family: 'simplistic-pixelation-sans-mono';
     font-size: large;
     color: white;
+    background-color: black;
 }
 body {
     margin: 0px;
