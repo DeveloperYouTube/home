@@ -36,3 +36,7 @@ button.select {
 button.select:focus {
     border-width: 2px;
 }
+p {
+    margin: 0px;
+    padding: 0px;
+}
