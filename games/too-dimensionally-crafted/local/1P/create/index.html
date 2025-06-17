@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Create New World</title>
+        <link rel="stylesheet" href="../../../too-dimensionally-crafted.css">
+    </head>
+    <body>
+        <div class="screen" style="background-color: white;">
+            <input type="text" id="New_World_Name" name="WorldName" placeholder="World Name" value="My World">
+            <label for="Game_Mode">Game Mode: </label>
+            <select id="Game_Mode" name="GameMode">
+                <option value="survival" selected>Survival</option>
+                <option value="creative">Creative</option>
+                <option value="adventure">Adventure</option>
+            </select>
+            <label for="Difficulty">Difficulty: </label>
+            <select id="Difficulty" name="Difficulty">
+                <option value="peaceful">Peaceful</option>
+                <option value="easy">Easy</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Hard</option>
+                <option value="hardcore">Hardcore</option>
+            </select>
+            <input type="text" id="Seed" name="Seed" placeholder="Seed">
+            <label><input type="checkbox" id="flat?">Flat world</label>
+            <button>Create World</button>
+        </div>
+    </body>
+</html>
