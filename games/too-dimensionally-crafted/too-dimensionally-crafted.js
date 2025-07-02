@@ -1,29 +1,9 @@
-/*oooooooo.                                    .o.       oooo                        
-`888'   `Y8b                                  .888.      `888                        
- 888      888  .ooooo.  oooo    ooo          .8"888.      888   .ooooo.  oooo    ooo 
- 888      888 d88' `88b  `88.  .8'          .8' `888.     888  d88' `88b  `88b..8P'  
- 888      888 888ooo888   `88..8'          .88ooo8888.    888  888ooo888    Y888'    
- 888     d88' 888    .o    `888'          .8'     `888.   888  888    .o  .o8"'88b   
-o888bood8P'   `Y8bod8P'     `8'          o88o     o8888o o888o `Y8bod8P' o88'   88*/
-
-//safty
-const correctURL = "https://developeryoutube.github.io/home/games/too-dimensionally-crafted/";
-const url = window.location.href;
-let in_correctURL = true;
-if (url !== correctURL) {
-    in_correctURL = confirm(`The URL\n${url}\nis invalid and might break the game.\nPlease go to\n${correctURL}\nfor no risk of the game breaking.`);
-    if (in_correctURL) {
-        window.location.href = correctURL;
-    };
-};
-
 //imports
 import {utils} from '../../utilities.js';
 
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const username = prompt('Enter your Username');
-const seed = Math.random() * 10000;
 const screen = document.getElementById('screen');
 const pen = screen.getContext('2d', {willReadFrequently: true});
 const background = document.body;

@@ -12,16 +12,16 @@
         </div>
         <script>
             const world_displayer = document.getElementById('world-displayer');
-            let worldsSTR = localStorage.getItem('singlePworlds');
+            let worldsSTR = localStorage.getItem('2DCsinglePworlds');
             let worlds;
             if (!worldsSTR) {
                 worldsSTR = '{}'
-                localStorage.setItem('singlePworlds', '{}');
+                localStorage.setItem('2DCsinglePworlds', '{}');
             }
             worlds = JSON.parse(worldsSTR);
             let display = Object.keys(worlds);
-            display.forEach(element => {
-                world_displayer.innerHTML += `<br><button class="select">${element}</button>`;
+            display.forEach(name => {
+                world_displayer.innerHTML += `<br><button class="select">${name}<br>${worlds.name.difficulty} ${worlds.name.game_mode}</button>`;
             });
         </script>
     </body>

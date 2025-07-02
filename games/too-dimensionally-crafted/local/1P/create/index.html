@@ -19,15 +19,47 @@
                 <option value="easy">Easy</option>
                 <option value="normal" selected>Normal</option>
                 <option value="hard">Hard</option>
-                <option value="hardcore">Hardcore</option>
             </select>
             <input type="text" id="Seed" name="Seed" placeholder="Seed">
             <label><input type="checkbox" id="flat?">Flat world</label>
-            <button>Create World</button>
+            <button id="create_world">Create World</button>
         </div>
-        <script>
-            const world_name = document.getElementById("New_World_Name").value;
-            console.log(world_name)
+        <script type="module">
+            import {utils} from '../../../../../utilities.js';
+            const world_name = document.getElementById("New_World_Name");//text input
+            const create_button = document.getElementById("create_world");
+            const game_mode = document.getElementById("Game_Mode");//dropdown
+            const difficulty = document.getElementById("Difficulty");//dropdown
+            const seed = document.getElementById("Seed");//text input
+            const flat = document.getElementById("flat?");//checkbox
+            create_button.addEventListener('click', function() {
+                let worldsSTR = localStorage.getItem('2DCsinglePworlds');
+                let worlds;
+                if (!worldsSTR) {
+                    worldsSTR = '{}'
+                    localStorage.setItem('2DCsinglePworlds', '{}');
+                }
+                worlds = JSON.parse(worldsSTR);
+                const world_names = Object.keys(worlds);
+                let create = true
+                if (world_names.includes(world_name.value)) {
+                    create = confirm(`You already used "${world_name.value}" as a world name. Would you like to override it?\nOverriding a world will erase all progress in that world.\nClick cancel to not override ${world_name.value} and change the new world name.`);
+                }
+                if (create) {
+                    const noiseValue = utils.perlin.generateNoise(0 * 0.1, 0, seed) * 10; // Adjust multiplier as needed
+                    const noiseFloor = Math.round(noiseValue);
+                    localStorage.setItem('2DCsinglePworldJSON', JSON.stringify({
+                        name: world_name.value, 
+                        game_mode: game_mode.value,
+                        difficulty: difficulty.value,
+                        seed: seed.value,
+                        flat: flat.checked,
+                        x: 0,
+                        y: noiseFloor + 1,
+                        blocks: {}
+                    }));
+                }
+            });
         </script>
     </body>
 </html>
