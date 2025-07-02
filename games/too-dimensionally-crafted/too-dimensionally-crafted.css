@@ -11,14 +11,14 @@
     right: 0px;
     min-height: 100vh;
 }
-button {
+button, a {
     border-width: 5px;
     border-style: outset;
     background-color: #808080;
     border-color: #808080;
     cursor: pointer;
 }
-button:active {
+button:active, a:active {
     border-style: inset;
 }
 * {
