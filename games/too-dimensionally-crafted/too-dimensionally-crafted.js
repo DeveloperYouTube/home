@@ -19,6 +19,7 @@ const pressedKeys = {};
 const pause_screen = document.getElementById('pause_screen');
 const seed = world_dataINIT.seed;
 const flat = world_dataINIT.flat;
+const game_mode = world_dataINIT.game_mode;
 //let (can change (e.g. player stuff))
 //offsets
 let offset_centerX;
