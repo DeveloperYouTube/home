@@ -597,9 +597,6 @@ if (!in_correctURL) {
 
 async function game_update() {
     delta_time = (performance.now() - last_frame) / 1000;
-    if (!in_correctURL) {
-        delta_time = NaN;
-    };
     FPS = 1 / delta_time;
     last_frame = performance.now();
     if (game_running) {
