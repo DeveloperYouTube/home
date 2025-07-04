@@ -591,11 +591,6 @@ function checkCollision(x, y, sizeX, sizeY, vx, vy, map = blocks, blockInfo = bl
   return collidingObject; // No collision
 }
 
-if (!in_correctURL) {
-    playerHP = 0;
-    death_reason = death.incorrectURL
-};
-
 async function game_update() {
     delta_time = (performance.now() - last_frame) / 1000;
     FPS = 1 / delta_time;
