@@ -9,7 +9,11 @@
     bottom: 0px;
     left: 0px;
     right: 0px;
-    min-height: 100vh;
+    position: fixed;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
 }
 button, a {
     border-width: 5px;

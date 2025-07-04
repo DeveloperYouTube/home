@@ -3,25 +3,22 @@ import {utils} from '../../utilities.js';
 
 //varibles
 //const(can't change (e.g. HTML elements and objects))
+const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworldJSON'))
 const username = prompt('Enter your Username');
 const screen = document.getElementById('screen');
 const pen = screen.getContext('2d', {willReadFrequently: true});
 const background = document.body;
-const position_text = document.querySelector('.position');
-const FPStext = document.querySelector('.FPS');
+const position_text = document.getElementById('position');
+const FPStext = document.getElementById('FPS');
 const death = {
-    void: `${username} fell out of the world`,
-    incorrectURL: `death.error.404.\${username} broke whilst trying to escape me breaking it for user being in ${url}<br>
-    If you want the player back go <a href="${correctURL}">here</a>`,
-    FPS_NaN: "death.physics.unstable"
+    void: `${username} fell out of the world`
 };
-const death_screen = document.querySelector('.death_screen');
-const death_message = document.querySelector('.deathID');
+const death_screen = document.getElementById('death_screen');
+const death_message = document.getElementById('deathID');
 const pressedKeys = {};
-const main_menu = document.querySelector('.main_menu');
-const pause_screen = document.querySelector('.pause_screen');
-const how2play = document.querySelector('.how2play');
-const hotbar = document.querySelector('.hotbar');
+const pause_screen = document.getElementById('pause_screen');
+const seed = world_dataINIT.seed;
+const flat = world_dataINIT.flat;
 //let (can change (e.g. player stuff))
 //offsets
 let offset_centerX;
@@ -31,14 +28,14 @@ let offsetY;
 //player stuff
 let respawnX = 0;
 let respawnY = -32;
-let playerX = respawnX;
-let playerY = respawnY;
+let playerX = world_dataINIT.x;
+let playerY = world_dataINIT.y;
 let playerVY = 0;
 let playerVX = 0;
-let playerHP = 20;
+let playerHP = world_dataINIT.HP;
 let can_player_take_damage = true;
 let fly = false;
-let inventory = [];
+let inventory = world_dataINIT.inventory;
 let on_ground = false;
 //fps and delta time
 let FPS = 0;
@@ -56,12 +53,10 @@ let lastPressTime = 0;
 //other
 let death_reason;
 let game_running = false;
-let entities = [];
+let entities = world_dataINIT.entities;
 
-main_menu.style.display = 'flex';
 pause_screen.style.display = 'none';
 death_screen.style.display = 'none';
-how2play.style.display = 'none';
 //key press logic
 document.addEventListener('keydown', (event) => {
     pressedKeys[event.key] = true; 
@@ -104,7 +99,7 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 //blocks
-let blocks = {};
+let blocks = world_dataINIT.blocks;
 const blockIDs = {
     0: {
         name: 'Grass Block',
@@ -408,20 +403,36 @@ const entityIDs = {
 function load_blocks(x, y) {
     let block_key = `${x}, ${y}`;
     if (!blocks.hasOwnProperty(block_key)) {
-        const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
-        const noiseFloor = Math.round(noiseValue);
-        if (y >= noiseFloor) {
-            if (y === noiseFloor) {
-                blocks[block_key] = 0; // Grass block on top
-            } else {
-                if (y > noiseFloor + 3 + Math.random()) {
-                    blocks[block_key] = 4;
+        if (!flat) {
+            const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
+            const noiseFloor = Math.round(noiseValue);
+            if (y >= noiseFloor) {
+                if (y === noiseFloor) {
+                    blocks[block_key] = 0; // Grass block on top
                 } else {
-                    blocks[block_key] = 1;
+                    if (y > noiseFloor + 3 + Math.random()) {
+                        blocks[block_key] = 4;
+                    } else {
+                        blocks[block_key] = 1;
+                    }
                 }
+            } else {
+                blocks[block_key] = 3; // Air block above
             }
         } else {
-            blocks[block_key] = 3; // Air block above
+            if (y >= 0) {
+                if (y === 0) {
+                    blocks[block_key] = 0; // Grass block on top
+                } else {
+                    if (y > -3) {
+                        blocks[block_key] = 5;
+                    } else {
+                        blocks[block_key] = 1;
+                    }
+                }
+            } else {
+                blocks[block_key] = 3; // Air block above
+            }
         }
     }
 }
@@ -756,50 +767,35 @@ window.respawnPlayer = function() {
     playerVY = 0;
     playerVX = 0;
 };
-
-window.play = function() {
-    game_running = true;
-    const savedGameData = localStorage.getItem('gameData');
-    if (savedGameData) {
-        const gameData = JSON.parse(savedGameData);
-        blocks = gameData.blocks;
-        playerX = gameData.playerX;
-        playerY = gameData.playerY;
-        playerHP = gameData.playerHP;
-    }
-    main_menu.style.display = 'none';
-    pause_screen.style.display = 'none';
-};
 window.save = function() {
     if (death_screen.style.display === 'flex') {
         window.respawnPlayer();
     };
-    const gameData = {
-        blocks: blocks,
-        playerX: playerX,
-        playerY: playerY,
-        playerHP: playerHP,
-    };
-    localStorage.setItem('gameData', JSON.stringify(gameData));
-    main_menu.style.display = 'flex';
-    pause_screen.style.display = 'none';
-    death_screen.style.display = 'none';
-    how2play.style.display = 'none';
-};
+    const worldsJSON = localStorage.getItem('2DCsinglePworlds');
+    let worlds = {}; // Initialize worlds as an empty object by default
 
-window.new = function() {
-    if (confirm("Creating a new world will erase your current progress. Are you sure?")) {
-        window.respawnPlayer();
-        const gameData = {
-            blocks: {},
-            playerX: playerX,
-            playerY: playerY,
-            playerHP: playerHP,
-        };
-        localStorage.setItem('gameData', JSON.stringify(gameData));
-        alert('Created!');
-        window.play();
-    } else {
-        alert('Canceled!');
+    if (worldsJSON) {
+        // Only parse if worldsJSON is not null or undefined
+        try {
+            worlds = JSON.parse(worldsJSON);
+        } catch (e) {
+            console.error("Error parsing worlds data from localStorage:", e);
+            // Optionally, clear the corrupted data or handle it otherwise
+            // localStorage.removeItem('2DCsinglePworlds');
+        }
     }
-}
+    worlds[world_dataINIT.name] = {
+        game_mode: world_dataINIT.game_mode,
+        difficulty: world_dataINIT.difficulty,
+        seed: seed,
+        flat: flat,
+        x: playerX,
+        y: playerY,
+        blocks: blocks,
+        HP: playerHP,
+        inventory: inventory,
+        entities: entities
+    };
+    localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
+    window.location.replace('../../');
+};
