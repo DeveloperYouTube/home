@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "checkJs": true,
+    "lib": ["dom", "ESNext"]
+  },
+  "exclude": ["node_modules", "**/dist"]
+}
