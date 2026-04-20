@@ -41,8 +41,14 @@ export const utils = {
         scale2Darray_up2: function (/** @type {any[]} */ array, /** @type {number} */ scaleX, /** @type {number} */ scaleY) {
             const multiplierX = Math.max(Math.round(scaleX / array.length), 1);
             const multiplierY = Math.max(Math.round(scaleY / array[0].length), 1);
+            /**
+             * @type {any[][]}
+             */
             let result = [];
             array.forEach((/** @type {any[]} */ array2) => {
+                /**
+                 * @type {any[]}
+                 */
                 let row = [];
                 array2.forEach((/** @type {any} */ element) => {
                     for (let index = 0; index < multiplierX; index++) {
@@ -55,5 +61,38 @@ export const utils = {
             });
             return result;
         }
+    },
+    perlin: {
+    noise: function (/** @type {number} */ x, seed = 0) {
+        // 1. Determine grid cell coordinates
+        const x0 = Math.floor(x);
+        const x1 = x0 + 1;
+        const t = x - x0;
+
+        // 2. Fade function (smoothes the transitions)
+        const fade = (t) * (t) * (t) * (t * (t * 6 - 15) + 10);
+
+        // 3. Deterministic pseudo-random gradient function
+        const getGradient = (/** @type {number} */ p) => {
+            // Incorporate the seed into the hash
+            const hash = Math.sin(p + seed) * 43758.5453123;
+            return (hash - Math.floor(hash)) * 2 - 1;
+        };
+
+        // 4. Calculate gradients and dot products
+        const g0 = getGradient(x0);
+        const g1 = getGradient(x1);
+        
+        const n0 = g0 * t;
+        const n1 = g1 * (t - 1);
+
+        // 5. Interpolate (lerp)
+        const lerp = (/** @type {number} */ a, /** @type {number} */ b, /** @type {number} */ weight) => a + weight * (b - a);
+        const result = lerp(n0, n1, fade);
+
+        // Standard Perlin 1D returns roughly [-0.5, 0.5]
+        // We add 0.5 to keep the output y mostly between 0 and 1
+        return result + 0.5;
     }
+};
 };
