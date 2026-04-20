@@ -1,3 +1,25 @@
+const str = {
+        /**
+         * Converts any string into a repeatable 32-bit integer.
+         * @param {string} str 
+         * @returns {number}
+         */
+        int: function(str) {
+            let hash = 0;
+            if (str.length === 0) return hash;
+
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                // (hash << 5) - hash is a faster way of saying hash * 31
+                hash = ((hash << 5) - hash) + char;
+                // Force into a 32-bit signed integer
+                hash |= 0; 
+            }
+            // Return absolute value if you only want positive numbers
+            return hash;
+        }
+    }
+
 export const utils = {
     math: {
         convert_rad2deg: function(/** @type {number} */ radians) {
@@ -63,7 +85,7 @@ export const utils = {
         }
     },
     perlin: {
-    noise: function (/** @type {number} */ x, seed = 0) {
+    noise: function (/** @type {number} */ x, /** @type {string} */seed = "0") {
         // 1. Determine grid cell coordinates
         const x0 = Math.floor(x);
         const x1 = x0 + 1;
@@ -75,7 +97,7 @@ export const utils = {
         // 3. Deterministic pseudo-random gradient function
         const getGradient = (/** @type {number} */ p) => {
             // Incorporate the seed into the hash
-            const hash = Math.sin(p + seed) * 43758.5453123;
+            const hash = Math.sin(p + str.int(seed)) * 43758.5453123;
             return (hash - Math.floor(hash)) * 2 - 1;
         };
 
@@ -94,5 +116,5 @@ export const utils = {
         // We add 0.5 to keep the output y mostly between 0 and 1
         return result + 0.5;
     }
-};
+    }
 };
