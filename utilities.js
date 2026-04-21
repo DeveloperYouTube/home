@@ -60,9 +60,7 @@ export const utils = {
         }
 	},
     arrays: {
-        scale2Darray_up2: function (/** @type {any[]} */ array, /** @type {number} */ scaleX, /** @type {number} */ scaleY) {
-            const multiplierX = Math.max(Math.round(scaleX / array.length), 1);
-            const multiplierY = Math.max(Math.round(scaleY / array[0].length), 1);
+        scale2Darray_up: function (/** @type {any[]} */ array, /** @type {number} */ scaleX, /** @type {number} */ scaleY) {
             /**
              * @type {any[][]}
              */
@@ -73,11 +71,11 @@ export const utils = {
                  */
                 let row = [];
                 array2.forEach((/** @type {any} */ element) => {
-                    for (let index = 0; index < multiplierX; index++) {
+                    for (let index = 0; index < scaleX; index++) {
                         row.push(element);
                     }
                 });
-                for (let index = 0; index < multiplierY; index++) {
+                for (let index = 0; index < scaleY; index++) {
                     result.push(row);
                 }
             });
