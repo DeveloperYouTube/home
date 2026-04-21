@@ -25,13 +25,24 @@
                 world_displayer.innerHTML += `<br><button class="select" data-name="${name}">${name}<br>${worlds[name].difficulty} ${worlds[name].game_mode}</button>`;
             });
             
-            const buttons = document.getElementsByClassName('select');
-            for (let button of buttons) {
-                button.addEventListener('click', function(event) {
-                    const content = this.innerHTML;
-                    
-                });
-            }
+            world_displayer.addEventListener('click', function(event) {
+                // Check if the clicked element (or its parent) is a select button
+                const button = event.target.closest('.select');
+                
+                if (button) {
+                    const name = button.dataset.name;
+                    const worldData = worlds[name];
+
+                    // Ensure the world data actually exists before moving on
+                    if (worldData) {
+                        // Include the name in the data object before saving
+                        worldData.name = name; 
+                        
+                        localStorage.setItem('2DCsinglePworldJSON', JSON.stringify(worldData));
+                        window.location.href = "./play/";
+                    }
+                }
+            });
         </script>
     </body>
 </html>
