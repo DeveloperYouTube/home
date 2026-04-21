@@ -22,8 +22,16 @@
             worlds = JSON.parse(worldsSTR);
             let display = Object.keys(worlds);
             display.forEach(name => {
-                world_displayer.innerHTML += `<br><button class="select">${name}<br>${worlds.name.difficulty} ${worlds.name.game_mode}</button>`;
+                world_displayer.innerHTML += `<br><button class="select" data-name="${name}">${name}<br>${worlds[name].difficulty} ${worlds[name].game_mode}</button>`;
             });
+            
+            const buttons = document.getElementsByClassName('select');
+            for (let button of buttons) {
+                button.addEventListener('click', function(event) {
+                    const content = this.innerHTML;
+                    
+                });
+            }
         </script>
     </body>
 </html>
