@@ -6,3 +6,8 @@
 .mc2d {
     font-family: 'Minecraftia';
 }
+body {
+    background-color: black;
+    color: #00c000;
+    font-family: monospace;
+}
