@@ -5,7 +5,6 @@ const savedData = localStorage.getItem('2DCsinglePworldJSON');
 let worldINIT;
 
 if (savedData !== null) {
-    // Inside this block, the editor knows for sure savedData is a string
     worldINIT = JSON.parse(savedData);
 }
 const world_name = worldINIT.name;
