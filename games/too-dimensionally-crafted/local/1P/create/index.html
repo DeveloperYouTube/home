@@ -23,8 +23,19 @@
             </select>
             <input type="text" id="Seed" name="Seed" placeholder="Seed">
             <label><input type="checkbox" id="flat?">Flat world</label>
+            <div class="slider-container">
+                <label for="m">Max height: <span id="ml">64</span></label>
+                <input type="range" id="m" min="63" max="320" value="64">
+            </div>
+            <div class="slider-container">
+                <label for="o">Max depth: <span id="ol">61</span></label>
+                <input type="range" id="o" min="-63" max="62" value="61">
+            </div>
+            <div class="slider-container">
+                <label for="s">Smoothness: <span id="sl">2</span></label>
+                <input type="range" id="s" min="1" max="16" value="2">
+            </div>
             <button id="create_world">Create World</button>
-        </div>
         <script type="module">
             import {utils} from '../../../../../utilities.js';
             const world_name = document.getElementById("New_World_Name");//text input
@@ -33,6 +44,27 @@
             const difficulty = document.getElementById("Difficulty");//dropdown
             const seed = document.getElementById("Seed");//text input
             const flat = document.getElementById("flat?");//checkbox
+            const slider = document.getElementById("m");
+            const output = document.getElementById("ml");
+
+            // Update the current slider value (each time you drag the slider handle)
+            slider.oninput = function() {
+                output.innerHTML = this.value;
+            }
+            const sliders = document.getElementById("o");
+            const outputs = document.getElementById("ol");
+
+            // Update the current slider value (each time you drag the slider handle)
+            sliders.oninput = function() {
+                outputs.innerHTML = this.value;
+            }
+            const sliderd = document.getElementById("s");
+            const outputd = document.getElementById("sl");
+
+            // Update the current slider value (each time you drag the slider handle)
+            sliderd.oninput = function() {
+                outputd.innerHTML = this.value;
+            }
             create_button.addEventListener('click', function() {
                 let worldsSTR = localStorage.getItem('2DCsinglePworlds');
                 let worlds;
@@ -47,7 +79,7 @@
                     create = confirm(`You already used "${world_name.value}" as a world name. Would you like to override it?\nOverriding a world will erase all progress in that world.\nClick cancel to not override ${world_name.value} and change the new world name.`);
                 }
                 if (create) {
-                    const noiseValue = utils.perlin.noise(0, seed) * 10; // Adjust multiplier as needed
+                    const noiseValue = utils.perlin.noise(0, seed) * (slider.value-sliders.value) + sliders.value; // Adjust multiplier as needed
                     const noiseFloor = Math.round(noiseValue);
                     localStorage.setItem('2DCsinglePworldJSON', JSON.stringify({
                         name: world_name.value, 
@@ -60,7 +92,10 @@
                         blocks: {},
                         HP: 20,
                         inventory: [],
-                        entities: []
+                        entities: [],
+                        m: slider.value,
+                        o: sliders.value,
+                        s: sliderd.value
                     }));
                     window.location.href="./play";
                 }
