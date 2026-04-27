@@ -4,18 +4,15 @@ const str = {
          * @param {string} str 
          * @returns {number}
          */
-        int: function(str) {
+        int: function(str) {//this function i clearly didnt make myself but it should work
             let hash = 0;
             if (str.length === 0) return hash;
 
             for (let i = 0; i < str.length; i++) {
                 const char = str.charCodeAt(i);
-                // (hash << 5) - hash is a faster way of saying hash * 31
                 hash = ((hash << 5) - hash) + char;
-                // Force into a 32-bit signed integer
                 hash |= 0; 
             }
-            // Return absolute value if you only want positive numbers
             return hash;
         }
     }
@@ -32,15 +29,8 @@ export const utils = {
             return Math.sqrt(a ** 2 + b ** 2);
         },
         range: function(/** @type {number[]} */ ...numbers) {
-            let max = numbers[0];
-            numbers.forEach(number => {
-                max = Math.max(max, number)
-            });
-            let min = numbers[0];
-            numbers.forEach(number => {
-                min = Math.min(min, number)
-            });
-            return max - min;
+            if (numbers.length === 0) {return 0};
+            return Math.max(...numbers) - Math.min(...numbers);
         }
     },
     pause: function (/** @type {number} */ ms) {

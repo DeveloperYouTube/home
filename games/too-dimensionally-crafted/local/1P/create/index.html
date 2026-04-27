@@ -79,7 +79,8 @@
                     create = confirm(`You already used "${world_name.value}" as a world name. Would you like to override it?\nOverriding a world will erase all progress in that world.\nClick cancel to not override ${world_name.value} and change the new world name.`);
                 }
                 if (create) {
-                    const noiseValue = utils.perlin.noise(0, seed) * (slider.value-sliders.value) + sliders.value; // Adjust multiplier as needed
+                    let noiseValue = -61
+                    if (!flat.checked){noiseValue = utils.perlin.noise(0, seed) * (slider.value-sliders.value) + sliders.value;} // Adjust multiplier as needed
                     const noiseFloor = Math.round(noiseValue);
                     localStorage.setItem('2DCsinglePworldJSON', JSON.stringify({
                         name: world_name.value, 
@@ -97,7 +98,7 @@
                         o: sliders.value,
                         s: sliderd.value
                     }));
-                    window.location.href="./play";
+                    window.location.href="../play";
                 }
             });
         </script>

@@ -1,4 +1,30 @@
 import {utils} from '../../../../../utilities.js';
+/*
+OBJECT OF ALL BLOCKS
+LOREM IPSUM
+FILLER TO MAKE MOER NOTICABLE
+*/
+const blockDATA = {
+    0: {
+        name: 'Air',
+        resistance: 0,
+        light: 0,
+        solid: [[false]]
+    },
+    1: {
+        name: 'Block of Grass',
+        resistance: 0.6,
+        light: 0,
+        solid: [[true]]
+    }
+}
+/*
+FILLER TO MAKE MORE NOTICABLE
+LOREM IPSUM DOREM
+OBJECT OF ALL BLOCK DATA
+*/
+
+
 //variables 
 const savedData = localStorage.getItem('2DCsinglePworldJSON');
 
@@ -24,7 +50,8 @@ const smoothness = Number(worldINIT.s);
 const height = mountain-sea
 
 function loadblock (/** @type {number} */x,/** @type {number} */y) {
-    const noiseValue = utils.perlin.noise(x/smoothness, seed) * height + sea;
+    let noiseValue = -61
+    if(!flat){noiseValue = utils.perlin.noise(x/smoothness, seed) * height + sea;}
     const noiseFloor = Math.round(noiseValue);
     if (noiseFloor==y){
         return 1;
@@ -41,4 +68,7 @@ function load_blocks (/** @type {number} */x,/** @type {number} */y,/** @type {n
             load_block(i,j);
         }
     }
+}
+function load_chunk (/** @type {number} */x,/** @type {number} */y) {
+    load_blocks(Math.floor(x)*16,Math.floor(y)*16,Math.ceil(x)*16,Math.ceil(y)*16)
 }
