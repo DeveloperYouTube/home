@@ -10,7 +10,8 @@ const blockDATA = {
         name: 'Air',
         resistance: 0,
         light: 0,
-        solid: [[false]]
+        solid: [[false]],
+        image: "../../../../../../nothing.png"
     },
     1: {
         name: 'Block of Grass',
@@ -53,6 +54,21 @@ const height = mountain-sea
 const canvas = document.getElementById('screen')
 const fpsc = document.getElementById('FPS')
 const ctx = canvas.getContext('2d');
+// This will store our actual Image objects, keyed by their file path
+const textureCache = {};
+
+function getTexture(path) {
+    // If we've already loaded this image, just return it
+    if (textureCache[path]) {
+        return textureCache[path];
+    }
+
+    // If not, create it and store it
+    const img = new Image();
+    img.src = path;
+    textureCache[path] = img;
+    return img;
+}
 
 function loadblock (/** @type {number} */x,/** @type {number} */y) {
     let noiseValue = -61
@@ -84,45 +100,48 @@ function load_start () {
         }
     }
 }
-const blockSize = 32;
 
 function draw() {
     if (!ctx) return;
 
-    // 1. Clear the canvas
-    ctx.fillStyle = "#00ffff"; // Sky blue
+    // 1. Clear Screen
+    ctx.fillStyle = "#00ffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
 
-    // 2. Calculate which blocks are visible
-    // This stops the game from trying to draw 1,000,000 blocks at once
-    const viewDistX = Math.ceil(centerX / blockSize) + 1;
-    const viewDistY = Math.ceil(centerY / blockSize) + 1;
+    // 2. Loop through your blocks
+    for (let key in blocks) {
+        const blockData = blocks[key]; 
+        const [bx, by] = key.split(",").map(Number);
 
-    const startX = Math.floor(playerX - viewDistX);
-    const endX = Math.ceil(playerX + viewDistX);
-    const startY = Math.floor(playerY - viewDistY);
-    const endY = Math.ceil(playerY + viewDistY);
+        // Check if the block has an image path string
+        if (blockData && blockData.image) {
+            const img = getTexture(blockData.image);
 
-    for (let x = startX; x <= endX; x++) {
-        for (let y = startY; y <= endY; y++) {
-            const blockType = blocks[`${x},${y}`];
+            // CAMERA MATH
+            const screenX = (bx - playerX) * blockSize + centerX;
+            const screenY = centerY - (by - playerY) * blockSize;
 
-            if (blockType && blockType !== 0) {
-                // THE CAMERA MATH:
-                // (World Position - Player Position) * Size + Screen Center
-                const drawX = (x - playerX) * blockSize + centerX;
-                const drawY = centerY - (y - playerY) * blockSize;
-
-                ctx.fillStyle = (blockType === "grass") ? "#2dcd40" : "#684b33";
-                ctx.fillRect(drawX - blockSize/2, drawY - blockSize/2, blockSize, blockSize);
+            // CULLING (Only draw if it's on screen)
+            if (screenX > -blockSize && screenX < canvas.width + blockSize &&
+                screenY > -blockSize && screenY < canvas.height + blockSize) {
+                
+                // 3. DRAW AND SCALE
+                // ctx.drawImage(image, x, y, width, height)
+                ctx.drawImage(
+                    img, 
+                    Math.round(screenX - blockSize / 2), 
+                    Math.round(screenY - blockSize / 2), 
+                    32, 
+                    32
+                );
             }
         }
     }
 
-    // 3. Draw Player (always stays in the center of the screen)
+    // 4. Draw Player (Fixed at screen center)
     ctx.fillStyle = "red";
     ctx.fillRect(centerX - 10, centerY - 20, 20, 40);
 }
