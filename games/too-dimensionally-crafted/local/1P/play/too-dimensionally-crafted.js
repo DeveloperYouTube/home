@@ -92,7 +92,7 @@ function gameLoop() {
     const dt = (performance.now() - lastTime) / 1000;
     lastTime = performance.now();
     if (fpsc) {
-        fpsc.innerText = Math.round(1 / dt).toString();
+        fpsc.innerText = "FPS: " + Math.round(1 / dt);
     }
     // 1. Update your variables (physics, player movement, etc.)
     update();
