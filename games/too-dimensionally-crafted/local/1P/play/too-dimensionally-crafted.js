@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {utils} from '../../../../../utilities.js';
 /*
 OBJECT OF ALL BLOCKS
@@ -15,7 +16,8 @@ const blockDATA = {
         name: 'Block of Grass',
         resistance: 0.6,
         light: 0,
-        solid: [[true]]
+        solid: [[true]],
+        image: "../../../../../../grass_block.png"
     }
 }
 /*
@@ -48,8 +50,9 @@ const mountain = Number(worldINIT.m);
 const sea= Number(worldINIT.o);
 const smoothness = Number(worldINIT.s);
 const height = mountain-sea
-const screen = document.getElementById('screen')
+const canvas = document.getElementById('screen')
 const fpsc = document.getElementById('FPS')
+const ctx = canvas.getContext('2d');
 
 function loadblock (/** @type {number} */x,/** @type {number} */y) {
     let noiseValue = -61
@@ -81,40 +84,47 @@ function load_start () {
         }
     }
 }
+const blockSize = 32;
+
 function draw() {
-    // 1. Clear the screen
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!ctx) return;
 
-    // 2. Calculate the camera bounds (which blocks are actually on screen)
-    const halfWidth = (canvas.width / 2) / blockSize;
-    const halfHeight = (canvas.height / 2) / blockSize;
+    // 1. Clear the canvas
+    ctx.fillStyle = "#00ffff"; // Sky blue
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const startX = Math.floor(playerX - halfWidth);
-    const endX = Math.ceil(playerX + halfWidth);
-    const startY = Math.floor(playerY - halfHeight);
-    const endY = Math.ceil(playerY + halfHeight);
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
 
-    // 3. Loop only through visible coordinates
+    // 2. Calculate which blocks are visible
+    // This stops the game from trying to draw 1,000,000 blocks at once
+    const viewDistX = Math.ceil(centerX / blockSize) + 1;
+    const viewDistY = Math.ceil(centerY / blockSize) + 1;
+
+    const startX = Math.floor(playerX - viewDistX);
+    const endX = Math.ceil(playerX + viewDistX);
+    const startY = Math.floor(playerY - viewDistY);
+    const endY = Math.ceil(playerY + viewDistY);
+
     for (let x = startX; x <= endX; x++) {
         for (let y = startY; y <= endY; y++) {
-            const blockType = blocks[x + "," + y];
+            const blockType = blocks[`${x},${y}`];
 
             if (blockType && blockType !== 0) {
-                // Calculate screen position
-                // We multiply by blockSize to convert "Grid" units to "Pixel" units
-                const screenX = (x - playerX) * blockSize + (canvas.width / 2);
-                
-                // In Canvas, Y grows downward, so we subtract (y - playerY) 
-                // if you want higher Y numbers to be "up" in the world.
-                const screenY = (canvas.height / 2) - (y - playerY) * blockSize;
+                // THE CAMERA MATH:
+                // (World Position - Player Position) * Size + Screen Center
+                const drawX = (x - playerX) * blockSize + centerX;
+                const drawY = centerY - (y - playerY) * blockSize;
 
-                drawBlock(screenX, screenY, blockType);
+                ctx.fillStyle = (blockType === "grass") ? "#2dcd40" : "#684b33";
+                ctx.fillRect(drawX - blockSize/2, drawY - blockSize/2, blockSize, blockSize);
             }
         }
     }
 
-    // 4. Draw the player in the center
-    drawPlayer(canvas.width / 2, canvas.height / 2);
+    // 3. Draw Player (always stays in the center of the screen)
+    ctx.fillStyle = "red";
+    ctx.fillRect(centerX - 10, centerY - 20, 20, 40);
 }
 function update() {
 
