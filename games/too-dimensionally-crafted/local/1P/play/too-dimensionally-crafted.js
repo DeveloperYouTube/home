@@ -100,7 +100,7 @@ function load_start () {
         }
     }
 }
-
+load_start()
 function draw() {
     if (!ctx) return;
 
