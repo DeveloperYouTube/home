@@ -48,6 +48,8 @@ const mountain = Number(worldINIT.m);
 const sea= Number(worldINIT.o);
 const smoothness = Number(worldINIT.s);
 const height = mountain-sea
+const screen = document.getElementById('screen')
+const fpsc = document.getElementById('FPS')
 
 function loadblock (/** @type {number} */x,/** @type {number} */y) {
     let noiseValue = -61
@@ -71,4 +73,33 @@ function load_blocks (/** @type {number} */x,/** @type {number} */y,/** @type {n
 }
 function load_chunk (/** @type {number} */x,/** @type {number} */y) {
     load_blocks(Math.floor(x)*16,Math.floor(y)*16,Math.ceil(x)*16,Math.ceil(y)*16)
+}
+function load_start () {
+    for (let i = -8; i <= 8; i++) {
+        for (let j=-8; j<=8; j++){
+            load_chunk(i,j);
+        }
+    }
+}
+function draw () {
+
+}
+function update() {
+
+}
+let lastTime = 0;
+function gameLoop() {
+    const dt = (performance.now() - lastTime) / 1000;
+    lastTime = performance.now();
+    if (fpsc) {
+        fpsc.innerText = Math.round(1 / dt).toString();
+    }
+    // 1. Update your variables (physics, player movement, etc.)
+    update();
+
+    // 2. Draw everything to the screen
+    draw();
+
+    // 3. Tell the browser to run this function again before the next frame
+    requestAnimationFrame(gameLoop);
 }
