@@ -18,7 +18,18 @@ const blockDATA = {
         resistance: 0.6,
         light: 0,
         solid: [[true]],
-        image: "../../../../../../grass_block.png"
+        image: "../../../../../../grass_block.png",
+        hardness: 0.6,
+        tool: 's',
+        minmat: 0
+    },
+    2: {
+        name: 'Dirt',
+        resistance: 0.5,
+        light: 0,
+        solid: [[true]],
+        image: "../../../../../../grass_block.png",
+        hardness: 0.5
     }
 }
 /*
