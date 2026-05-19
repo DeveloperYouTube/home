@@ -9,18 +9,21 @@
         <p id="b">Click to generate buffalo text</p>
         <p id="f">Click to generate fish text</p>
         <script>
+            const pause = (ms) => new Promise(resolve => setTimeout(resolve, ms));
             const buffalo = document.getElementById("b");
             const fish = document.getElementById("f");
-            buffalo.addEventListener('click', () => {
-                buffalo.innerHTML = "Buffalo";
+            buffalo.addEventListener('click', async () => {
+                buffalo.innerHTML = "Buffalo ";
                 while (true) {
-                    buffalo.innerHTML += "buffalo";
+                    buffalo.innerHTML += "buffalo ";
+                    await pause(100); 
                 }
             });
-            fish.addEventListener('click', () => {
-                fish.innerHTML = "Fish";
+            fish.addEventListener('click', async () => {
+                fish.innerHTML = "Fish ";
                 while (true) {
-                    fish.innerHTML += "fish";
+                    fish.innerHTML += "fish ";
+                    await pause(100);
                 }
             });
         </script>
