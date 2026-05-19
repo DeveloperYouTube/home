@@ -9,22 +9,25 @@
         <p id="b">Click to generate buffalo text</p>
         <p id="f">Click to generate fish text</p>
         <script>
-            const pause = (ms) => new Promise(resolve => setTimeout(resolve, ms));
             const buffalo = document.getElementById("b");
             const fish = document.getElementById("f");
-            buffalo.addEventListener('click', async () => {
+
+            buffalo.addEventListener('click', () => {
                 buffalo.innerHTML = "Buffalo ";
-                while (true) {
+                function streamBuffalo() {
                     buffalo.innerHTML += "buffalo ";
-                    await pause(100); 
+                    requestAnimationFrame(streamBuffalo);
                 }
+                requestAnimationFrame(streamBuffalo);
             });
-            fish.addEventListener('click', async () => {
+
+            fish.addEventListener('click', () => {
                 fish.innerHTML = "Fish ";
-                while (true) {
+                function streamFish() {
                     fish.innerHTML += "fish ";
-                    await pause(100);
+                    requestAnimationFrame(streamFish);
                 }
+                requestAnimationFrame(streamFish);
             });
         </script>
     </body>
