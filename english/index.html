@@ -11,21 +11,22 @@
         <script>
             const buffalo = document.getElementById("b");
             const fish = document.getElementById("f");
-
-            buffalo.addEventListener('click', () => {
+            let m = 0.000001;
+            const pause = async (ms) => new Promise(resolve => setTimeout(resolve, ms));
+            buffalo.addEventListener('click', async () => {
                 buffalo.innerHTML = "Buffalo ";
-                function streamBuffalo() {
-                    buffalo.innerHTML += "buffalo ";
+                async function streamBuffalo() {
                     requestAnimationFrame(streamBuffalo);
+                    for (i = 0; i<m; i++) {buffalo.innerHTML += "buffalo "; m++; await pause(5)}
                 }
                 requestAnimationFrame(streamBuffalo);
             });
 
-            fish.addEventListener('click', () => {
+            fish.addEventListener('click', async () => {
                 fish.innerHTML = "Fish ";
-                function streamFish() {
-                    fish.innerHTML += "fish ";
+                async function streamFish() {
                     requestAnimationFrame(streamFish);
+                    for (i = 0; i<m; i++) {fish.innerHTML += "fish "; m++; await pause(5)}
                 }
                 requestAnimationFrame(streamFish);
             });
