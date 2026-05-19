@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>English makes absolutly no sense at all!</title>
+    </head>
+    <body>
+        <p>I present a present present in the present</p>
+        <p>I sent a scented cent</p>
+        <p id="b">Click to generate buffalo text</p>
+        <p id="f">Click to generate fish text</p>
+        <script>
+            const buffalo = document.getElementById("b");
+            const fish = document.getElementById("f");
+            buffalo.addEventListener('click', () => {
+                buffalo.innerHTML = "Buffalo";
+                while (true) {
+                    buffalo.innerHTML += "buffalo";
+                }
+            });
+            fish.addEventListener('click', () => {
+                fish.innerHTML = "Fish";
+                while (true) {
+                    fish.innerHTML += "fish";
+                }
+            });
+        </script>
+    </body>
+</html>
