@@ -21,15 +21,17 @@ const blockDATA = {
         image: "../../../../../../grass_block.png",
         hardness: 0.6,
         tool: 's',
-        minmat: 0
+        drop: [1, 1, 1, 1, 1, 1, 1, 1]
     },
     2: {
         name: 'Cobbled Stone',
-        resistance: 0.5,
+        resistance: 6,
         light: 0,
         solid: [[true]],
         image: "../../../../../../2dc/cobblestone.png",
-        hardness: 0.5
+        hardness: 2,
+        tool: 'p',
+        drop: [null, 2, 2, 2, 2, 2, 2, 2]
     }
 }
 /*

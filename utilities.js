@@ -106,3 +106,9 @@ export const utils = {
     }
     }
 };
+export const input = {
+    getInputX: () => {
+        let x = 0;
+        
+    }
+}
