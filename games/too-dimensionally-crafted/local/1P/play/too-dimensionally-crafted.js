@@ -24,11 +24,11 @@ const blockDATA = {
         minmat: 0
     },
     2: {
-        name: 'Dirt',
+        name: 'Cobbled Stone',
         resistance: 0.5,
         light: 0,
         solid: [[true]],
-        image: "../../../../../../grass_block.png",
+        image: "../../../../../../2dc/cobblestone.png",
         hardness: 0.5
     }
 }
