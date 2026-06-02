@@ -156,7 +156,7 @@ function draw() {
 
     // 4. Draw Player (Fixed at screen center)
     ctx.fillStyle = "red";
-    ctx.fillRect(centerX - 10, centerY - 20, 20, 40);
+    ctx.fillRect(centerX - 16, centerY - 32, 32, 64);
 }
 function update() {
 
