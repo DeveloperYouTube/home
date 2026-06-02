@@ -68,7 +68,10 @@ const canvas = document.getElementById('screen')
 const fpsc = document.getElementById('FPS')
 const ctx = canvas.getContext('2d');
 // This will store our actual Image objects, keyed by their file path
+const death_screen = document.getElementById('death_screen');
+const pause_screen = document.getElementById('pause_screen');
 const textureCache = {};
+const blockSize = 32;
 
 function getTexture(path) {
     // If we've already loaded this image, just return it
@@ -93,6 +96,18 @@ function loadblock (/** @type {number} */x,/** @type {number} */y) {
         return 2
     } else {return 0}
 }
+function unloadblock (/** @type {number} */x,/** @type {number} */y) {
+    let noiseValue = -61
+    let block = null;
+    if(!flat){noiseValue = utils.perlin.noise(x/smoothness, seed) * height + sea;}
+    const noiseFloor = Math.round(noiseValue);
+    if (noiseFloor==y){
+        block = 1;
+    } else if (noiseFloor >= y) {
+        block = 2
+    } else {block = 0}
+    if (blocks[`${x},${y}`] == block) {delete blocks[`${x},${y}`]}
+}
 function load_block (/** @type {number} */x,/** @type {number} */y) {
     if (!blocks[x+","+y]){blocks[x+","+y] = loadblock(x,y);}
 }
@@ -103,8 +118,18 @@ function load_blocks (/** @type {number} */x,/** @type {number} */y,/** @type {n
         }
     }
 }
+function unload_blocks (/** @type {number} */x,/** @type {number} */y,/** @type {number} */X,/** @type {number} */Y) {
+    for (let i = x; i <= X; i++) {
+        for (let j=y; j<=Y; j++){
+            unloadblock(i,j);
+        }
+    }
+}
 function load_chunk (/** @type {number} */x,/** @type {number} */y) {
     load_blocks(Math.floor(x)*16,Math.floor(y)*16,Math.ceil(x)*16,Math.ceil(y)*16)
+}
+function unload_chunk (/** @type {number} */x,/** @type {number} */y) {
+    unload_blocks(Math.floor(x)*16,Math.floor(y)*16,Math.ceil(x)*16,Math.ceil(y)*16)
 }
 function load_start () {
     for (let i = -8; i <= 8; i++) {
@@ -126,7 +151,8 @@ function draw() {
 
     // 2. Loop through your blocks
     for (let key in blocks) {
-        const blockData = blocks[key]; 
+        const blockId = blocks[key];
+        const blockData = blockDATA[blockId]; 
         const [bx, by] = key.split(",").map(Number);
 
         // Check if the block has an image path string
