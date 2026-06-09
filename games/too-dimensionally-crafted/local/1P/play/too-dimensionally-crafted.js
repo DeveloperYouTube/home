@@ -67,9 +67,10 @@ const height = mountain-sea
 const canvas = document.getElementById('screen')
 const fpsc = document.getElementById('FPS')
 const ctx = canvas.getContext('2d');
-// This will store our actual Image objects, keyed by their file path
 const death_screen = document.getElementById('death_screen');
+death_screen.style.display = "none";
 const pause_screen = document.getElementById('pause_screen');
+pause_screen.style.display = "none";
 const textureCache = {};
 const blockSize = 32;
 
@@ -125,20 +126,6 @@ function unload_blocks (/** @type {number} */x,/** @type {number} */y,/** @type 
         }
     }
 }
-function load_chunk (/** @type {number} */x,/** @type {number} */y) {
-    load_blocks(Math.floor(x)*16,Math.floor(y)*16,Math.ceil(x)*16,Math.ceil(y)*16)
-}
-function unload_chunk (/** @type {number} */x,/** @type {number} */y) {
-    unload_blocks(Math.floor(x)*16,Math.floor(y)*16,Math.ceil(x)*16,Math.ceil(y)*16)
-}
-function load_start () {
-    for (let i = -8; i <= 8; i++) {
-        for (let j=-8; j<=8; j++){
-            load_chunk(i,j);
-        }
-    }
-}
-load_start()
 function draw() {
     if (!ctx) return;
 
@@ -181,11 +168,11 @@ function draw() {
     }
 
     // 4. Draw Player (Fixed at screen center)
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "#008080";
     ctx.fillRect(centerX - 16, centerY - 32, 32, 64);
 }
 function update() {
-
+    load_blocks(Math.round(playerX) - Math.ceil(canvas.width / 64) - 2, Math.round(playerY) - Math.ceil(canvas.height / 64) - 2, Math.round(playerX) + Math.ceil(canvas.width / 64) + 2, Math.round(playerY) + Math.ceil(canvas.height / 64) + 2);
 }
 let lastTime = 0;
 function gameLoop() {
