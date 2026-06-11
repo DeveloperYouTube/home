@@ -76,6 +76,7 @@ pause_screen.style.display = "none";
 const textureCache = {};
 const blockSize = 32;
 let dt;
+let sky = 510;
 // Velocities (Current speed in blocks per second)
 let vx = 0;
 let vy = 0;
@@ -186,7 +187,8 @@ window.addEventListener('keyup', (e) => {
 });
 function draw() {
     // 1. Reset Frame
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = `rgb(0, ${Math.max(0, sky - 255)}, ${Math.min(255, sky)})`
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // 2. Camera math centered around player pixel space
     let cameraX = (playerX * blockSize) - (canvas.width / 2);
@@ -229,15 +231,6 @@ function draw() {
                 if (img.complete && img.naturalWidth !== 0) {
                     ctx.drawImage(
                         img, 
-                        Math.round((bx * blockSize) - cameraX), 
-                        Math.round((by * blockSize) - cameraY), 
-                        blockSize, 
-                        blockSize
-                    );
-                } else {
-                    // Fallback colors while textures load
-                    ctx.fillStyle = blockId === 1 ? '#557a2b' : '#808080';
-                    ctx.fillRect(
                         Math.round((bx * blockSize) - cameraX), 
                         Math.round((by * blockSize) - cameraY), 
                         blockSize, 
