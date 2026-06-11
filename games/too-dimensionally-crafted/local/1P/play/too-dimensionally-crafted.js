@@ -65,6 +65,7 @@ document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
         if (game_running) { // Only show pause menu if the game is running
             pause_screen.style.display = 'flex';
+            game_running = false;
         }
     };
 });
@@ -793,3 +794,8 @@ window.save = function() {
     localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
     window.location.replace('../../');
 };
+window.hidepause = function() {
+    pause_screen.style.display = 'none';
+    last_frame = performance.now();
+    game_running = true;
+}
