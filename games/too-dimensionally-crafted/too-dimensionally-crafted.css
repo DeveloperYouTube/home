@@ -27,7 +27,7 @@ button:active, a:active {
 }
 * {
     font-family: 'simplistic-pixelation-sans-mono';
-    font-size: large;
+    font-size: 50px;
     color: white;
     background-color: black;
 }

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>BIY Review</title>
+        <style>
+            body {
+                background-color: #000000;
+            }
+            p.header {
+                font-weight: bold;
+                text-align: center;
+                font-size: 1em;
+            }
+            p {
+                font-size: 1em;
+                text-align: justify;
+                font-family: 'baba';
+                color: #ffffff;
+                background-color: #00000000;
+                margin-bottom: 100px;
+            }
+            @font-face {
+                font-family: "baba";
+                src: url("../fonts/biy_text.woff2");
+                line-gap-override: 600%;
+            }
+            span.pink{
+                color: #D9396A;
+            }
+            span.white{
+                color: #ffffff;
+            }
+            span.red {
+                color: #E5533B;
+            }
+            span.purple {
+                color: #8E5E9C;
+            }
+            span.orange {
+                color: #E49950;
+            }
+            span.green {
+                color: #5C8339;
+            }
+            span.yellow {
+                color: #EDE285;
+            }
+            span.cyan {
+                color: #83C8E5;
+            }
+            span.brown {
+                color: #C29E46;
+            }
+            span {
+                font-weight: bold;
+            }
+            p.header span {
+                font-weight: bolder;
+            }
+        </style>
+    </head>
+    <body>
+        <p style="
+            top: -100px;
+            right: -100px;
+            bottom: -100px;
+            left: -100px;
+            background-color: #000000;
+            display: block;
+            position: fixed;
+            justify-content: center;
+            align-content: center;
+            text-align: center;
+        " id="cover">CLICK TO VIEW CONTENTS<br>…<br>(AND TURN UP YOUR VOLUME)</p>
+        <p class="header"><span class="pink">BABA</span> <span class="white">IS</span> <span class="pink">YOU</span> REVIEW</p>
+        <p><span class="pink">BABA</span> <span class="white">IS</span> <span class="pink">YOU</span> IS A CHALLENGING PUZZLE GAME THAT FEATURES THE CHARACTERS <span class="pink">BABA</span>, <span class="red">KEKE</span>, <span class="purple">ME</span>, <span class="green">FOFO</span>, <span class="orange">JIJI</span>, <span class="cyan">IT</span>, AND <span class="brown">ANNI</span> (SHE'S ONLY IN 1 LEVEL THOUGH). THE GAME ALSO HAS 3 LEVEL PACKS, AND THE MAIN ONE (CALLED "BABA") LOOKS SIMPLE AT FIRST, BUT IF YOU TRANSFORM LEVEL 9 OF <span>MAP</span> INTO <span class="pink">BABA</span> AND LEVEL 11 INTO <span class="yellow">FLAG</span> YOU CAN WIN <span>MAP</span>, LEADING TO <span>???</span>, WHERE <span>MAP</span> IS JUST A LEVEL.</p>
+        <p><span>???</span> IS EXTEMLY COMPLICATED AND NOT RECCOMENDED IF YOU'RE NOT SMART ENOUGH. WINNING <span>???</span> TAKES YOU TO <span>NULL</span> WHERE <span>???</span> IS THE ONLY LEVEL THERE. <span>NULL</span> USES THE MAIN MENU THEME BUT REVERSED, GIVING IT THE STRANGE-SOUNDING MUSIC APPERENTLY CALLED "FUN.OGG"</p>
+        <p>IN <span>MAP</span> THERE'S 13 SUB-WORLDS, IN <span>???</span> THERE ARE 3, AND IN <span>NULL</span> THERE'S ONLY 1. <span class="pink">BABA</span> APPEARS IN MOST LEVELS, EVEN IN THE <span>MUSEUM</span> AND <span>NEW ADVENTURES</span> LEVEL PACKS AND NOT JUST <span>BABA</span> LEVEL PACK. <span class="pink">3D</span> ONLY APPEARS IN 6 LEVELS, HIDDEN IN 2 OF THEM. A LOT OF OBJECTS DON'T APPEAR IN ANY LEVEL, ONLY IN THE LEVER EDITOR. <span class="brown">ANNI</span> ONLY APPEARS IN 1 LEVEL AND ISN'T IN THE LEVEL EDITOR FOR SOME REASON.</p>
+        <p>OVERALL I WOULD SAY <span class="pink">BABA</span> <span class="white">IS</span> <span class="pink">YOU</span> IS GOOD, WITH SO MANY CHALLENGING LEVELS AND THE LEVEL EDITOR, THE LEVEL EDITOR HAS SO MANY POSSIBILITIES AS THERES MORE MUSIC, MORE THEMES, MORE SIZES (MAXIMUM 30 BY 18), MORE OBJECTS, MORE PROPERTIES, AND MORE WORDS OVERALL.</p>
+
+        <script>
+            const audio = document.getElementById('bgMusic');
+            const cover = document.getElementById('cover');
+            addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+            });
+            document.addEventListener('click', function() {
+                audio.play();
+                audio.VOLUME = 1;
+                cover.remove();
+                window.scrollTo(0, 0);
+            }, { once: true });
+        </script>
+    </body>
+</html>
