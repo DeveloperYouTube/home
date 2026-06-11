@@ -76,7 +76,7 @@ document.addEventListener('keyup', (event) => {
         if (currentTime - lastPressTime <= 500) { 
             spaceBarPresses++;
             if (spaceBarPresses >= 2) {
-                //fly = !fly
+                fly = !fly;
                 spaceBarPresses = 0;
                 lastPressTime = currentTime; 
             }
