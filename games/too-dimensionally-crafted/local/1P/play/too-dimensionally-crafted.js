@@ -75,6 +75,8 @@ const pause_screen = document.getElementById('pause_screen');
 pause_screen.style.display = "none";
 const textureCache = {};
 const blockSize = 32;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 let dt;
 let sky = 510;
 // Velocities (Current speed in blocks per second)
