@@ -1,289 +1,795 @@
-// @ts-nocheck
-import {utils} from '../../../../../utilities.js';
-console.log('v1');
-/*
-OBJECT OF ALL BLOCKS
-LOREM IPSUM
-FILLER TO MAKE MOER NOTICABLE
-*/
-const blockDATA = {
-    0: {
-        name: 'Air',
-        resistance: 0,
-        light: 0,
-        solid: [[false]],
-        image: "../../../../../../nothing.png"
-    },
-    1: {
-        name: 'Block of Grass',
-        resistance: 0.6,
-        light: 0,
-        solid: [[true]],
-        image: "../../../../../../grass_block.png",
-        hardness: 0.6,
-        tool: 's',
-        drop: [1, 1, 1, 1, 1, 1, 1, 1]
-    },
-    2: {
-        name: 'Cobbled Stone',
-        resistance: 6,
-        light: 0,
-        solid: [[true]],
-        image: "../../../../../../2dc/cobblestone.png",
-        hardness: 2,
-        tool: 'p',
-        drop: [null, 2, 2, 2, 2, 2, 2, 2]
-    }
-}
-/*
-FILLER TO MAKE MORE NOTICABLE
-LOREM IPSUM DOREM
-OBJECT OF ALL BLOCK DATA
-*/
+//imports
+import {utils} from '../../utilities.js';
 
-
-//variables 
-const savedData = localStorage.getItem('2DCsinglePworldJSON');
-
-let worldINIT;
-
-if (savedData !== null) {
-    worldINIT = JSON.parse(savedData);
-}
-const world_name = worldINIT.name;
-const game_mode = worldINIT.game_mode;
-const difficulty = worldINIT.difficulty;
-const seed = worldINIT.seed;
-const flat = worldINIT.flat;
-let playerX = worldINIT.x;
-let playerY = worldINIT.y;
-let blocks = worldINIT.blocks;
-let playerHP = worldINIT.HP;
-let inventory = worldINIT.inventory;
-let entities = worldINIT.entities;
-const mountain = Number(worldINIT.m);
-const sea= Number(worldINIT.o);
-const smoothness = Number(worldINIT.s);
-const height = mountain-sea
-const canvas = document.getElementById('screen');
-const fpsc = document.getElementById('FPS');
-const positionc = document.getElementById('position');
-const ctx = canvas.getContext('2d');
+//varibles
+//const(can't change (e.g. HTML elements and objects))
+const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworldJSON'))
+localStorage.removeItem('2DCsinglePworldJSON');
+const username = prompt('Enter your Username');
+const screen = document.getElementById('screen');
+const pen = screen.getContext('2d', {willReadFrequently: true});
+const background = document.body;
+const position_text = document.getElementById('position');
+const FPStext = document.getElementById('FPS');
+const death = {
+    void: `${username} fell out of the world`
+};
 const death_screen = document.getElementById('death_screen');
-death_screen.style.display = "none";
+const death_message = document.getElementById('deathID');
+const pressedKeys = {};
 const pause_screen = document.getElementById('pause_screen');
-pause_screen.style.display = "none";
-const textureCache = {};
-const blockSize = 32;
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
-let dt;
-let sky = 510;
-// Velocities (Current speed in blocks per second)
-let vx = 0;
-let vy = 0;
+const seed = world_dataINIT.seed;
+const flat = world_dataINIT.flat;
+const game_mode = world_dataINIT.game_mode;
+//let (can change (e.g. player stuff))
+//offsets
+let offset_centerX;
+let offset_centerY;
+let offsetX;
+let offsetY;
+//player stuff
+let respawnX = 0;
+let respawnY = -32;
+let playerX = world_dataINIT.x;
+let playerY = world_dataINIT.y;
+let playerVY = 0;
+let playerVX = 0;
+let playerHP = world_dataINIT.HP;
+let can_player_take_damage = true;
+let fly = false;
+let inventory = world_dataINIT.inventory;
+let on_ground = false;
+//fps and delta time
+let FPS = 0;
+let last_frame = 0;
+let delta_time = 0;
+//background things
+let light = 15;
+//mouse
+let mouseX = 0;
+let mouseY = 0;
+let mouse_dir = 0;
+//fly mode checker
+let spaceBarPresses = 0;
+let lastPressTime = 0;
+//other
+let death_reason;
+let game_running = false;
+let entities = world_dataINIT.entities;
 
-// Accelerations (Rate of speed change per second)
-let ax = 0;
-const ay = 32;
-
-// Minimum Speed Caps (Prevents flying or moving left too fast)
-let minvx = -8;
-let minvy = 0;
-
-// Maximum Speed Caps (Prevents falling or moving right too fast)
-let maxvx = 0;
-const maxvy = 78.4;
-
-function getTexture(path) {
-    // If we've already loaded this image, just return it
-    if (textureCache[path]) {
-        return textureCache[path];
-    }
-
-    // If not, create it and store it
-    const img = new Image();
-    img.src = path;
-    textureCache[path] = img;
-    return img;
-}
-
-function loadblock (/** @type {number} */x,/** @type {number} */y) {
-    let noiseValue = -61
-    if(!flat){noiseValue = utils.perlin.noise(x/smoothness, seed) * height + sea;}
-    const noiseFloor = Math.round(noiseValue);
-    if (noiseFloor==y){
-        return 1;
-    } else if (noiseFloor >= y) {
-        return 2
-    } else {return 0}
-}
-function unloadblock (/** @type {number} */x,/** @type {number} */y) {
-    let noiseValue = -61
-    let block = null;
-    if(!flat){noiseValue = utils.perlin.noise(x/smoothness, seed) * height + sea;}
-    const noiseFloor = Math.round(noiseValue);
-    if (noiseFloor==y){
-        block = 1;
-    } else if (noiseFloor >= y) {
-        block = 2
-    } else {block = 0}
-    if (blocks[`${x},${y}`] == block) {delete blocks[`${x},${y}`]}
-}
-function load_block (/** @type {number} */x,/** @type {number} */y) {
-    if (!blocks[x+","+y]){blocks[x+","+y] = loadblock(x,y);}
-}
-function load_blocks (/** @type {number} */x,/** @type {number} */y,/** @type {number} */X,/** @type {number} */Y) {
-    for (let i = x; i <= X; i++) {
-        for (let j=y; j<=Y; j++){
-            load_block(i,j);
+pause_screen.style.display = 'none';
+death_screen.style.display = 'none';
+//key press logic
+document.addEventListener('keydown', (event) => {
+    pressedKeys[event.key] = true; 
+    if (event.key === 'Escape') {
+        if (game_running) { // Only show pause menu if the game is running
+            pause_screen.style.display = 'flex';
         }
-    }
-}
-function unload_blocks (/** @type {number} */x,/** @type {number} */y,/** @type {number} */X,/** @type {number} */Y) {
-    for (let i = x; i <= X; i++) {
-        for (let j=y; j<=Y; j++){
-            unloadblock(i,j);
-        }
-    }
-}
-let crtl = false;
-// --- 'A' KEY (Move Left) ---
-window.addEventListener('keydown', (e) => {
-    if ((e.key !== 'a' && e.key !== 'A') || e.repeat) return;
-    ax = -10;
-    minvx = crtl ? -5.612 : -4.317;
+    };
 });
-window.addEventListener('keyup', (e) => {
-    if (e.key !== 'a' && e.key !== 'A') return;
-    maxvx = 0;
-    ax = 10;
-});
+document.addEventListener('keyup', (event) => {
+    pressedKeys[event.key] = false;
+    if (event.key === ' ') {
+        const currentTime = Date.now();
 
-// --- 'D' KEY (Move Right) ---
-window.addEventListener('keydown', (e) => {
-    if ((e.key !== 'd' && e.key !== 'D') || e.repeat) return;
-    ax = 10;
-    maxvx = crtl ? 5.612 : 4.317; 
-});
-window.addEventListener('keyup', (e) => {
-    if (e.key !== 'd' && e.key !== 'D') return;
-    ax = -10;
-    minvx = 0; 
-});
-
-window.addEventListener('keydown', (e) => {
-    // Check if the key being pressed is Control OR Command
-    if (e.key !== 'Control' && e.key !== 'Meta') return;
-    if (e.repeat) return;
-    crtl = true
-    minvx = minvx * (5.612/4.317);
-    maxvx = maxvx * (5.612/4.317);
-});
-
-window.addEventListener('keyup', (e) => {
-    if (e.key !== 'Control' && e.key !== 'Meta') return;
-    crtl = false
-    minvx = minvx * (4.317/5.612);
-    maxvx = maxvx * (4.317/5.612);
-});
-function draw() {
-    // 1. Reset Frame
-    ctx.fillStyle = `rgb(0, ${Math.max(0, sky - 255)}, ${Math.min(255, sky)})`
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // 2. Camera math centered around player pixel space
-    let cameraX = (playerX * blockSize) - (canvas.width / 2);
-    let cameraY = (playerY * blockSize) - (canvas.height / 2);
-
-    // 3. Calculate exactly which block grid coordinates are visible on screen
-    let startX = Math.floor(cameraX / blockSize) - 2;
-    let endX   = Math.ceil((cameraX + canvas.width) / blockSize) + 2;
-    let startY = Math.floor(cameraY / blockSize) - 2;
-    let endY   = Math.ceil((cameraY + canvas.height) / blockSize) + 2;
-
-    // 4. Loop ONLY through the visible screen grid cells
-    for (let bx = startX; bx <= endX; bx++) {
-        for (let by = startY; by <= endY; by++) {
-            
-            // Generate the exact string key your dictionary uses
-            let blockKey = bx + "," + by; 
-            const blockId = blocks[blockKey];
-
-            // NEW: If the key doesn't exist or is explicitly unloaded, draw it BLACK
-            if (blockId === undefined || blockId === null) {
-                ctx.fillStyle = "#000000"; // Black void for unloaded chunks
-                ctx.fillRect(
-                    Math.round((bx * blockSize) - cameraX), 
-                    Math.round((by * blockSize) - cameraY), 
-                    blockSize, 
-                    blockSize
-                );
-                continue; // Skip the rest of the loop for this block cell
+        if (currentTime - lastPressTime <= 500) { 
+            spaceBarPresses++;
+            if (spaceBarPresses >= 2) {
+                fly = !fly;
+                spaceBarPresses = 0;
+                lastPressTime = currentTime; 
             }
+        } else {
+            spaceBarPresses = 1; 
+        }
+        lastPressTime = currentTime; 
+    }
+});
+function is_pressed(key) {
+    return pressedKeys[key];
+}
 
-            // Skip drawing completely if it's explicitly generated as Air
-            if (blockId === 0) continue;
+//resizeing and centering 
+function resizeCanvas() {
+    screen.width = window.innerWidth;
+    screen.height = window.innerHeight;
+    offset_centerX = screen.width / 2;
+    offset_centerY = screen.height / 2;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-            // Render existing terrain blocks
-            const blockInfo = blockDATA[blockId];
-            if (blockInfo) {
-                const img = getTexture(blockInfo.image);
-                
-                if (img.complete && img.naturalWidth !== 0) {
-                    ctx.drawImage(
-                        img, 
-                        Math.round((bx * blockSize) - cameraX), 
-                        Math.round((by * blockSize) - cameraY), 
-                        blockSize, 
-                        blockSize
+//blocks
+let blocks = world_dataINIT.blocks;
+const blockIDs = {
+    0: {
+        name: 'Grass Block',
+        texture: [
+            ['#00ff00'],
+            ['#804000'],
+            ['#804000'],
+            ['#804000'],
+        ],
+        solid: [[true]]
+    }, 
+    1: {
+        name: 'Dirt',
+        texture: [['#804000']],
+        solid: [[true]]
+    }, 
+    2: {
+        name: 'Cobblestone',
+        texture: [
+            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
+            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
+            ['#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080'],
+            ['#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080'],
+            ['#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080'],
+            ['#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080'],
+            ['#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080'],
+            ['#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040'],
+            ['#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040'],
+            ['#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080'],
+            ['#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080'],
+            ['#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080'],
+            ['#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080'],
+            ['#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080'],
+            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#808080', '#808080', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
+            ['#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#404040', '#404040', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080', '#808080'],
+        ],
+        solid: [[true]]
+    }, 
+    3: {
+        name: 'Air',
+        texture: [['#00000000']],
+        solid: [[false]]
+    }, 
+    4: {
+        name: 'Stone',
+        texture: [['#808080']],
+        solid: [[true]]
+    },
+    5: {
+        name: 'Bedrock',
+        texture: [['#202020']],
+        solid: [[true]]
+    },
+    6: {
+        name: 'Water',
+        texture: [['#0000f080']],
+        solid: [[false]]
+    },
+    7: {
+        name: 'Lava',
+        texture: [['#ff6020']],
+        solid: [[false]]
+    },
+    8: {
+        name: 'Oak Planks',
+        texture: [
+            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
+            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
+            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
+            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
+            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
+            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
+            ['#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000'],
+            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
+            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
+            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
+            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
+            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
+            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
+            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
+            ['#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#804000', '#804000', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080', '#c0a080'],
+            ['#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000', '#804000'],
+        ],
+        solid: [[true]]
+    },
+    9: {
+        name: 'Oak Sapling',
+        texture: [
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00ff0080', '#00ff0080', '#40a000ff', '#40a000ff', '#00ff0080', '#00ff0080', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00ff0080', '#00ff0080', '#40a000ff', '#40a000ff', '#00ff0080', '#00ff0080', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#40a000ff', '#40a000ff', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#40a000ff', '#40a000ff', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#40a000ff', '#40a000ff', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#40a000ff', '#40a000ff', '#00ff0080', '#00ff0080', '#00ff0080', '#00ff0080', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+            ['#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#804000ff', '#804000ff', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000', '#00000000'],
+        ],
+        solid: [[false]]
+    },
+    10: {
+        name: 'Sand',
+        texture: [['#c0a080']],
+        solid: [[true]],
+        fallingBlockEntity: true
+    }
+};
+const itemIDs = {
+    0: blockIDs
+}
+const block_drops = [
+    itemIDs[0][1],
+    itemIDs[0][1],
+    itemIDs[0][2],
+    null,
+    itemIDs[0][2],
+    null,
+    null,
+    null,
+    itemIDs[0][8],
+    itemIDs[0][9],
+    itemIDs[0][10]
+];
+const blockTextureCanvases = {};
+function preRenderBlockTextures() {
+    for (const blockID in blockIDs) {
+        const block = blockIDs[blockID];
+        const canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 32;
+        const ctx = canvas.getContext('2d');
+        const texture = utils.arrays.scale2Darray_up2(block.texture, 16, 16);
+
+        for (let y = 0; y < 16; y++) {
+            for (let x = 0; x < 16; x++) {
+                ctx.fillStyle = texture[y][x];
+                ctx.fillRect(x * 2, y * 2, 2, 2);
+            }
+        }
+        blockTextureCanvases[blockID] = canvas;
+    }
+}
+preRenderBlockTextures();
+const itemTextureCanvases = {};
+function preRenderItemTextures() {
+    for (const itemID in itemIDs) {
+        if (itemIDs.hasOwnProperty((itemID))) {
+            if (itemIDs[itemID] != blockIDs) {
+                const item = itemIDs[itemID];
+                const canvas = document.createElement('canvas');
+                canvas.width = 16;
+                canvas.height = 16;
+                const ctx = canvas.getContext('2d');
+                const texture = utils.arrays.scale2Darray_up2(item.texture, 16, 16);
+    
+                for (let y = 0; y < 16; y++) {
+                    for (let x = 0; x < 16; x++) {
+                        ctx.fillStyle = texture[y][x];
+                        ctx.fillRect(x, y, 1, 1);
+                    }
+                }
+                itemTextureCanvases[itemID] = canvas;
+            }
+        }
+    }
+}
+preRenderItemTextures();
+
+function summon_item_entity (x, y, vx, vy, id, block) {
+    if (block) {
+        entities.push({
+            texture: blockTextureCanvases[id],
+            X: x,
+            Y: y,
+            VX: vx,
+            VY: vy,
+            code: function () {
+                this.VY = this.VY + 512 * delta_time;
+                this.VX = this.VX - 8 * this.VX * delta_time;
+                this.VY = this.VY - 8 * this.VY * delta_time;
+                this.Vdirection = Math.atan2(this.VY, this.VX);
+                this.V = utils.math.pythagorean_theorem(this.VX, this.VY);
+                this.V = Math.min(this.V, 39.2);
+                this.VX = Math.cos(this.Vdirection) * this.V;
+                this.VY = Math.sin(this.Vdirection) * this.V;
+
+                const collisionResult = checkCollision(this.X, this.Y, 16, 16, this.VX, this.VY);
+
+                if (collisionResult.collision) {
+                    // Resolve the collision
+                    if (collisionResult.directionX !== 0) {
+                        this.X -= collisionResult.overlapX * collisionResult.directionX;
+                        this.VX = 0;
+                    }
+                    if (collisionResult.directionY !== 0) {
+                        this.Y -= collisionResult.overlapY * collisionResult.directionY;
+                        this.VY = 0;
+                    }
+                } else {
+                    // Apply velocity if no collision
+                    this.X += this.VX * delta_time;
+                    this.Y += this.VY * delta_time;
+                }
+
+                const drawX = this.X * 32 + offsetX - 16;
+                const drawY = this.Y * 32 + offsetY - 32;
+
+                if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
+                    pen.drawImage(this.texture, drawX, drawY, 16, 16);
+                }
+
+                if (utils.math.range(this.X, playerX) < 24 && utils.math.range(this.Y, playerY) < 24) {
+                    entities = entities.filter(entity =>
+                        !(entity.X === this.X &&
+                        entity.Y === this.Y &&
+                        entity.VX === this.VX &&
+                        entity.VY === this.VY &&
+                        entity.texture === this.texture)
                     );
+                    inventory.push({block: id, ammount: 1, max: 64});
+                }
+            }
+        });
+    } else {
+        entities.push({
+            texture: itemTextureCanvases[id],
+            X: x,
+            Y: y,
+            VX: vx,
+            VY: vy,
+            code: function () {
+                this.VY = this.VY + 512 * delta_time;
+                this.VX = this.VX - 8 * this.VX * delta_time;
+                this.VY = this.VY - 8 * this.VY * delta_time;
+                this.Vdirection = Math.atan2(this.VY, this.VX);
+                this.V = utils.math.pythagorean_theorem(this.VX, this.VY);
+                this.V = Math.min(this.V, 39.2);
+                this.VX = Math.cos(this.Vdirection) * this.V;
+                this.VY = Math.sin(this.Vdirection) * this.V;
+
+                const collisionResult = checkCollision(this.X, this.Y, 16, 16, this.VX, this.VY);
+
+                if (collisionResult.collision) {
+                    // Resolve the collision
+                    if (collisionResult.directionX !== 0) {
+                        this.X -= collisionResult.overlapX * collisionResult.directionX;
+                        this.VX = 0;
+                    }
+                    if (collisionResult.directionY !== 0) {
+                        this.Y -= collisionResult.overlapY * collisionResult.directionY;
+                        this.VY = 0;
+                    }
+                } else {
+                    // Apply velocity if no collision
+                    this.X += this.VX * delta_time;
+                    this.Y += this.VY * delta_time;
+                }
+
+                const drawX = this.X * 32 + offsetX - 16;
+                const drawY = this.Y * 32 + offsetY - 32;
+    
+                if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
+                    pen.drawImage(this.texture, drawX, drawY, 16, 16);
+                }
+
+                if (utils.math.range(this.X, playerX) < 24 && utils.math.range(this.Y, playerY) < 24) {
+                    entities = entities.filter(entity =>
+                        !(entity.X === this.X &&
+                        entity.Y === this.Y &&
+                        entity.VX === this.VX &&
+                        entity.VY === this.VY &&
+                        entity.texture === this.texture)
+                    );
+                    inventory.push({item: id, ammount: 1, max: 64});
+                }
+            }
+        });
+    }
+}
+
+block_drops.forEach((element, index) => {
+    if (blockIDs[index]) {
+        blockIDs[index].drop = function(x, y, id) {
+            if (block_drops[index]) {
+                summon_item_entity(x, y, 0, 0, id, block_drops[index].solid);
+            }
+        };
+    }
+});
+const entityIDs = {
+    0: itemIDs
+};
+
+function load_blocks(x, y) {
+    let block_key = `${x}, ${y}`;
+    if (!blocks.hasOwnProperty(block_key)) {
+        if (!flat) {
+            const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
+            const noiseFloor = Math.round(noiseValue);
+            if (y >= noiseFloor) {
+                if (y === noiseFloor) {
+                    blocks[block_key] = 0; // Grass block on top
+                } else {
+                    if (y > noiseFloor + 3 + Math.random()) {
+                        blocks[block_key] = 4;
+                    } else {
+                        blocks[block_key] = 1;
+                    }
+                }
+            } else {
+                blocks[block_key] = 3; // Air block above
+            }
+        } else {
+            if (y >= 0) {
+                if (y === 0) {
+                    blocks[block_key] = 0; // Grass block on top
+                } else {
+                    if (y > -3) {
+                        blocks[block_key] = 5;
+                    } else {
+                        blocks[block_key] = 1;
+                    }
+                }
+            } else {
+                blocks[block_key] = 3; // Air block above
+            }
+        }
+    }
+}
+
+function render_blocks() {
+    for (const [key, blockID] of Object.entries(blocks)) {
+        const [x, y] = key.split(', ').map(Number);
+        const drawX = x * 32 + offsetX - 16;
+        const drawY = y * 32 + offsetY - 32;
+
+        if (drawX + 32 > 0 && drawX < screen.width && drawY + 32 > 0 && drawY < screen.height){
+            pen.drawImage(blockTextureCanvases[blockID], drawX, drawY);
+        }
+    }
+}
+
+//mouse things(for player controls)
+document.addEventListener('mousemove', (event) => {
+    mouseX = event.clientX - offset_centerX;
+    mouseY = event.clientY - offset_centerY;
+    mouse_dir = Math.atan2(mouseY, mouseX);
+});
+document.addEventListener('mousedown', (event) => {
+    if (event.button === 0) {
+        // Break block
+        const mouseXrad = Math.cos(mouse_dir);
+        const mouseYrad = Math.sin(mouse_dir);
+
+        let selectedBlock = null;
+
+        for (let px = 0; px < 160; px++) {
+            const blockX = Math.round((playerX + mouseXrad * px) / 32);
+            const blockY = Math.round((playerY + mouseYrad * px) / 32);
+            const blockKey = `${blockX}, ${blockY}`;
+
+            if (blocks[blockKey] !== undefined) { // Check if the block exists
+                const blockID = blocks[blockKey];
+                const blockSolid2D = blockIDs[blockID].solid;
+
+                // Condense the 2D solid array into a 1D array
+                const blockSolid1D = blockSolid2D.flat();
+
+                // Check if any part of the block is solid
+                if (utils.logic.ors(...blockSolid1D)) {
+                    selectedBlock = { x: blockX, y: blockY };
+                    break; // Exit loop after selecting a solid block
                 }
             }
         }
+
+        if (selectedBlock) {
+            blockIDs[blocks[`${selectedBlock.x}, ${selectedBlock.y}`]].drop(selectedBlock.x * 32 - 16, selectedBlock.y * 32 - 16, blocks[`${selectedBlock.x}, ${selectedBlock.y}`]);
+            blocks[`${selectedBlock.x}, ${selectedBlock.y}`] = 3;
+        }
     }
+});
 
-    // 5. Render Teal (#008080) Player
-    ctx.fillStyle = "#008080";
-    ctx.fillRect(
-        Math.round((playerX * blockSize) - cameraX),
-        Math.round((playerY * blockSize) - cameraY),
-        blockSize,      
-        blockSize * 2   
-    );
-}
-function update() {
-    load_blocks(Math.round(playerX) - Math.ceil(canvas.width / 64) - 2, Math.round(playerY) - Math.ceil(canvas.height / 64) - 2, Math.round(playerX) + Math.ceil(canvas.width / 64) + 2, Math.round(playerY) + Math.ceil(canvas.height / 64) + 2);
-    vx += ax * dt;
-    vy += ay * dt;
-    // Clamp Horizontal Velocity
-    vx = Math.max(minvx, Math.min(vx, maxvx));
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+    //place block
+    const mouseXrad = Math.cos(mouse_dir);
+    const mouseYrad = Math.sin(mouse_dir);
+    let selectedBlock = null;
 
-    // Clamp Vertical Velocity
-    vy = Math.max(minvy, Math.min(vy, maxvy));
-    playerX += vx * dt;
-    playerY += vy * dt;
-}
-let lastTime = 0;
-function gameLoop() {
-    dt = (performance.now() - lastTime) / 1000;
-    lastTime = performance.now();
-    if (fpsc) {
-        fpsc.innerText = "FPS: " + Math.round(1 / dt);
+    for (let px = 0; px < 160; px++) {
+        const blockX = Math.round((playerX + mouseXrad * px) / 32);
+        const blockY = Math.round((playerY + mouseYrad * px) / 32);
+        const blockKey = `${blockX}, ${blockY}`;
+        if (blocks[blockKey] !== undefined) { // Check if the block exists
+            const blockID = blocks[blockKey];
+            const blockSolid2D = blockIDs[blockID].solid;
+
+            // Condense the 2D solid array into a 1D array
+            const blockSolid1D = blockSolid2D.flat();
+
+            // Check if any part of the block is solid
+            if (utils.logic.ors(...blockSolid1D)) {
+                selectedBlock = { x: blockX, y: blockY };
+                break; // Exit loop after selecting a solid block
+            }
+        }
     }
-    if (positionc) {
-        positionc.innerText = "Position: " + Math.round(playerX) + ", " + Math.round(playerY);
+});
+
+function checkCollision(x, y, sizeX, sizeY, vx, vy, map = blocks, blockInfo = blockIDs, blockSize = 32) {
+  const collidingObject = { collision: false };
+
+  // Calculate the bounding box of the moving object
+  const objectLeft = x;
+  const objectRight = x + sizeX;
+  const objectTop = y;
+  const objectBottom = y + sizeY;
+
+  // Determine the range of map tiles to check based on the object's potential movement
+  const minX = Math.floor(Math.min(objectLeft, objectLeft + vx) / blockSize);
+  const maxX = Math.ceil(Math.max(objectRight, objectRight + vx) / blockSize);
+  const minY = Math.floor(Math.min(objectTop, objectTop + vy) / blockSize);
+  const maxY = Math.ceil(Math.max(objectBottom, objectBottom + vy) / blockSize);
+
+  for (let mapX = minX; mapX <= maxX; mapX++) {
+    for (let mapY = minY; mapY <= maxY; mapY++) {
+      const mapKey = `${mapX},${mapY}`;
+      if (map.hasOwnProperty(mapKey)) {
+        const blockId = map[mapKey];
+        if (blockInfo.hasOwnProperty(blockId) && blockInfo[blockId].solid && blockInfo[blockId].solid[0][0]) {
+          // Calculate the boundaries of the map square
+          const tileLeft = mapX * blockSize;
+          const tileRight = (mapX + 1) * blockSize;
+          const tileTop = mapY * blockSize;
+          const tileBottom = (mapY + 1) * blockSize;
+
+          // Check for overlap
+          if (objectRight > tileLeft &&
+              objectLeft < tileRight &&
+              objectBottom > tileTop &&
+              objectTop < tileBottom) {
+            collidingObject.collision = true;
+            collidingObject.tileX = mapX;
+            collidingObject.tileY = mapY;
+            collidingObject.blockId = blockId;
+
+            // Calculate overlap on each side
+            const overlapLeft = objectRight - tileLeft;
+            const overlapRight = tileRight - objectLeft;
+            const overlapTop = objectBottom - tileTop;
+            const overlapBottom = tileBottom - objectTop;
+
+            collidingObject.overlapX = Math.min(overlapLeft, overlapRight);
+            collidingObject.overlapY = Math.min(overlapTop, overlapBottom);
+
+            // Determine collision direction to help with resolution
+            collidingObject.directionX = 0;
+            collidingObject.directionY = 0;
+
+            if (vx > 0 && overlapLeft < overlapRight) {
+              collidingObject.directionX = -1; // Colliding from the left
+            } else if (vx < 0 && overlapRight < overlapLeft) {
+              collidingObject.directionX = 1;  // Colliding from the right
+            }
+
+            if (vy > 0 && overlapTop < overlapBottom) {
+              collidingObject.directionY = -1; // Colliding from the top
+            } else if (vy < 0 && overlapBottom < overlapTop) {
+              collidingObject.directionY = 1;  // Colliding from the bottom
+            }
+
+            return collidingObject; // Return the first collision found for simplicity
+          }
+        }
+      }
     }
-    // 1. Update your variables (physics, player movement, etc.)
-    update();
+  }
 
-    // 2. Draw everything to the screen
-    draw();
-
-    // 3. Tell the browser to run this function again before the next frame
-    requestAnimationFrame(gameLoop);
+  return collidingObject; // No collision
 }
+
+async function game_update() {
+    delta_time = (performance.now() - last_frame) / 1000;
+    FPS = 1 / delta_time;
+    last_frame = performance.now();
+    if (game_running) {
+        FPStext.textContent = `FPS : ${Math.round(FPS)}`;
+    
+        // Game logic
+        background.style.backgroundColor = `rgb(0, ${Math.round(Math.max(0, (Math.sin(performance.now()/600000+1)*255) - 255))}, ${Math.round(Math.min(255, Math.sin(performance.now()/600000+1)*255))})`;
+        light = Math.sin(performance.now()/600000+1)*7.5;
+        if (playerHP > 0) {
+            offsetX = offset_centerX - playerX;
+            offsetY = offset_centerY - playerY;
+            position_text.textContent = `Position: ${Math.round(playerX / 32)} ${0 - (Math.ceil((playerY - 1) / 32))}`;
+            
+            //movement
+            //horisontal
+            if (is_pressed('a')) {
+                playerVX = -138.144;
+            }
+            if (is_pressed('d')) {
+                playerVX = 138.144;
+            }
+            if ((!(is_pressed('a') || is_pressed('d'))) || (is_pressed('a') && is_pressed('d'))) {
+                playerVX = 0;
+            }
+            //vertical
+            if (!fly) {
+                if (is_pressed(' ') && on_ground) {
+                    playerVY = -Math.sqrt(81920);
+                }
+                if (!on_ground) {
+                    playerVY = playerVY + 1024 * delta_time;
+                }
+            } else {
+                playerVY = 0;
+                if (is_pressed(' ')) {
+                    playerVY = playerVY - 138.144;
+                }
+                if (is_pressed('Shift')) {
+                    playerVY = playerVY + 138.144;
+                }
+            }
+
+            playerVX = playerVX - 36 * playerVX * delta_time;
+            playerVY = playerVY - 8 * playerVY * delta_time;
+            const playerVdirection = Math.atan2(playerVY, playerVX);
+            let playerV = utils.math.pythagorean_theorem(playerVX ** 2 + playerVY ** 2);
+            playerV = Math.min(playerV, 78.4);
+            playerVX = Math.cos(playerVdirection) * playerV;
+            playerVY = Math.sin(playerVdirection) * playerV;
+
+            const collisionResult = checkCollision(playerX, playerY, 32, 64, playerVX, playerVY);
+
+            if (collisionResult.collision) {
+                // Resolve the collision
+                if (collisionResult.directionX !== 0) {
+                    playerX -= collisionResult.overlapX * collisionResult.directionX;
+                    playerVX = 0;
+                }
+                if (collisionResult.directionY !== 0) {
+                    playerY -= collisionResult.overlapY * collisionResult.directionY;
+                    playerVY = 0;
+                }
+            } else {
+                // Apply velocity if no collision
+                playerX += playerVX * delta_time;
+                playerY += playerVY * delta_time;
+            }
+    
+            for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
+                for (let j = 0; j < Math.round(window.innerHeight / 32) + 1; j++) {
+                    load_blocks(Math.round(playerX / 32) + i - Math.round(window.innerWidth / 64), Math.round(playerY / 32) + j - Math.round(window.innerHeight / 64));
+                }
+            }
+    
+            // Calculate mouse direction vector
+            const mouseXrad = Math.cos(mouse_dir);
+            const mouseYrad = Math.sin(mouse_dir);
+    
+            let selectedBlock = null;
+    
+            for (let px = 0; px < 160; px++) {
+                if (blocks[`${Math.round((playerX + mouseXrad * px) / 32)}, ${Math.round((playerY + mouseYrad * px) / 32)}`] !== 3) {
+                    selectedBlock = {
+                        x: Math.round((playerX + mouseXrad * px) / 32), 
+                        y: Math.round((playerY + mouseYrad * px) / 32)
+                    }
+                    break;
+                }
+            }
+    
+            // Clear the canvas before drawing anything
+            pen.clearRect(0, 0, screen.width, screen.height); 
+            render_blocks();
+            //entities
+            entities.forEach(element => {
+                element.behavior.code();
+            });
+            //draw player
+            pen.fillStyle = '#3f8c9f';
+            pen.fillRect(offset_centerX - 16, offset_centerY - 32, 32, 64);
+    
+            // Draw selector around selected block
+            if (selectedBlock) {
+                pen.strokeStyle = '#000000'; 
+                pen.lineWidth = 1 / window.devicePixelRatio * 2;
+                pen.beginPath();
+                pen.rect((selectedBlock.x * 32) + offsetX - 16, ((selectedBlock.y - 1) * 32) + offsetY, 32, 32); 
+                pen.closePath(); 
+                pen.stroke();
+            }
+
+            if (can_player_take_damage) {
+                if (playerY > 4096) {
+                    death_reason = death.void;
+                    playerHP = playerHP - 2.5;
+                    can_player_take_damage = false;
+                    pen.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                    pen.fillRect(0, 0, screen.width, screen.height);
+                    utils.pause(100);
+                    setTimeout(() => {
+                        can_player_take_damage = true;
+                    }, 150);
+                }
+                if (isNaN(FPS)) {
+                    death_reason = death.FPS_NaN;
+                    playerHP = playerHP - Math.random() * 20;
+                    can_player_take_damage = false;
+                    pen.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                    pen.fillRect(0, 0, screen.width, screen.height);
+                    utils.pause(100);
+                    setTimeout(() => {
+                        can_player_take_damage = true;
+                    }, 150);
+                }
+            }
+        }
+        document.querySelectorAll('.HP canvas').forEach((element, index) => {
+            const heart = element.getContext('2d');
+            heart.fillStyle = '#000000';
+            heart.fillRect(0, 0, element.width, element.height);
+            if (Math.ceil(playerHP / 2) >= index) {
+                heart.fillStyle = '#ff0000';
+                heart.fillRect(2, 2, element.width/2, element.height - 2);
+                if (Math.floor(playerHP / 2) >= index) {
+                    heart.fillRect(2, 2, element.width - 2, element.height - 2);
+                }
+            }
+        });
+        if (playerHP <= 0) {
+            death_message.innerHTML = death_reason;
+            death_screen.style.display = 'flex';
+        } else {
+            death_screen.style.display = 'none';
+        }
+    }
+    requestAnimationFrame(game_update);
+}
+
+game_update();
+
+//stuff for html things
+window.respawnPlayer = function() {
+    playerHP = 20;
+    playerX = respawnX;
+    playerY = respawnY;
+    playerVY = 0;
+    playerVX = 0;
+};
+window.save = function() {
+    if (death_screen.style.display === 'flex') {
+        window.respawnPlayer();
+    };
+    const worldsJSON = localStorage.getItem('2DCsinglePworlds');
+    let worlds = {}; // Initialize worlds as an empty object by default
+
+    if (worldsJSON) {
+        // Only parse if worldsJSON is not null or undefined
+        try {
+            worlds = JSON.parse(worldsJSON);
+        } catch (e) {
+            console.error("Error parsing worlds data from localStorage:", e);
+            // Optionally, clear the corrupted data or handle it otherwise
+            // localStorage.removeItem('2DCsinglePworlds');
+        }
+    }
+    worlds[world_dataINIT.name] = {
+        game_mode: world_dataINIT.game_mode,
+        difficulty: world_dataINIT.difficulty,
+        seed: seed,
+        flat: flat,
+        x: playerX,
+        y: playerY,
+        blocks: blocks,
+        HP: playerHP,
+        inventory: inventory,
+        entities: entities
+    };
+    localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
+    window.location.replace('../../');
+};
