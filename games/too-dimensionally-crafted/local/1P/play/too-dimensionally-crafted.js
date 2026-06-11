@@ -77,6 +77,10 @@ const textureCache = {};
 const blockSize = 32;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
 let dt;
 let sky = 510;
 // Velocities (Current speed in blocks per second)
