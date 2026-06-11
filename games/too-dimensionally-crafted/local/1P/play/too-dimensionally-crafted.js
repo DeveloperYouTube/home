@@ -64,8 +64,9 @@ const mountain = Number(worldINIT.m);
 const sea= Number(worldINIT.o);
 const smoothness = Number(worldINIT.s);
 const height = mountain-sea
-const canvas = document.getElementById('screen')
-const fpsc = document.getElementById('FPS')
+const canvas = document.getElementById('screen');
+const fpsc = document.getElementById('FPS');
+const positionc = document.getElementById('position');
 const ctx = canvas.getContext('2d');
 const death_screen = document.getElementById('death_screen');
 death_screen.style.display = "none";
@@ -252,6 +253,9 @@ function gameLoop() {
     lastTime = performance.now();
     if (fpsc) {
         fpsc.innerText = "FPS: " + Math.round(1 / dt);
+    }
+    if (positionc) {
+        positionc.innerText = "Position: " + Math.round(playerX) + ", " + Math.round(playerY);
     }
     // 1. Update your variables (physics, player movement, etc.)
     update();
