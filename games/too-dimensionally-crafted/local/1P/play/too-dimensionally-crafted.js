@@ -73,21 +73,22 @@ const pause_screen = document.getElementById('pause_screen');
 pause_screen.style.display = "none";
 const textureCache = {};
 const blockSize = 32;
+let dt;
 // Velocities (Current speed in blocks per second)
 let vx = 0;
 let vy = 0;
 
 // Accelerations (Rate of speed change per second)
 let ax = 0;
-let ay = 0;
+const ay = 32;
 
-// Minimum Speed Caps (Prevents falling or moving left too fast)
-const minvx = -8;
-const minvy = -24; // High terminal velocity downward for falling
+// Minimum Speed Caps (Prevents flying or moving left too fast)
+let minvx = -8;
+let minvy = 0;
 
-// Maximum Speed Caps (Prevents flying or moving right too fast)
-const maxvx = 8;
-const maxvy = 8;
+// Maximum Speed Caps (Prevents falling or moving right too fast)
+let maxvx = 0;
+const maxvy = 78.4;
 
 function getTexture(path) {
     // If we've already loaded this image, just return it
@@ -141,51 +142,6 @@ function unload_blocks (/** @type {number} */x,/** @type {number} */y,/** @type 
         }
     }
 }
-function draw() {
-    if (!ctx) return;
-
-    // 1. Clear Screen
-    ctx.fillStyle = "#00ffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-
-    // 2. Loop through your blocks
-    for (let key in blocks) {
-        const blockId = blocks[key];
-        const blockData = blockDATA[blockId]; 
-        const [bx, by] = key.split(",").map(Number);
-
-        // Check if the block has an image path string
-        if (blockData && blockData.image) {
-            const img = getTexture(blockData.image);
-
-            // CAMERA MATH
-            const screenX = (bx - playerX) * blockSize + centerX;
-            const screenY = centerY - (by - playerY) * blockSize;
-
-            // CULLING (Only draw if it's on screen)
-            if (screenX > -blockSize && screenX < canvas.width + blockSize &&
-                screenY > -blockSize && screenY < canvas.height + blockSize) {
-                
-                // 3. DRAW AND SCALE
-                // ctx.drawImage(image, x, y, width, height)
-                ctx.drawImage(
-                    img, 
-                    Math.round(screenX - blockSize / 2), 
-                    Math.round(screenY - blockSize / 2), 
-                    32, 
-                    32
-                );
-            }
-        }
-    }
-
-    // 4. Draw Player (Fixed at screen center)
-    ctx.fillStyle = "#008080";
-    ctx.fillRect(centerX - 16, centerY - 32, 32, 64);
-}
 let crtl = false;
 // --- 'A' KEY (Move Left) ---
 window.addEventListener('keydown', (e) => {
@@ -226,6 +182,58 @@ window.addEventListener('keyup', (e) => {
     minvx = minvx * (4.317/5.612);
     maxvx = maxvx * (4.317/5.612);
 });
+function draw() {
+    // 1. Reset Frame (prevents trail artifacts)
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 2. Camera math centered around player pixel space
+    // blockSize = 32
+    let cameraX = (playerX * blockSize) - (canvas.width / 2);
+    let cameraY = (playerY * blockSize) - (canvas.height / 2);
+
+    // 3. Render World from your active blocks string dictionary
+    for (const key in blocks) {
+        const blockId = blocks[key];
+        if (blockId === 0) continue; // Skip air blocks
+
+        // Split "x,y" string keys back into numbers
+        const [bx, by] = key.split(',').map(Number);
+        const blockInfo = blockDATA[blockId];
+
+        if (blockInfo) {
+            const img = getTexture(blockInfo.image);
+            
+            // Render textures if image is fully loaded, otherwise draw a fallback color box
+            if (img.complete && img.naturalWidth !== 0) {
+                ctx.drawImage(
+                    img, 
+                    Math.round((bx * blockSize) - cameraX), 
+                    Math.round((by * blockSize) - cameraY), 
+                    blockSize, 
+                    blockSize
+                );
+            } else {
+                // Quick colored rectangles so your world isn't invisible while images load
+                ctx.fillStyle = blockId === 1 ? '#557a2b' : '#808080'; // Grass green vs Stone gray
+                ctx.fillRect(
+                    Math.round((bx * blockSize) - cameraX), 
+                    Math.round((by * blockSize) - cameraY), 
+                    blockSize, 
+                    blockSize
+                );
+            }
+        }
+    }
+
+    // 4. Render Teal (#008080) Player (1 block wide by 2 blocks tall)
+    ctx.fillStyle = "#008080";
+    ctx.fillRect(
+        Math.round((playerX * blockSize) - cameraX),
+        Math.round((playerY * blockSize) - cameraY),
+        blockSize,      // 32px
+        blockSize * 2   // 64px
+    );
+}
 function update() {
     load_blocks(Math.round(playerX) - Math.ceil(canvas.width / 64) - 2, Math.round(playerY) - Math.ceil(canvas.height / 64) - 2, Math.round(playerX) + Math.ceil(canvas.width / 64) + 2, Math.round(playerY) + Math.ceil(canvas.height / 64) + 2);
     vx += ax * dt;
@@ -240,7 +248,7 @@ function update() {
 }
 let lastTime = 0;
 function gameLoop() {
-    const dt = (performance.now() - lastTime) / 1000;
+    dt = (performance.now() - lastTime) / 1000;
     lastTime = performance.now();
     if (fpsc) {
         fpsc.innerText = "FPS: " + Math.round(1 / dt);
