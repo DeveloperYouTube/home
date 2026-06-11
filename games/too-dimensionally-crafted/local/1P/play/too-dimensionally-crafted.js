@@ -1,5 +1,6 @@
 // @ts-nocheck
 import {utils} from '../../../../../utilities.js';
+console.log('v2');
 /*
 OBJECT OF ALL BLOCKS
 LOREM IPSUM
