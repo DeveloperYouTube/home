@@ -184,55 +184,76 @@ window.addEventListener('keyup', (e) => {
     maxvx = maxvx * (4.317/5.612);
 });
 function draw() {
-    // 1. Reset Frame (prevents trail artifacts)
+    // 1. Reset Frame
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // 2. Camera math centered around player pixel space
-    // blockSize = 32
     let cameraX = (playerX * blockSize) - (canvas.width / 2);
     let cameraY = (playerY * blockSize) - (canvas.height / 2);
 
-    // 3. Render World from your active blocks string dictionary
-    for (const key in blocks) {
-        const blockId = blocks[key];
-        if (blockId === 0) continue; // Skip air blocks
+    // 3. Calculate exactly which block grid coordinates are visible on screen
+    let startX = Math.floor(cameraX / blockSize) - 2;
+    let endX   = Math.ceil((cameraX + canvas.width) / blockSize) + 2;
+    let startY = Math.floor(cameraY / blockSize) - 2;
+    let endY   = Math.ceil((cameraY + canvas.height) / blockSize) + 2;
 
-        // Split "x,y" string keys back into numbers
-        const [bx, by] = key.split(',').map(Number);
-        const blockInfo = blockDATA[blockId];
-
-        if (blockInfo) {
-            const img = getTexture(blockInfo.image);
+    // 4. Loop ONLY through the visible screen grid cells
+    for (let bx = startX; bx <= endX; bx++) {
+        for (let by = startY; by <= endY; by++) {
             
-            // Render textures if image is fully loaded, otherwise draw a fallback color box
-            if (img.complete && img.naturalWidth !== 0) {
-                ctx.drawImage(
-                    img, 
-                    Math.round((bx * blockSize) - cameraX), 
-                    Math.round((by * blockSize) - cameraY), 
-                    blockSize, 
-                    blockSize
-                );
-            } else {
-                // Quick colored rectangles so your world isn't invisible while images load
-                ctx.fillStyle = blockId === 1 ? '#557a2b' : '#808080'; // Grass green vs Stone gray
+            // Generate the exact string key your dictionary uses
+            let blockKey = bx + "," + by; 
+            const blockId = blocks[blockKey];
+
+            // NEW: If the key doesn't exist or is explicitly unloaded, draw it BLACK
+            if (blockId === undefined || blockId === null) {
+                ctx.fillStyle = "#000000"; // Black void for unloaded chunks
                 ctx.fillRect(
                     Math.round((bx * blockSize) - cameraX), 
                     Math.round((by * blockSize) - cameraY), 
                     blockSize, 
                     blockSize
                 );
+                continue; // Skip the rest of the loop for this block cell
+            }
+
+            // Skip drawing completely if it's explicitly generated as Air
+            if (blockId === 0) continue;
+
+            // Render existing terrain blocks
+            const blockInfo = blockDATA[blockId];
+            if (blockInfo) {
+                const img = getTexture(blockInfo.image);
+                
+                if (img.complete && img.naturalWidth !== 0) {
+                    ctx.drawImage(
+                        img, 
+                        Math.round((bx * blockSize) - cameraX), 
+                        Math.round((by * blockSize) - cameraY), 
+                        blockSize, 
+                        blockSize
+                    );
+                } else {
+                    // Fallback colors while textures load
+                    ctx.fillStyle = blockId === 1 ? '#557a2b' : '#808080';
+                    ctx.fillRect(
+                        Math.round((bx * blockSize) - cameraX), 
+                        Math.round((by * blockSize) - cameraY), 
+                        blockSize, 
+                        blockSize
+                    );
+                }
             }
         }
     }
 
-    // 4. Render Teal (#008080) Player (1 block wide by 2 blocks tall)
+    // 5. Render Teal (#008080) Player
     ctx.fillStyle = "#008080";
     ctx.fillRect(
         Math.round((playerX * blockSize) - cameraX),
         Math.round((playerY * blockSize) - cameraY),
-        blockSize,      // 32px
-        blockSize * 2   // 64px
+        blockSize,      
+        blockSize * 2   
     );
 }
 function update() {
