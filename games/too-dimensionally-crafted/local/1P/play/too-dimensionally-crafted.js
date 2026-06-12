@@ -241,7 +241,7 @@ function preRenderBlockTextures() {
         canvas.width = 32;
         canvas.height = 32;
         const ctx = canvas.getContext('2d');
-        const texture = utils.arrays.scale2Darray_up2(block.texture, 16, 16);
+        const texture = utils.arrays.scale2Darray_up(block.texture, 16, 16);
 
         for (let y = 0; y < 16; y++) {
             for (let x = 0; x < 16; x++) {
@@ -263,7 +263,7 @@ function preRenderItemTextures() {
                 canvas.width = 16;
                 canvas.height = 16;
                 const ctx = canvas.getContext('2d');
-                const texture = utils.arrays.scale2Darray_up2(item.texture, 16, 16);
+                const texture = utils.arrays.scale2Darray_up(item.texture, 16, 16);
     
                 for (let y = 0; y < 16; y++) {
                     for (let x = 0; x < 16; x++) {
