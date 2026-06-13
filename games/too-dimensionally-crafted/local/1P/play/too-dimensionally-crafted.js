@@ -481,6 +481,7 @@ function unload_blocks(x, y) {
     }
 }
 function render_blocks() {
+    let keys = [];
     for (const [key, blockID] of Object.entries(blocks)) {
         const [x, y] = key.split(', ').map(Number);
         const drawX = x * 32 + offsetX - 16;
@@ -489,9 +490,13 @@ function render_blocks() {
         if (drawX + 32 > 0 && drawX < screen.width && drawY + 32 > 0 && drawY < screen.height){
             pen.drawImage(blockTextureCanvases[blockID], drawX, drawY);
         } else {
-            unload_blocks(x, y);
+            keys.push(key);
         }
     }
+    keys.forEach((key) => {
+        const [x, y] = key.split(', ').map(Number);
+        unload_blocks(x, y);
+    })
 }
 
 //mouse things(for player controls)
