@@ -402,82 +402,55 @@ block_drops.forEach((element, index) => {
 const entityIDs = {
     0: itemIDs
 };
-
-function load_blocks(x, y) {
+function get_block(x, y) {
     let block_key = `${x}, ${y}`;
-    if (!blocks.hasOwnProperty(block_key)) {
+    let value;
         if (!flat) {
             const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
             const noiseFloor = Math.round(noiseValue);
-            if (y >= noiseFloor) {
-                if (y === noiseFloor) {
-                    blocks[block_key] = 0; // Grass block on top
-                } else {
-                    if (y > noiseFloor + 3 + Math.random()) {
-                        blocks[block_key] = 4;
-                    } else {
-                        blocks[block_key] = 1;
-                    }
-                }
+        if (y >= noiseFloor) {
+            if (y === noiseFloor) {
+                value = 0; // Grass block on top
             } else {
-                blocks[block_key] = 3; // Air block above
+                if (y > noiseFloor + 3 + Math.random()) {
+                    value = 4;
+                } else {
+                    value = 1;
+                }
             }
         } else {
-            if (y >= 0) {
-                if (y === 0) {
-                    blocks[block_key] = 0; // Grass block on top
-                } else {
-                    if (y > -3) {
-                        blocks[block_key] = 5;
-                    } else {
-                        blocks[block_key] = 1;
-                    }
-                }
-            } else {
-                blocks[block_key] = 3; // Air block above
-            }
+            value = 3; // Air block above
         }
+    } else {
+        if (y >= 0) {
+            if (y === 0) {
+                value = 0; // Grass block on top
+            } else {
+                if (y > -3) {
+                    value = 5;
+                } else {
+                    value = 1;
+                }
+            }
+        } else {
+            value = 3; // Air block above
+        }
+    }
+    return value;
+}
+function load_blocks(x, y) {
+    let block_key = `${x}, ${y}`;
+    if (!blocks.hasOwnProperty(block_key)) {
+        blocks[block_key] = get_block(x, y);
     }
 }
 
 function unload_blocks(x, y) {
     let block_key = `${x}, ${y}`;
-    let value;
     if (blocks.hasOwnProperty(block_key)) {
-        if (!flat) {
-            const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
-            const noiseFloor = Math.round(noiseValue);
-            if (y >= noiseFloor) {
-                if (y === noiseFloor) {
-                    value = 0; // Grass block on top
-                } else {
-                    if (y > noiseFloor + 3 + Math.random()) {
-                        value = 4;
-                    } else {
-                        value = 1;
-                    }
-                }
-            } else {
-                value = 3; // Air block above
-            }
-        } else {
-            if (y >= 0) {
-                if (y === 0) {
-                    value = 0; // Grass block on top
-                } else {
-                    if (y > -3) {
-                        value = 5;
-                    } else {
-                        value = 1;
-                    }
-                }
-            } else {
-                value = 3; // Air block above
-            }
+        if (blocks[block_key] === get_block(x, y)) {
+            delete blocks[block_key];
         }
-    }
-    if (blocks[block_key] === value) {
-        delete blocks[block_key];
     }
 }
 function render_blocks() {
