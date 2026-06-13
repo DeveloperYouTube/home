@@ -440,6 +440,46 @@ function load_blocks(x, y) {
     }
 }
 
+function unload_blocks(x, y) {
+    let block_key = `${x}, ${y}`;
+    let value;
+    if (blocks.hasOwnProperty(block_key)) {
+        if (!flat) {
+            const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
+            const noiseFloor = Math.round(noiseValue);
+            if (y >= noiseFloor) {
+                if (y === noiseFloor) {
+                    value = 0; // Grass block on top
+                } else {
+                    if (y > noiseFloor + 3 + Math.random()) {
+                        value = 4;
+                    } else {
+                        value = 1;
+                    }
+                }
+            } else {
+                value = 3; // Air block above
+            }
+        } else {
+            if (y >= 0) {
+                if (y === 0) {
+                    value = 0; // Grass block on top
+                } else {
+                    if (y > -3) {
+                        value = 5;
+                    } else {
+                        value = 1;
+                    }
+                }
+            } else {
+                value = 3; // Air block above
+            }
+        }
+    }
+    if (blocks[block_key] === value) {
+        delete blocks[block_key];
+    }
+}
 function render_blocks() {
     for (const [key, blockID] of Object.entries(blocks)) {
         const [x, y] = key.split(', ').map(Number);
@@ -448,6 +488,8 @@ function render_blocks() {
 
         if (drawX + 32 > 0 && drawX < screen.width && drawY + 32 > 0 && drawY < screen.height){
             pen.drawImage(blockTextureCanvases[blockID], drawX, drawY);
+        } else {
+            unload_blocks(x, y);
         }
     }
 }
@@ -792,7 +834,7 @@ window.save = function() {
         entities: entities
     };
     localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
-    window.location.replace('../../');
+    window.location.replace('../../../../');
 };
 window.hidepause = function() {
     pause_screen.style.display = 'none';
