@@ -639,7 +639,7 @@ async function game_update() {
             playerVX = playerVX - 36 * playerVX * delta_time;
             playerVY = playerVY - 8 * playerVY * delta_time;
             const playerVdirection = Math.atan2(playerVY, playerVX);
-            let playerV = utils.math.pythagorean_theorem(playerVX ** 2 + playerVY ** 2);
+            let playerV = utils.math.pythagorean_theorem(playerVX, playerVY);
             playerV = Math.min(playerV, 78.4);
             playerVX = Math.cos(playerVdirection) * playerV;
             playerVY = Math.sin(playerVdirection) * playerV;
