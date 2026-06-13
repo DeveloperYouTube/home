@@ -32,25 +32,6 @@
             const difficulty = document.getElementById("Difficulty");//dropdown
             const seed = document.getElementById("Seed");//text input
             const flat = document.getElementById("flat?");//checkbox
-
-            // Update the current slider value (each time you drag the slider handle)
-            slider.oninput = function() {
-                output.innerHTML = this.value;
-            }
-            const sliders = document.getElementById("o");
-            const outputs = document.getElementById("ol");
-
-            // Update the current slider value (each time you drag the slider handle)
-            sliders.oninput = function() {
-                outputs.innerHTML = this.value;
-            }
-            const sliderd = document.getElementById("s");
-            const outputd = document.getElementById("sl");
-
-            // Update the current slider value (each time you drag the slider handle)
-            sliderd.oninput = function() {
-                outputd.innerHTML = this.value;
-            }
             create_button.addEventListener('click', function() {
                 let worldsSTR = localStorage.getItem('2DCsinglePworlds');
                 let worlds;
