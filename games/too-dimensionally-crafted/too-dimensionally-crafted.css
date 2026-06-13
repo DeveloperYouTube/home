@@ -29,6 +29,7 @@ button:active, a:active {
     font-family: 'simplistic-pixelation-sans-mono';
     font-size: 50px;
     color: white;
+    background-color: #000000;
 }
 body {
     margin: 0px;
