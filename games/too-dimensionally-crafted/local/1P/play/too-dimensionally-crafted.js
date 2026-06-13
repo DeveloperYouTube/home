@@ -399,6 +399,13 @@ block_drops.forEach((element, index) => {
         };
     }
 });
+window.addEventListener('beforeunload', (event) => {
+    // Cancel the event as stated by the standard.
+    event.preventDefault();
+    
+    // Older browsers require a return value to be set.
+    event.returnValue = ''; 
+});
 const entityIDs = {
     0: itemIDs
 };
