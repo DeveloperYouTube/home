@@ -9,15 +9,15 @@ const username = prompt('Enter your Username');
 const screen = document.getElementById('screen');
 const pen = screen.getContext('2d', {willReadFrequently: true});
 const background = document.body;
-const position_text = document.getElementById('position');
-const FPStext = document.getElementById('FPS');
+const position_text = document.querySelector('position');
+const FPStext = document.querySelector('FPS');
 const death = {
     void: `${username} fell out of the world`
 };
-const death_screen = document.getElementById('death_screen');
-const death_message = document.getElementById('deathID');
+const death_screen = document.querySelector('death_screen');
+const death_message = document.querySelector('deathID');
 const pressedKeys = {};
-const pause_screen = document.getElementById('pause_screen');
+const pause_screen = document.querySelector('pause_screen');
 const seed = world_dataINIT.seed;
 const flat = world_dataINIT.flat;
 const game_mode = world_dataINIT.game_mode;
