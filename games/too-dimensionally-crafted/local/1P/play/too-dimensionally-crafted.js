@@ -9,7 +9,7 @@ const username = prompt('Enter your Username');
 const screen = document.getElementById('screen');
 const pen = screen.getContext('2d', {willReadFrequently: true});
 const background = document.body;
-const position_text = document.querySelector(.'position');
+const position_text = document.querySelector('.position');
 const FPStext = document.querySelector('.FPS');
 const death = {
     void: `${username} fell out of the world`
