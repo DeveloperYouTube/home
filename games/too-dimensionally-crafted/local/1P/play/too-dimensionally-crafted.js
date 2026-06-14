@@ -680,14 +680,12 @@ async function game_update() {
             
             //movement
             //horisontal
+            playerVX = 0;
             if (is_pressed('a')) {
-                playerVX = -138.144;
+                playerVX += -138.144;
             }
             if (is_pressed('d')) {
-                playerVX = 138.144;
-            }
-            if ((!(is_pressed('a') || is_pressed('d'))) || (is_pressed('a') && is_pressed('d'))) {
-                playerVX = 0;
+                playerVX += 138.144;
             }
             //vertical
             if (!fly) {
@@ -705,23 +703,37 @@ async function game_update() {
                 }
             }
             playerVY = Math.min(playerVY, 78.4);
-
-            const collisionResult = checkCollision(playerX, playerY, 32, 64, playerVX, playerVY);
-
-            if (collisionResult.collision) {
-                // Resolve the collision
-                if (collisionResult.directionX !== 0) {
-                    playerX -= collisionResult.overlapX * collisionResult.directionX;
+            
+            // --- 1. HANDLE X-AXIS MOVEMENT & RESOLUTION ---
+            playerX += playerVX * delta_time;
+            
+            let collisionResultX = checkCollision(playerX, playerY, 32, 64, playerVX, 0);
+            if (collisionResultX.collision) {
+                if (collisionResultX.directionX !== 0) {
+                    playerX -= collisionResultX.overlapX * collisionResultX.directionX;
                     playerVX = 0;
                 }
-                if (collisionResult.directionY !== 0) {
-                    playerY -= collisionResult.overlapY * collisionResult.directionY;
+            }
+
+            // --- 2. HANDLE Y-AXIS MOVEMENT & RESOLUTION ---
+            playerY += playerVY * delta_time;
+
+            let collisionResultY = checkCollision(playerX, playerY, 32, 64, 0, playerVY);
+            if (collisionResultY.collision) {
+                if (collisionResultY.directionY !== 0) {
+                    playerY -= collisionResultY.overlapY * collisionResultY.directionY;
+                    
+                    // If moving down and hitting a block, we landed!
+                    if (playerVY > 0) {
+                        on_ground = true;
+                    }
                     playerVY = 0;
                 }
             } else {
-                // Apply velocity if no collision
-                playerX += playerVX * delta_time;
-                playerY += playerVY * delta_time;
+                // If moving down and NOT touching a block, we are airborne
+                if (!fly && playerVY > 0) {
+                    on_ground = false;
+                }
             }
     
             for (let i = 0; i < Math.round(window.innerWidth / 32) + 1; i++) {
