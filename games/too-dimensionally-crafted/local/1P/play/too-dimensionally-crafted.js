@@ -615,7 +615,7 @@ if (Math.random() < 0.01) { // Prevents console spamting
 
   for (let mapX = minX; mapX <= maxX; mapX++) {
     for (let mapY = minY; mapY <= maxY; mapY++) {
-      const mapKey = `${mapX},${mapY}`;
+      const mapKey = `${mapX}, ${mapY}`;
       if (map.hasOwnProperty(mapKey)) {
         const blockId = map[mapKey];
         if (blockInfo.hasOwnProperty(blockId) && blockInfo[blockId].solid && blockInfo[blockId].solid[0][0]) {
@@ -708,21 +708,22 @@ async function game_update() {
             }
             playerVY = Math.min(playerVY, 2508.8);
             
-            // --- X AXIS MOVEMENT ---
+            // --- X-AXIS MOVEMENT & RESOLUTION ---
             playerX += playerVX * delta_time;
+
             let colX = checkCollision(playerX, playerY, 32, 64);
             if (colX.collision && colX.directionX !== 0) {
-                playerX -= colX.overlapX * colX.directionX; // Correctly slides you out of walls
+                playerX -= colX.overlapX * colX.directionX;
                 playerVX = 0;
             }
 
-            // --- Y AXIS MOVEMENT ---
-            playerY += playerVY * delta_time;
+            // --- Y-AXIS MOVEMENT & RESOLUTION ---
             let colY = checkCollision(playerX, playerY, 32, 64);
             if (colY.collision && colY.directionY !== 0) {
-                playerY -= colY.overlapY * colY.directionY; // Correctly pushes you up onto grass
+                playerY -= colY.overlapY * colY.directionY;
                 
-                if (colY.directionY === 1) { // 1 means we landed on top of a tile
+                // colY.directionY === 1 means you were pushed up (landed on a block)
+                if (colY.directionY === 1) {
                     on_ground = true;
                 }
                 playerVY = 0;
