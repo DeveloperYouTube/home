@@ -702,7 +702,7 @@ async function game_update() {
                     playerVY = playerVY + 138.144;
                 }
             }
-            playerVY = Math.min(playerVY, 78.4);
+            playerVY = Math.min(playerVY, 2508.8);
             
             // --- 1. HANDLE X-AXIS MOVEMENT & RESOLUTION ---
             playerX += playerVX * delta_time;
