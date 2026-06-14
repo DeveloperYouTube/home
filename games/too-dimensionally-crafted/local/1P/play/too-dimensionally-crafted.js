@@ -1,6 +1,6 @@
 //imports
 import {utils} from '../../../../../utilities.js';
-console.log('v5');
+console.log('v5.1');
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworldJSON'))
