@@ -591,20 +591,20 @@ document.addEventListener('contextmenu', function(event) {
     }
 });
 
-function checkCollision(x, y, sizeX, sizeY, vx, vy, map = blocks, blockInfo = blockIDs, blockSize = 32) {
+function checkCollision(x, y, sizeX, sizeY, map = blocks, blockInfo = blockIDs, blockSize = 32) {
   const collidingObject = { collision: false };
 
-  // Calculate the bounding box of the moving object
+  // Calculate the current active bounding box of the object
   const objectLeft = x;
   const objectRight = x + sizeX;
   const objectTop = y;
   const objectBottom = y + sizeY;
 
-  // Determine the range of map tiles to check based on the object's potential movement
-  const minX = Math.floor(Math.min(objectLeft, objectLeft + vx) / blockSize);
-  const maxX = Math.ceil(Math.max(objectRight, objectRight + vx) / blockSize);
-  const minY = Math.floor(Math.min(objectTop, objectTop + vy) / blockSize);
-  const maxY = Math.ceil(Math.max(objectBottom, objectBottom + vy) / blockSize);
+  // Scan only the tiles the player's bounding box currently intersects
+  const minX = Math.floor(objectLeft / blockSize);
+  const maxX = Math.floor((objectRight - 0.01) / blockSize);
+  const minY = Math.floor(objectTop / blockSize);
+  const maxY = Math.floor((objectBottom - 0.01) / blockSize);
 
   for (let mapX = minX; mapX <= maxX; mapX++) {
     for (let mapY = minY; mapY <= maxY; mapY++) {
@@ -612,23 +612,24 @@ function checkCollision(x, y, sizeX, sizeY, vx, vy, map = blocks, blockInfo = bl
       if (map.hasOwnProperty(mapKey)) {
         const blockId = map[mapKey];
         if (blockInfo.hasOwnProperty(blockId) && blockInfo[blockId].solid && blockInfo[blockId].solid[0][0]) {
-          // Calculate the boundaries of the map square
+          
           const tileLeft = mapX * blockSize;
           const tileRight = (mapX + 1) * blockSize;
           const tileTop = mapY * blockSize;
           const tileBottom = (mapY + 1) * blockSize;
 
-          // Check for overlap
+          // Standard AABB Overlap Check
           if (objectRight > tileLeft &&
               objectLeft < tileRight &&
               objectBottom > tileTop &&
               objectTop < tileBottom) {
+            
             collidingObject.collision = true;
             collidingObject.tileX = mapX;
             collidingObject.tileY = mapY;
             collidingObject.blockId = blockId;
 
-            // Calculate overlap on each side
+            // Calculate precise overlap depths
             const overlapLeft = objectRight - tileLeft;
             const overlapRight = tileRight - objectLeft;
             const overlapTop = objectBottom - tileTop;
@@ -637,30 +638,26 @@ function checkCollision(x, y, sizeX, sizeY, vx, vy, map = blocks, blockInfo = bl
             collidingObject.overlapX = Math.min(overlapLeft, overlapRight);
             collidingObject.overlapY = Math.min(overlapTop, overlapBottom);
 
-            // Determine collision direction to help with resolution
-            collidingObject.directionX = 0;
-            collidingObject.directionY = 0;
-
-            if (vx > 0 && overlapLeft < overlapRight) {
-              collidingObject.directionX = -1; // Colliding from the left
-            } else if (vx < 0 && overlapRight < overlapLeft) {
-              collidingObject.directionX = 1;  // Colliding from the right
+            // SIMPLIFIED DIRECTION LOGIC: 
+            // If the horizontal overlap is shallower than vertical, it's a side hit!
+            if (collidingObject.overlapX < collidingObject.overlapY) {
+              // If player center is left of block center, we hit the left side
+              collidingObject.directionX = (objectLeft + sizeX / 2 < tileLeft + blockSize / 2) ? 1 : -1;
+              collidingObject.directionY = 0;
+            } else {
+              // Otherwise, it's a vertical top/bottom floor hit!
+              collidingObject.directionX = 0;
+              collidingObject.directionY = (objectTop + sizeY / 2 < tileTop + blockSize / 2) ? 1 : -1;
             }
 
-            if (vy > 0 && overlapTop < overlapBottom) {
-              collidingObject.directionY = -1; // Colliding from the top
-            } else if (vy < 0 && overlapBottom < overlapTop) {
-              collidingObject.directionY = 1;  // Colliding from the bottom
-            }
-
-            return collidingObject; // Return the first collision found for simplicity
+            return collidingObject; 
           }
         }
       }
     }
   }
 
-  return collidingObject; // No collision
+  return collidingObject;
 }
 
 async function game_update() {
@@ -704,33 +701,25 @@ async function game_update() {
             }
             playerVY = Math.min(playerVY, 2508.8);
             
-            // --- 1. HANDLE X-AXIS MOVEMENT & RESOLUTION ---
+            // --- X AXIS MOVEMENT ---
             playerX += playerVX * delta_time;
-            
-            let collisionResultX = checkCollision(playerX, playerY, 32, 64, playerVX, 0);
-            if (collisionResultX.collision) {
-                if (collisionResultX.directionX !== 0) {
-                    playerX -= collisionResultX.overlapX * collisionResultX.directionX;
-                    playerVX = 0;
-                }
+            let colX = checkCollision(playerX, playerY, 32, 64);
+            if (colX.collision && colX.directionX !== 0) {
+                playerX -= colX.overlapX * colX.directionX; // Correctly slides you out of walls
+                playerVX = 0;
             }
 
-            // --- 2. HANDLE Y-AXIS MOVEMENT & RESOLUTION ---
+            // --- Y AXIS MOVEMENT ---
             playerY += playerVY * delta_time;
-
-            let collisionResultY = checkCollision(playerX, playerY, 32, 64, 0, playerVY);
-            if (collisionResultY.collision) {
-                if (collisionResultY.directionY !== 0) {
-                    playerY -= collisionResultY.overlapY * collisionResultY.directionY;
-                    
-                    // If moving down and hitting a block, we landed!
-                    if (playerVY > 0) {
-                        on_ground = true;
-                    }
-                    playerVY = 0;
+            let colY = checkCollision(playerX, playerY, 32, 64);
+            if (colY.collision && colY.directionY !== 0) {
+                playerY -= colY.overlapY * colY.directionY; // Correctly pushes you up onto grass
+                
+                if (colY.directionY === 1) { // 1 means we landed on top of a tile
+                    on_ground = true;
                 }
+                playerVY = 0;
             } else {
-                // If moving down and NOT touching a block, we are airborne
                 if (!fly && playerVY > 0) {
                     on_ground = false;
                 }
