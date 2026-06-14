@@ -29,10 +29,10 @@ let offset_centerY;
 let offsetX;
 let offsetY;
 //player stuff
-let respawnX = 0;
-let respawnY = -32;
 let playerX = world_dataINIT.x;
 let playerY = world_dataINIT.y;
+let respawnX = world_dataINIT.rx;
+let respawnY = world_dataINIT.ry;
 let playerVY = 0;
 let playerVX = 0;
 let playerHP = world_dataINIT.HP;
@@ -859,7 +859,9 @@ window.save = function() {
         blocks: blocks,
         HP: playerHP,
         inventory: inventory,
-        entities: entities
+        entities: entities,
+        rx: respawnX,
+        ry: respawnY
     };
     localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
     window.location.replace('../../../../');
