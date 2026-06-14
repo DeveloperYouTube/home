@@ -119,6 +119,6 @@ noscript {
     font-weight: bold;
 }
 .hotbar {
-    height: 32;
+    height: 32px;
     flex-direction: row;
 }
