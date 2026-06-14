@@ -22,24 +22,22 @@ body {
     cursor: crosshair;
 }
 .position {
+    top: 0px;
+    left: 0px;
+    
+}
+.FPS {
+    top: 0px;
+    right: 0px;
+}
+.overlay {
     background-color: rgba(0, 0, 0, 0.5);
     display: inline-block;
     padding: 0px 5px;
-    top: 0px;
-    left: 0px;
     margin: 0px;
     position: fixed;
     z-index: 21;
-}
-.FPS {
-    background-color: rgba(0, 0, 0, 0.5);
-    display: inline-block;
-    padding: 0px 5px;
-    top: 0px;
-    right: 0px;
-    margin: 0px;
-    position: fixed;
-    z-index: 20;
+    font-size: 32px;
 }
 .death_screen{
     background-color: rgba(255, 0, 0, 0.5);
