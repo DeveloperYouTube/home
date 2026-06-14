@@ -585,7 +585,10 @@ document.addEventListener('contextmenu', function(event) {
             // Check if any part of the block is solid
             if (utils.logic.ors(...blockSolid1D)) {
                 selectedBlock = { x: blockX, y: blockY };
-                break; // Exit loop after selecting a solid block
+                const locX = Math.round((playerX + mouseXrad * px - 1) / 32);
+                const locY = Math.round((playerY + mouseYrad * px - 1) / 32);
+                blocks[`${locX}, ${locY}`] = 2;
+                break;
             }
         }
     }
