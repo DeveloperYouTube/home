@@ -704,26 +704,39 @@ async function game_update() {
             }
             playerVY = Math.min(playerVY, 2508.8);
             
-            // --- X-AXIS MOVEMENT & RESOLUTION ---
+            /*================================\
+            ||COLLISION UPDATE LOOP (No Caps)||
+            \================================*/
+
+            // --- 1. HANDLE X-AXIS MOVEMENT ---
             playerX += playerVX * delta_time;
 
+            // Check for collisions immediately after moving horizontally
             let colX = checkCollision(playerX, playerY, 32, 64);
+
             if (colX.collision && colX.directionX !== 0) {
+                // Eject the player out of the wall using the overlap depth
                 playerX -= colX.overlapX * colX.directionX;
-                playerVX = 0;
+                playerVX = 0; // Stop horizontal momentum
             }
 
-            // --- Y-AXIS MOVEMENT & RESOLUTION ---
+            // --- 2. HANDLE Y-AXIS MOVEMENT ---
+            playerY += playerVY * delta_time;
+
+            // Check for collisions immediately after moving vertically
             let colY = checkCollision(playerX, playerY, 32, 64);
+
             if (colY.collision && colY.directionY !== 0) {
+                // Eject the player up or down out of the roof/floor
                 playerY -= colY.overlapY * colY.directionY;
                 
-                // colY.directionY === 1 means you were pushed up (landed on a block)
+                // directionY === 1 means the collision pushed you UP (you landed on top of a tile)
                 if (colY.directionY === 1) {
                     on_ground = true;
                 }
-                playerVY = 0;
+                playerVY = 0; // Kill falling momentum on impact
             } else {
+                // If we didn't collide vertically and we are moving down, we are airborne
                 if (!fly && playerVY > 0) {
                     on_ground = false;
                 }
