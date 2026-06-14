@@ -694,9 +694,7 @@ async function game_update() {
                 if (is_pressed(' ') && on_ground) {
                     playerVY = -Math.sqrt(81920);
                 }
-                if (!on_ground) {
-                    playerVY = playerVY + 1024 * delta_time;
-                }
+                playerVY = playerVY + 1024 * delta_time;
             } else {
                 playerVY = 0;
                 if (is_pressed(' ')) {
