@@ -1,6 +1,6 @@
 //imports
 import {utils} from '../../../../../utilities.js';
-console.log('coll v2');
+console.log('coll v3');
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworldJSON'))
@@ -592,6 +592,10 @@ document.addEventListener('contextmenu', function(event) {
 });
 
 function checkCollision(x, y, sizeX, sizeY, map = blocks, blockInfo = blockIDs, blockSize = 32) {
+    // Add this right before your loops inside checkCollision to audit your keys:
+if (Math.random() < 0.01) { // Prevents console spamting
+    console.log("Looking for key:", `${minX},${minY}`, "Sample existing keys:", Object.keys(map).slice(0, 5));
+}
   const collidingObject = { collision: false };
 
   // Calculate the current active bounding box of the object
