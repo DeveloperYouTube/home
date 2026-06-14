@@ -760,7 +760,7 @@ async function game_update() {
             render_blocks();
             //entities
             entities.forEach(element => {
-                element.behavior.code();
+                element.code();
             });
             //draw player
             pen.fillStyle = '#3f8c9f';
