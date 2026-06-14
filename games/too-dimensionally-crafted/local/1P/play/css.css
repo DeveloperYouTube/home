@@ -72,7 +72,7 @@ body {
 }
 .hud {
     bottom: 64px;
-    left: calc(50vw - 50%);
+    left: 50%;
     transform: translateX(-50%);
     width: max-content;
     display: flex;
