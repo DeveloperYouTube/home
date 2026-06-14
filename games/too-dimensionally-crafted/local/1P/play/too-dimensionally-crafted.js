@@ -21,6 +21,7 @@ const pause_screen = document.querySelector('.pause_screen');
 const seed = world_dataINIT.seed;
 const flat = world_dataINIT.flat;
 const game_mode = world_dataINIT.game_mode;
+const slots = document.querySelectorAll('.hotbar canvas');
 //let (can change (e.g. player stuff))
 //offsets
 let offset_centerX;
@@ -39,6 +40,7 @@ let can_player_take_damage = true;
 let fly = false;
 let inventory = world_dataINIT.inventory;
 let on_ground = false;
+let selected = 0;
 //fps and delta time
 let FPS = 0;
 let last_frame = 0;
@@ -59,6 +61,47 @@ let entities = world_dataINIT.entities;
 
 pause_screen.style.display = 'none';
 death_screen.style.display = 'none';
+//slots logic
+slots.forEach((slot, index) => {
+    slot.addEventListener('click', () => {
+        slots[selected].style.borderStyle = 'outset';
+        selected = index;
+        slot.style.borderStyle = 'inset';
+    });
+    
+});
+// Listen for keys pressed anywhere on the game window
+window.addEventListener('keydown', (event) => {
+    
+    // Check if the physical key pressed is Digit1 through Digit9
+    // event.code looks like "Digit1", "Digit2", etc.
+    if (event.code.startsWith('Digit') && event.code !== 'Digit0') {
+        
+        // Extract the number character from the code string (e.g., "Digit5" -> 5)
+        const pressedNum = parseInt(event.code.replace('Digit', ''), 10);
+        
+        // Convert the 1-9 key into a 0-8 list index for your 'slots' array
+        const targetIndex = pressedNum - 1;
+        
+        // If they press a key for a slot they are already on, do nothing
+        if (selected === targetIndex) return;
+
+        // 1. Reset the border of the old selected slot to outset
+        if (slots[selected]) {
+            slots[selected].style.borderStyle = 'outset';
+        }
+        
+        // 2. Update your global tracking variable to the new index
+        selected = targetIndex;
+        
+        // 3. Set the newly selected slot's border to inset
+        if (slots[selected]) {
+            slots[selected].style.borderStyle = 'inset';
+        }
+        
+        console.log(`Switched to slot index ${selected} via keyboard key: ${pressedNum}`);
+    }
+});
 //key press logic
 document.addEventListener('keydown', (event) => {
     pressedKeys[event.key] = true; 
