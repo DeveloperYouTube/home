@@ -704,7 +704,7 @@ async function game_update() {
                     playerVY = playerVY + 138.144;
                 }
             }
-            playerVY = Math.min(playerV, 78.4);
+            playerVY = Math.min(playerVY, 78.4);
 
             const collisionResult = checkCollision(playerX, playerY, 32, 64, playerVX, playerVY);
 
