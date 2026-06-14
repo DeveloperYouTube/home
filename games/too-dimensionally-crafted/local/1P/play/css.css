@@ -29,7 +29,7 @@ body {
     left: 0px;
     margin: 0px;
     position: fixed;
-    z-index: 20;
+    z-index: 21;
 }
 .FPS {
     background-color: rgba(0, 0, 0, 0.5);
@@ -70,7 +70,7 @@ body {
     width: max-content;
     display: flex;
     justify-content: center;
-    z-index: 20;
+    z-index: 30;
     position: fixed;
 }
 button, .hotbar canvas {
