@@ -704,11 +704,7 @@ async function game_update() {
                     playerVY = playerVY + 138.144;
                 }
             }
-            const playerVdirection = Math.atan2(playerVY, playerVX);
-            let playerV = utils.math.pythagorean_theorem(playerVX, playerVY);
-            playerV = Math.min(playerV, 78.4);
-            playerVX = Math.cos(playerVdirection) * playerV;
-            playerVY = Math.sin(playerVdirection) * playerV;
+            playerVY = Math.min(playerV, 78.4);
 
             const collisionResult = checkCollision(playerX, playerY, 32, 64, playerVX, playerVY);
 
