@@ -82,18 +82,20 @@ body {
 }
 button, .hotbar canvas {
     color: #ffffff;
-    background-color: #808080;
     border-color: #404040;
     border-width: 4px;
     border-style: outset;
     display: inline-block;
-    width: 500px;
-    height: 50px;
     font-size: 20px;
     font-family: 'Minecraftia';
-    margin: 10px;
     cursor: pointer;
     font-weight: 400;
+}
+button {
+    width: 500px;
+    height: 50px;
+    background-color: #808080;
+    margin: 10px;
 }
 .hotbar canvas {
     width: 32px;
