@@ -18,15 +18,15 @@ body {
     color: #ffffff;
     font-size: 15px;
 }
-
-canvas {
+#screen{
     display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     z-index: 10;
     cursor: crosshair;
-    top: 0px;
-    bottom: 0px;
-    right: 0px;
-    left: 0px;
 }
 .position {
     background-color: rgba(0, 0, 0, 0.5);
@@ -48,7 +48,7 @@ canvas {
     position: fixed;
     z-index: 20;
 }
-.death_screen, .pause_screen {
+.death_screen, .pause_screen, .how2play {
     background-color: rgba(255, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
@@ -56,8 +56,6 @@ canvas {
     align-items: center;
     font-size: 50px;
     z-index: 100;
-}
-div {
     top: 0px;
     bottom: 0px;
     right: 0px;
@@ -73,12 +71,13 @@ div {
     z-index: 200;
 }
 .hud {
-    width: 392px;
     bottom: 64px;
     left: calc(50vw - 50%);
-    display: inline-flex;
+    transform: translateX(-50%);
+    width: max-content;
+    display: flex;
+    justify-content: center;
     z-index: 10;
-    right: calc(50vw - 50%);
 }
 button, .hotbar canvas {
     color: #ffffff;
