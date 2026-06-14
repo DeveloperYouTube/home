@@ -457,7 +457,7 @@ function get_block(x, y) {
     let block_key = `${x}, ${y}`;
     let value;
         if (!flat) {
-            const noiseValue = utils.perlin.generateNoise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
+            const noiseValue = utils.perlin.noise(x * 0.1, 0, seed) * 10; // Adjust multiplier as needed
             const noiseFloor = Math.round(noiseValue);
         if (y >= noiseFloor) {
             if (y === noiseFloor) {
