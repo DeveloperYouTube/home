@@ -1,6 +1,6 @@
 //imports
 import {utils} from '../../../../../utilities.js';
-
+console.log('coll v2');
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworldJSON'))
