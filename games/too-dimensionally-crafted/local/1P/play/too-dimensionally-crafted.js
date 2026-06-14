@@ -704,9 +704,6 @@ async function game_update() {
                     playerVY = playerVY + 138.144;
                 }
             }
-
-            playerVX = playerVX - 36 * playerVX * delta_time;
-            playerVY = playerVY - 8 * playerVY * delta_time;
             const playerVdirection = Math.atan2(playerVY, playerVX);
             let playerV = utils.math.pythagorean_theorem(playerVX, playerVY);
             playerV = Math.min(playerV, 78.4);
