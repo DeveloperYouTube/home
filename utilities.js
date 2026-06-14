@@ -66,7 +66,30 @@ export const utils = {
                     }
                 });
                 for (let index = 0; index < scaleY; index++) {
-                    result.push(row);
+                    result.push([...row]);
+                }
+            });
+            return result;
+        },
+        scale2Darray_up2: function (/** @type {any[]} */ array, /** @type {number} */ maxX, /** @type {number} */ maxY) {
+            /**
+             * @type {any[][]}
+             */
+            let result = [];
+            const scaleY = Math.floor(maxY/array.length);
+            const scaleX = Math.floor(maxX/array[0].length);
+            array.forEach((/** @type {any[]} */ array2) => {
+                /**
+                 * @type {any[]}
+                 */
+                let row = [];
+                array2.forEach((/** @type {any} */ element) => {
+                    for (let index = 0; index < scaleX; index++) {
+                        row.push(element);
+                    }
+                });
+                for (let index = 0; index < scaleY; index++) {
+                    result.push([...row]);
                 }
             });
             return result;
