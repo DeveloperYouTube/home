@@ -56,7 +56,8 @@ let spaceBarPresses = 0;
 let lastPressTime = 0;
 //other
 let death_reason;
-let game_running = false;
+let game_running = true;
+document.querySelector('.how2play').style.display = 'none';
 let entities = world_dataINIT.entities;
 
 pause_screen.style.display = 'none';
