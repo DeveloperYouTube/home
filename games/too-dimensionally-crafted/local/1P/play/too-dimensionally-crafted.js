@@ -689,7 +689,7 @@ async function game_update() {
             }
             //vertical
             if (!fly) {
-                if (is_pressed(' ') && on_ground) {
+                if (is_pressed(' ') && on_ground && playerVY >= 0) {
                     playerVY = -Math.sqrt(81920);
                 }
                 playerVY = playerVY + 1024 * delta_time;
