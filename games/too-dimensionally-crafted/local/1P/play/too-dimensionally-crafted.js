@@ -43,7 +43,7 @@ let on_ground = false;
 let selected = 0;
 //fps and delta time
 let FPS = 0;
-let last_frame = 0;
+let last_frame = performance.now();
 let delta_time = 0;
 //background things
 let light = 15;
