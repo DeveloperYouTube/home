@@ -14,34 +14,38 @@
         <script>
             const world_displayer = document.getElementById('world-displayer');
             let worldsSTR = localStorage.getItem('2DCsinglePworlds');
-            let worlds;
+            
             if (!worldsSTR) {
-                worldsSTR = '{}'
+                worldsSTR = '{}';
                 localStorage.setItem('2DCsinglePworlds', '{}');
             }
-            worlds = JSON.parse(worldsSTR);
-            let display = Object.keys(worlds);
-            display.forEach(name => {
-                world_displayer.innerHTML += `<br><button class="select" data-name="${name}">${name}<br>${worlds[name].difficulty} ${worlds[name].game_mode}</button>`;
-            });
             
-            world_displayer.addEventListener('click', function(event) {
-                // Check if the clicked element (or its parent) is a select button
-                const button = event.target.closest('.select');
+            const worlds = JSON.parse(worldsSTR);
+            const display = Object.keys(worlds);
+            
+            // Clear out any placeholder content safely
+            world_displayer.innerHTML = '';
+            
+            display.forEach(name => {
+                // 1. Create a true, separate button element object
+                const btn = document.createElement('button');
+                btn.id = name;
                 
-                if (button) {
-                    const name = button.dataset.name;
-                    const worldData = worlds[name];
-
-                    // Ensure the world data actually exists before moving on
-                    if (worldData) {
-                        // Include the name in the data object before saving
-                        worldData.name = name; 
-                        
-                        localStorage.setItem('2DCsinglePworldJSON', JSON.stringify(worldData));
-                        window.location.href = "./play/";
-                    }
-                }
+                // 2. Use innerHTML on the *isolated* button to format its internal labels neatly
+                btn.innerHTML = `${name}<br><small>${worlds[name].difficulty} - ${worlds[name].game_mode}</small>`;
+                
+                // 3. Attach the click listener directly to this specific button object
+                btn.addEventListener('click', function() {
+                    // Save this specific world data payload so './play/' can initialize it
+                    localStorage.setItem('2DCsinglePworld', JSON.stringify(worlds[name]));
+                    
+                    // Redirect smoothly into your gameplay canvas layer
+                    window.location.href = './play/';
+                });
+                
+                // 4. Safely drop an organizational line break and the new button into your display div
+                world_displayer.appendChild(document.createElement('br'));
+                world_displayer.appendChild(btn);
             });
         </script>
     </body>
