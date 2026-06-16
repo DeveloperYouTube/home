@@ -58,10 +58,19 @@ let lastPressTime = 0;
 let death_reason;
 let game_running = true;
 document.querySelector('.how2play').style.display = 'none';
-let entities = world_dataINIT.entities;
 
 pause_screen.style.display = 'none';
 death_screen.style.display = 'none';
+
+//entit init
+let entities = world_dataINIT.entities || [];
+entities.forEach(entity => {
+    if (entity.type === 'block') {
+        entity.texture = blockTextureCanvases[entity.id];
+    } else {
+        entity.texture = itemTextureCanvases[entity.id];
+    }
+});
 //slots logic
 slots.forEach((slot, index) => {
     slot.addEventListener('click', () => {
@@ -321,119 +330,17 @@ function preRenderItemTextures() {
     }
 }
 preRenderItemTextures();
-
-function summon_item_entity (x, y, vx, vy, id, block) {
-    if (block) {
-        entities.push({
-            texture: blockTextureCanvases[id],
-            X: x,
-            Y: y,
-            VX: vx,
-            VY: vy,
-            code: function () {
-                this.VY = this.VY + 512 * delta_time;
-                this.VX = this.VX - 8 * this.VX * delta_time;
-                this.VY = this.VY - 8 * this.VY * delta_time;
-                this.Vdirection = Math.atan2(this.VY, this.VX);
-                this.V = utils.math.pythagorean_theorem(this.VX, this.VY);
-                this.V = Math.min(this.V, 39.2);
-                this.VX = Math.cos(this.Vdirection) * this.V;
-                this.VY = Math.sin(this.Vdirection) * this.V;
-
-                const collisionResult = checkCollision(this.X, this.Y, 16, 16, this.VX, this.VY);
-
-                if (collisionResult.collision) {
-                    // Resolve the collision
-                    if (collisionResult.directionX !== 0) {
-                        this.X -= collisionResult.overlapX * collisionResult.directionX;
-                        this.VX = 0;
-                    }
-                    if (collisionResult.directionY !== 0) {
-                        this.Y -= collisionResult.overlapY * collisionResult.directionY;
-                        this.VY = 0;
-                    }
-                } else {
-                    // Apply velocity if no collision
-                    this.X += this.VX * delta_time;
-                    this.Y += this.VY * delta_time;
-                }
-
-                const drawX = this.X * 32 + offsetX - 16;
-                const drawY = this.Y * 32 + offsetY - 32;
-
-                if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
-                    pen.drawImage(this.texture, drawX, drawY, 16, 16);
-                }
-
-                if (utils.math.range(this.X, playerX) < 24 && utils.math.range(this.Y, playerY) < 24) {
-                    entities = entities.filter(entity =>
-                        !(entity.X === this.X &&
-                        entity.Y === this.Y &&
-                        entity.VX === this.VX &&
-                        entity.VY === this.VY &&
-                        entity.texture === this.texture)
-                    );
-                    inventory.push({block: id, ammount: 1, max: 64});
-                }
-            }
-        });
-    } else {
-        entities.push({
-            texture: itemTextureCanvases[id],
-            X: x,
-            Y: y,
-            VX: vx,
-            VY: vy,
-            code: function () {
-                this.VY = this.VY + 512 * delta_time;
-                this.VX = this.VX - 8 * this.VX * delta_time;
-                this.VY = this.VY - 8 * this.VY * delta_time;
-                this.Vdirection = Math.atan2(this.VY, this.VX);
-                this.V = utils.math.pythagorean_theorem(this.VX, this.VY);
-                this.V = Math.min(this.V, 39.2);
-                this.VX = Math.cos(this.Vdirection) * this.V;
-                this.VY = Math.sin(this.Vdirection) * this.V;
-
-                const collisionResult = checkCollision(this.X, this.Y, 16, 16, this.VX, this.VY);
-
-                if (collisionResult.collision) {
-                    // Resolve the collision
-                    if (collisionResult.directionX !== 0) {
-                        this.X -= collisionResult.overlapX * collisionResult.directionX;
-                        this.VX = 0;
-                    }
-                    if (collisionResult.directionY !== 0) {
-                        this.Y -= collisionResult.overlapY * collisionResult.directionY;
-                        this.VY = 0;
-                    }
-                } else {
-                    // Apply velocity if no collision
-                    this.X += this.VX * delta_time;
-                    this.Y += this.VY * delta_time;
-                }
-
-                const drawX = this.X * 32 + offsetX - 16;
-                const drawY = this.Y * 32 + offsetY - 32;
-    
-                if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height){
-                    pen.drawImage(this.texture, drawX, drawY, 16, 16);
-                }
-
-                if (utils.math.range(this.X, playerX) < 24 && utils.math.range(this.Y, playerY) < 24) {
-                    entities = entities.filter(entity =>
-                        !(entity.X === this.X &&
-                        entity.Y === this.Y &&
-                        entity.VX === this.VX &&
-                        entity.VY === this.VY &&
-                        entity.texture === this.texture)
-                    );
-                    inventory.push({item: id, ammount: 1, max: 64});
-                }
-            }
-        });
-    }
+function summon_item_entity (x, y, vx, vy, id, isBlock) {
+    entities.push({
+        type: isBlock ? 'block' : 'item',
+        id: id,
+        X: x,
+        Y: y,
+        VX: vx,
+        VY: vy,
+        texture: isBlock ? blockTextureCanvases[id] : itemTextureCanvases[id]
+    });
 }
-
 block_drops.forEach((element, index) => {
     if (blockIDs[index]) {
         blockIDs[index].drop = function(x, y, id) {
@@ -662,7 +569,69 @@ function checkCollision(x, y, sizeX, sizeY, map = blocks, blockInfo = blockIDs, 
 
   return collidingObject;
 }
+function updateDroppedItem(entity) {
+    // 1. Gravity and Drag Math
+    entity.VY += 512 * delta_time;
+    entity.VX -= 8 * entity.VX * delta_time;
+    entity.VY -= 8 * entity.VY * delta_time;
+    
+    let vDirection = Math.atan2(entity.VY, entity.VX);
+    let vMag = utils.math.pythagorean_theorem(entity.VX, entity.VY);
+    vMag = Math.min(vMag, 39.2); // Cap maximum velocity terminal speed
+    
+    entity.VX = Math.cos(vDirection) * vMag;
+    entity.VY = Math.sin(vDirection) * vMag;
 
+    // 2. Collision Processing
+    const collisionResult = checkCollision(entity.X, entity.Y, 16, 16, entity.VX, entity.VY);
+    if (collisionResult.collision) {
+        // Resolve horizontal collisions
+        if (collisionResult.directionX !== 0) {
+            entity.X -= collisionResult.overlapX * collisionResult.directionX;
+            entity.VX = 0;
+        }
+        // Resolve vertical collisions
+        if (collisionResult.directionY !== 0) {
+            entity.Y -= collisionResult.overlapY * collisionResult.directionY;
+            entity.VY = 0;
+        }
+    } else {
+        // Apply smooth velocity changes using delta time if airborne
+        entity.X += entity.VX * delta_time;
+        entity.Y += entity.VY * delta_time;
+    }
+
+    // 3. Dynamic Texture Re-linking (Resolves JSON stripped canvas links)
+    if (!entity.texture) {
+        if (entity.type === 'block') {
+            entity.texture = blockTextureCanvases[entity.id];
+        } else {
+            entity.texture = itemTextureCanvases[entity.id];
+        }
+    }
+
+    // 4. Camera Translation and Render Pass
+    const drawX = entity.X * 32 + offsetX - 16;
+    const drawY = entity.Y * 32 + offsetY - 32;
+
+    // Frustum Culling: Only draw the entity canvas if it's visible on the screen viewport
+    if (drawX + 16 > 0 && drawX < screen.width && drawY + 16 > 0 && drawY < screen.height && entity.texture) {
+        pen.drawImage(entity.texture, drawX, drawY, 16, 16);
+    }
+
+    // 5. Magnet / Pickup Collision Check
+    if (utils.math.range(entity.X, playerX) < 24 && utils.math.range(entity.Y, playerY) < 24) {
+        // Remove this exact item from the live global array array reference
+        entities = entities.filter(e => e !== entity);
+        
+        // Format inventory payload correctly depending on item class
+        if (entity.type === 'block') {
+            inventory.push({ block: entity.id, ammount: 1, max: 64 });
+        } else {
+            inventory.push({ item: entity.id, ammount: 1, max: 64 });
+        }
+    }
+}
 async function game_update() {
     delta_time = (performance.now() - last_frame) / 1000;
     FPS = 1 / delta_time;
@@ -768,8 +737,14 @@ async function game_update() {
             pen.clearRect(0, 0, screen.width, screen.height); 
             render_blocks();
             //entities
-            entities.forEach(element => {
-                element.code();
+            // Inside your main game_update loop:
+            entities.forEach((entity) => {
+                if (!entity) return;
+
+                if (entity.type === 'item' || entity.type === 'block') {
+                    updateDroppedItem(entity);
+                }
+                // Easy to drop more in later with else if!
             });
             //draw player
             pen.fillStyle = '#3f8c9f';
