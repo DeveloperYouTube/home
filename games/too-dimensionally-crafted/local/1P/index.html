@@ -36,7 +36,8 @@
                 
                 // 3. Attach the click listener directly to this specific button object
                 btn.addEventListener('click', function() {
-                    // Save this specific world data payload so './play/' can initialize it
+                    const world = worlds[name]
+                    world.name = name;
                     localStorage.setItem('2DCsinglePworld', JSON.stringify(worlds[name]));
                     
                     // Redirect smoothly into your gameplay canvas layer
