@@ -49,7 +49,7 @@
                     let noiseValue = -1
                     if (!flat.checked){noiseValue = utils.perlin.noise(0, seed);} // Adjust multiplier as needed
                     const noiseFloor = Math.round(noiseValue);
-                    localStorage.setItem('2DCsinglePworldJSON', JSON.stringify({
+                    localStorage.setItem('2DCsinglePworld', JSON.stringify({
                         name: world_name.value, 
                         game_mode: game_mode.value,
                         difficulty: difficulty.value,

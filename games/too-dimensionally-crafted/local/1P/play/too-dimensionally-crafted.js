@@ -3,7 +3,7 @@ import {utils} from '../../../../../utilities.js';
 console.log('v5.1');
 //varibles
 //const(can't change (e.g. HTML elements and objects))
-const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworldJSON'))
+const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworld'))
 localStorage.removeItem('2DCsinglePworldJSON');
 const username = prompt('Enter your Username');
 const screen = document.getElementById('screen');
@@ -871,7 +871,7 @@ window.save = function() {
         inventory: inventory,
         entities: entities,
         rx: respawnX,
-        ry: respawnY
+        ry: respawnY,
     };
     localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
     window.location.replace('../../../../');
