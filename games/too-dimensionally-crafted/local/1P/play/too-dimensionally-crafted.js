@@ -1,6 +1,6 @@
 //imports
 import {utils} from '../../../../../utilities.js';
-console.log('v5.3');
+console.log('v5.3.1');
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworld'))
@@ -62,15 +62,6 @@ document.querySelector('.how2play').style.display = 'none';
 pause_screen.style.display = 'none';
 death_screen.style.display = 'none';
 
-//entit init
-let entities = world_dataINIT.entities || [];
-entities.forEach(entity => {
-    if (entity.type === 'block') {
-        entity.texture = blockTextureCanvases[entity.id];
-    } else {
-        entity.texture = itemTextureCanvases[entity.id];
-    }
-});
 //slots logic
 slots.forEach((slot, index) => {
     slot.addEventListener('click', () => {
@@ -807,6 +798,15 @@ async function game_update() {
     requestAnimationFrame(game_update);
 }
 
+//entit init
+let entities = world_dataINIT.entities || [];
+entities.forEach(entity => {
+    if (entity.type === 'block') {
+        entity.texture = blockTextureCanvases[entity.id];
+    } else {
+        entity.texture = itemTextureCanvases[entity.id];
+    }
+});
 game_update();
 
 //stuff for html things
