@@ -4,7 +4,7 @@ console.log('v5.4');
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworld'))
-localStorage.removeItem('2DCsinglePworldJSON');
+localStorage.removeItem('2DCsinglePworld');
 const username = prompt('Enter your Username');
 const screen = document.getElementById('screen');
 const pen = screen.getContext('2d', {willReadFrequently: true});
