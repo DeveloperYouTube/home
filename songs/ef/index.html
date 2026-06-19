@@ -35,36 +35,29 @@
             padding: 20px;
         }
 
-        /* Top navigation layout wrapper for your escape route link button */
+        /* Top navigation layout wrapper */
         .top-nav {
             position: absolute;
             top: 30px;
             left: 30px;
         }
 
-        /* Consistent raw monospace button profile design matches other utilities */
+        /* Clean Terminal-style Back link */
         .back-btn {
-            display: inline-block;
-            text-decoration: none;
             font-family: 'Roboto Mono', monospace;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            padding: 8px 16px;
-            border-width: 5px;
-            border-style: outset;
-            background-color: #808080;
-            border-color: #c0c0c0 #404040 #404040 #c0c0c0;
-            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: color 0.2s ease;
         }
 
-        .back-btn:active {
-            border-style: inset;
-            border-color: #404040 #c0c0c0 #c0c0c0 #404040;
-            transform: translateY(2px);
+        .back-btn:hover {
+            color: var(--text-main);
         }
 
-        /* Centered Media Deck Card container panel */
+        /* Centered Media Deck Card */
         .audio-card {
             background: var(--panel-bg);
             padding: 40px 30px;
@@ -133,7 +126,7 @@
 <body>
 
     <nav class="top-nav">
-        <a href="../" class="back-btn">BACK</a>
+        <a href="../" class="back-btn">&larr; BACK</a>
     </nav>
 
     <div class="audio-card">
