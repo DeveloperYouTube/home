@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashing Lights</title>
     <style>
-        /* Inherit your custom font styling */
-        @font-face {
-            font-family: 'simplistic-pixelation-sans-mono';
-            src: url('../../fonts/simplistic-pixelation-sans-mono.woff2') format('woff2');
-        }
-
         body {
             margin: 0;
             padding: 0;
@@ -18,7 +12,6 @@
             overflow: hidden;
         }
 
-        /* Set canvas to occupy the full screen viewport layout cleanly */
         canvas {
             position: fixed;
             top: 0;
@@ -28,42 +21,39 @@
             z-index: 1;
         }
 
-        /* Floating UI layer container sitting above the flashing canvas element */
+        /* Dark glass panel backdrop to make the green text highly visible over the static */
         .ui-overlay {
             position: fixed;
             top: 30px;
             left: 30px;
             z-index: 10;
+            background-color: rgba(0, 0, 0, 0.85); 
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: 1px solid #003300;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.9);
         }
 
-        /* Your signature classic grey 3D game buttons */
+        /* Clean Terminal-style Back link */
         .back-btn {
-            display: inline-block;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: #00c000;
             text-decoration: none;
-            text-align: center;
-            font-family: 'simplistic-pixelation-sans-mono', monospace;
-            font-size: 24px;
-            color: white;
-            padding: 8px 16px;
-            border-width: 5px;
-            border-style: outset;
-            background-color: #808080;
-            border-color: #c0c0c0 #404040 #404040 #c0c0c0;
-            cursor: pointer;
-            user-select: none;
+            letter-spacing: 1px;
+            transition: color 0.2s ease;
         }
 
-        .back-btn:active {
-            border-style: inset;
-            border-color: #404040 #c0c0c0 #c0c0c0 #404040;
-            transform: translateY(2px);
+        .back-btn:hover {
+            color: #39ff14; /* Glow highlight */
         }
     </style>
 </head>
 <body>
 
     <div class="ui-overlay">
-        <a href="../" class="back-btn">BACK</a>
+        <a href="../" class="back-btn">&larr; BACK</a>
     </div>
 
     <canvas id="glitchCanvas"></canvas>
@@ -72,27 +62,23 @@
         const canvas = document.getElementById('glitchCanvas');
         const context = canvas.getContext('2d');
 
-        // Dynamically scale the canvas viewport internal resolution 
         function resize() {
-            // Keep internal resolution low (e.g., divided by 4) to boost performance and 
-            // make the pixel blocks look larger, cooler, and more vintage retro!
             canvas.width = window.innerWidth / 4;
             canvas.height = window.innerHeight / 4;
         }
         window.addEventListener('resize', resize);
         resize();
 
-        // Optimized noise generation loop using direct ImageData modulation
         function loop() {
             const imgData = context.createImageData(canvas.width, canvas.height);
             const data = imgData.data;
             const len = data.length;
 
             for (let i = 0; i < len; i += 4) {
-                data[i]     = Math.random() * 255; // Red
-                data[i + 1] = Math.random() * 255; // Green
-                data[i + 2] = Math.random() * 255; // Blue
-                data[i + 3] = 255;                 // Alpha opacity (fully visible)
+                data[i]     = Math.random() * 255;
+                data[i + 1] = Math.random() * 255;
+                data[i + 2] = Math.random() * 255;
+                data[i + 3] = 255;
             }
 
             context.putImageData(imgData, 0, 0);

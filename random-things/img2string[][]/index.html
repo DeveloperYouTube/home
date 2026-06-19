@@ -39,29 +39,23 @@
         /* Nav & Header */
         .top-nav {
             margin-bottom: 2.5rem;
+            align-self: flex-start;
+            width: 100%;
         }
 
-        /* Cleaned to standard monospace retro button look */
+        /* Clean Terminal-style Back link */
         .back-btn {
-            display: inline-block;
-            text-decoration: none;
             font-family: 'Roboto Mono', monospace;
-            font-size: 16px; /* standard monospace sizing */
-            font-weight: bold;
-            color: white;
-            padding: 8px 16px;
-            border-width: 5px;
-            border-style: outset;
-            background-color: #808080;
-            border-color: #c0c0c0 #404040 #404040 #c0c0c0;
-            cursor: pointer;
-            user-select: none;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: color 0.2s ease;
         }
 
-        .back-btn:active {
-            border-style: inset;
-            border-color: #404040 #c0c0c0 #c0c0c0 #404040;
-            transform: translateY(2px);
+        .back-btn:hover {
+            color: var(--text-main);
         }
 
         .page-header {
@@ -140,7 +134,6 @@
             animation: pulse 1.5s infinite;
         }
 
-        /* Terminal Output View */
         #output {
             background: #030a03;
             border: 1px solid var(--border-color);
@@ -166,7 +159,7 @@
 
     <main class="container">
         <nav class="top-nav">
-            <a href="../" class="back-btn">BACK</a>
+            <a href="../" class="back-btn">&larr; BACK</a>
         </nav>
 
         <header class="page-header">
