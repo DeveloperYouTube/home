@@ -6,18 +6,25 @@
     <title>Dynamic Audio Loop Engine</title>
     <style>
         :root {
-            --bg-color: #0d0e12;
-            --panel-bg: #161920;
+            --bg-color: #000000;
+            --panel-bg: #0b0c10;
             --accent-green: #39ff14;
             --accent-red: #ff073a;
-            --text-main: #f0f2f5;
-            --text-muted: #7a8293;
+            --text-main: #00c000;
+            --text-muted: #006600;
+            --border-color: #003300;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Roboto Mono', monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -25,35 +32,61 @@
             height: 100vh;
             margin: 0;
             user-select: none;
+            padding: 20px;
         }
 
+        /* Top navigation layout wrapper for your escape route link button */
+        .top-nav {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+        }
+
+        /* Consistent raw monospace button profile design matches other utilities */
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            padding: 8px 16px;
+            border-width: 5px;
+            border-style: outset;
+            background-color: #808080;
+            border-color: #c0c0c0 #404040 #404040 #c0c0c0;
+            cursor: pointer;
+        }
+
+        .back-btn:active {
+            border-style: inset;
+            border-color: #404040 #c0c0c0 #c0c0c0 #404040;
+            transform: translateY(2px);
+        }
+
+        /* Centered Media Deck Card container panel */
         .audio-card {
             background: var(--panel-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 40px 30px;
+            border-radius: 12px;
             text-align: center;
-            width: 320px;
-            border: 1px solid #242936;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
         }
 
         h1 {
-            font-size: 22px;
-            margin: 0 0 8px 0;
-            letter-spacing: 0.5px;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 13px;
+            font-size: 20px;
+            font-weight: 500;
             margin: 0 0 24px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
         }
 
         .btn-group {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             justify-content: center;
         }
 
@@ -61,9 +94,10 @@
             flex: 1;
             border: none;
             padding: 14px 20px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 8px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -75,7 +109,7 @@
 
         #playBtn:hover:not(:disabled) {
             background: #2ee610;
-            box-shadow: 0 0 12px rgba(57, 255, 20, 0.3);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
         }
 
         #stopBtn {
@@ -85,11 +119,11 @@
 
         #stopBtn:hover:not(:disabled) {
             background: #e00633;
-            box-shadow: 0 0 12px rgba(255, 7, 58, 0.3);
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.3);
         }
 
         button:disabled {
-            background: #242936 !important;
+            background: #14161d !important;
             color: var(--text-muted) !important;
             cursor: not-allowed;
             box-shadow: none !important;
@@ -97,6 +131,10 @@
     </style>
 </head>
 <body>
+
+    <nav class="top-nav">
+        <a href="../" class="back-btn">BACK</a>
+    </nav>
 
     <div class="audio-card">
         <h1>E and F only + chords</h1>
@@ -143,29 +181,22 @@
             let targetOutroTime = 0;
 
             if (!intro.paused) {
-                // --- CASE 1: CUT DURING INTRO ---
                 const elapsedIntro = intro.currentTime;
                 intro.pause();
 
                 if (elapsedIntro <= 12) {
-                    // Standard inverse mapping for the first 12 seconds
                     targetOutroTime = 12 - elapsedIntro;
                 } else {
-                    // Last 2 seconds of intro (seconds 12 to 14) act like the middle loop.
-                    // We subtract 12 to see how far into the "fake middle" we are.
                     const fakeMiddleTime = elapsedIntro - 12; 
                     targetOutroTime = fakeMiddleTime % 4; 
                 }
             } else if (!middle.paused) {
-                // --- CASE 2: CUT DURING MIDDLE ---
                 const elapsedMiddle = middle.currentTime;
                 middle.pause();
                 
-                // Maps the 4-second loop progress onto the 12-second outro starting timeline
                 targetOutroTime = elapsedMiddle % 4;
             }
 
-            // Play calibrated outro
             outro.currentTime = targetOutroTime;
             outro.play();
 
