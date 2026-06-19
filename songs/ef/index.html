@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Audio Loop Engine</title>
+    <style>
+        :root {
+            --bg-color: #0d0e12;
+            --panel-bg: #161920;
+            --accent-green: #39ff14;
+            --accent-red: #ff073a;
+            --text-main: #f0f2f5;
+            --text-muted: #7a8293;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+
+        .audio-card {
+            background: var(--panel-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 320px;
+            border: 1px solid #242936;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin: 0 0 8px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 0 0 24px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        button {
+            flex: 1;
+            border: none;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #playBtn {
+            background: var(--accent-green);
+            color: #000;
+        }
+
+        #playBtn:hover:not(:disabled) {
+            background: #2ee610;
+            box-shadow: 0 0 12px rgba(57, 255, 20, 0.3);
+        }
+
+        #stopBtn {
+            background: var(--accent-red);
+            color: #fff;
+        }
+
+        #stopBtn:hover:not(:disabled) {
+            background: #e00633;
+            box-shadow: 0 0 12px rgba(255, 7, 58, 0.3);
+        }
+
+        button:disabled {
+            background: #242936 !important;
+            color: var(--text-muted) !important;
+            cursor: not-allowed;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="audio-card">
+        <h1>E and F only + chords</h1>
+
+        <div class="btn-group">
+            <button id="playBtn" onclick="startTrack()">Play Track</button>
+            <button id="stopBtn" onclick="triggerOutro()" disabled>Cut to Outro</button>
+        </div>
+    </div>
+
+    <script>
+        const intro = new Audio('4533596194471936.wav');
+        const middle = new Audio('6625038706540544.wav');
+        const outro = new Audio('5911269818892288.wav');
+
+        const playBtn = document.getElementById('playBtn');
+        const stopBtn = document.getElementById('stopBtn');
+
+        middle.loop = true;
+
+        function startTrack() {
+            playBtn.disabled = true;
+            stopBtn.disabled = false;
+            intro.play();
+        }
+
+        intro.onended = () => {
+            middle.play();
+        };
+
+        function triggerOutro() {
+            stopBtn.disabled = true;
+            
+            // If the intro is interrupted early
+            if (!intro.paused) {
+                let barDuration = intro.duration / 7;
+                let introBarsPlayed = intro.currentTime / barDuration;
+                let outroStartBar = 6 - introBarsPlayed;
+                let outroTargetTime = outroStartBar * barDuration;
+                
+                intro.pause();
+                
+                if (outroTargetTime >= outro.duration) outroTargetTime = outro.duration - 0.1;
+                if (outroTargetTime < 0) outroTargetTime = 0;
+                
+                outro.currentTime = outroTargetTime;
+                outro.play();
+            } 
+            // Standard loop interruption behavior
+            else if (!middle.paused) {
+                let cutoffTime = middle.currentTime;
+                
+                middle.pause();
+                middle.loop = false;
+                
+                outro.currentTime = cutoffTime;
+                outro.play();
+            }
+
+            outro.onended = () => {
+                playBtn.disabled = false;
+            };
+        }
+    </script>
+</body>
+</html>
