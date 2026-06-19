@@ -1,9 +1,97 @@
-.yt {
-    font-family: 'Roboto Mono';
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+:root {
+    --bg-color: #0d0e12;
+    --text-main: #f0f3f6;
+    --accent-glow: #38bdf8; /* Modern electric cyan */
+    --yt-brand: #ff0033;   /* Accent for your YouTube link */
+    --border-color: #222530;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background-color: black;
-    color: #00c000;
-    font-family: monospace;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Roboto Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+}
+
+.terminal-header {
+    margin-bottom: 2.5rem;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 1.5rem;
+}
+
+.terminal-header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.terminal-header .subtitle {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.links-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.nav-link {
+    display: block;
+    color: var(--text-main);
+    text-decoration: none;
+    padding: 1rem 1.25rem;
+    background-color: #161821;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 400;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Hover & Interactive States */
+.nav-link:hover {
+    background-color: #1e2230;
+    border-color: var(--accent-glow);
+    transform: translateX(4px);
+    box-shadow: -4px 0 0 0 var(--accent-glow);
+}
+
+/* Distinct hover feel for your YouTube link */
+.nav-link.yt:hover {
+    border-color: var(--yt-brand);
+    box-shadow: -4px 0 0 0 var(--yt-brand);
+}
+
+/* Decorative code prefix styling */
+.dir-prefix {
+    color: #475569;
+    margin-right: 0.5rem;
+    user-select: none;
+}
+
+.nav-link:hover .dir-prefix {
+    color: var(--accent-glow);
+}
+
+.nav-link.yt:hover .dir-prefix {
+    color: var(--yt-brand);
 }
