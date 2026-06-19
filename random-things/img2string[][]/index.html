@@ -1,79 +1,222 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Image Processing and Pixel Data</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to 2D Array Converter</title>
     <style>
+        @font-face {
+            font-family: 'simplistic-pixelation-sans-mono';
+            src: url('../../fonts/simplistic-pixelation-sans-mono.woff2') format('woff2');
+        }
+
+        :root {
+            --bg-color: #000000;
+            --card-bg: #0b0c10;
+            --text-main: #00c000;
+            --text-muted: #006600;
+            --accent-glow: #39ff14;
+            --border-color: #003300;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Roboto Mono', monospace; /* Falls back to standard layout monospace */
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 4rem 2rem;
         }
-        canvas {
-            border: 1px solid #ccc;
-            margin-top: 10px;
-            display: none; /* Initially hidden */
-            max-width: 80%; /* Ensure canvas doesn't overflow */
-            height: auto;    /* Maintain aspect ratio */
+
+        .container {
+            width: 100%;
+            max-width: 700px;
         }
-        #processButton {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
+
+        /* Nav & Header */
+        .top-nav {
+            margin-bottom: 2.5rem;
+        }
+
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            font-family: 'simplistic-pixelation-sans-mono', monospace;
+            font-size: 24px;
             color: white;
-            border: none;
+            padding: 8px 16px;
+            border-width: 5px;
+            border-style: outset;
+            background-color: #808080;
+            border-color: #c0c0c0 #404040 #404040 #c0c0c0;
             cursor: pointer;
-            display: none; /* Initially hidden */
+            user-select: none;
         }
-        #output {
-            margin-top: 20px;
+
+        .back-btn:active {
+            border-style: inset;
+            border-color: #404040 #c0c0c0 #c0c0c0 #404040;
+            transform: translateY(2px);
+        }
+
+        .page-header {
+            margin-bottom: 2.5rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+        }
+
+        .page-header .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Control Panel elements */
+        .control-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Styling custom native input files */
+        input[type="file"] {
+            background: #041204;
+            border: 1px dashed var(--text-main);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 4px;
             font-family: monospace;
+            cursor: pointer;
+        }
+
+        canvas {
+            border: 1px solid var(--border-color);
+            display: none;
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin: 0 auto;
+        }
+
+        #processButton {
+            background-color: #052405;
+            border: 2px solid var(--text-main);
+            color: var(--text-main);
+            font-family: monospace;
+            font-weight: bold;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            display: none;
+            transition: all 0.2s ease;
+        }
+
+        #processButton:hover {
+            background-color: #0a3a0a;
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+        }
+
+        #loadingText {
+            color: var(--accent-glow);
+            font-size: 0.9rem;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Terminal Output view */
+        #output {
+            background: #030a03;
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
             white-space: pre-wrap;
             word-wrap: break-word;
-            max-width: 80%;
+            max-height: 400px;
+            overflow-y: auto;
+            color: #ffffff;
         }
-        #loadingText {
-            margin-top: 20px;
-            color: #888;
-            display: none; /* initially hidden */
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
         }
     </style>
 </head>
 <body>
-    <input type="file" id="imageUpload" accept="image/*">
-    <canvas id="myCanvas"></canvas>
-    <button id="processButton">Process Image</button>
-    <div id="loadingText">Processing...</div>
-    <div id="output"></div>
+
+    <main class="container">
+        <nav class="top-nav">
+            <a href="../" class="back-btn">BACK</a>
+        </nav>
+
+        <header class="page-header">
+            <h1>Image to 2D Array Converter</h1>
+            <p class="subtitle">// Extract exact pixel matrices to string coordinates</p>
+        </header>
+
+        <section class="control-panel">
+            <input type="file" id="imageUpload" accept="image/*">
+            <canvas id="myCanvas"></canvas>
+            <button id="processButton">Process Image Matrix</button>
+            <div id="loadingText">PARSING IMAGE DATA...</div>
+        </section>
+
+        <div id="output">Output logs will appear here after parsing...</div>
+    </main>
 
     <script>
         const imageUpload = document.getElementById('imageUpload');
         const canvas = document.getElementById('myCanvas');
-        const ctx = canvas.getContext('2d', { willReadFrequently: true }); // Important for pixel data access
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         const processButton = document.getElementById('processButton');
         const output = document.getElementById('output');
         const loadingText = document.getElementById('loadingText');
 
         let img = new Image();
         let pixelData = [];
-        let frameCount = 0;
+        let currentIndex = 0; // Tracks total pixel iteration 
         let isProcessing = false;
 
         imageUpload.addEventListener('change', function(e) {
             const file = e.target.files[0];
+            if (!file) return;
+            
             const reader = new FileReader();
-
             reader.onload = function(event) {
                 img.onload = function() {
-                    canvas.style.display = 'block'; // Show the canvas
+                    canvas.style.display = 'block';
                     canvas.width = img.width;
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0, img.width, img.height);
-                    processButton.style.display = 'block'; // Show the process button
-                    output.textContent = ''; // Clear previous output
-                    pixelData = [];       // Clear any previous pixel data
-                    frameCount = 0;
+                    
+                    processButton.style.display = 'block';
+                    output.textContent = 'Image loaded ready for execution matrix array parsing.';
+                    pixelData = [];
+                    currentIndex = 0;
                     isProcessing = false;
                 };
                 img.src = event.target.result;
@@ -82,50 +225,56 @@
         });
 
         processButton.addEventListener('click', function() {
-            if (!isProcessing) {
+            if (!isProcessing && img.src) {
                 isProcessing = true;
                 output.textContent = '';
-                loadingText.style.display = 'block'; // Show loading text
-                processImage(); // Start the processing
+                loadingText.style.display = 'block';
+                
+                // Initialize the structural rows setup mapping array dimensions
+                pixelData = Array.from({ length: canvas.height }, () => []);
+                currentIndex = 0;
+                
+                requestAnimationFrame(processImageChunks);
             }
         });
 
-        function processImage() {
+        function processImageChunks() {
             if (!isProcessing) return;
 
             const width = canvas.width;
             const height = canvas.height;
+            const totalPixels = width * height;
             const imageData = ctx.getImageData(0, 0, width, height).data;
-            const row = [];
 
-            // Process a portion of the image data each frame
-            const pixelsPerFrame = 100; // Adjust for performance
-            let processedPixels = 0;
+            // Performance batch calculation chunk configuration 
+            const pixelsPerFrame = 2000; 
+            let processedInThisFrame = 0;
 
-            while (processedPixels < pixelsPerFrame && frameCount < width * height) {
-                const x = frameCount % width;
-                const y = Math.floor(frameCount / width);
-                const pixelIndex = (x + y * width) * 4;
+            while (processedInThisFrame < pixelsPerFrame && currentIndex < totalPixels) {
+                const x = currentIndex % width;
+                const y = Math.floor(currentIndex / width);
+                const pixelIndex = currentIndex * 4;
 
                 const r = imageData[pixelIndex];
                 const g = imageData[pixelIndex + 1];
                 const b = imageData[pixelIndex + 2];
                 const a = imageData[pixelIndex + 3];
-                row.push([r, g, b, a]); // Store RGBA values
 
-                processedPixels++;
-                frameCount++;
+                // Pushes color sets strictly to their absolute matrix Y target row index path
+                pixelData[y].push([r, g, b, a]);
+
+                processedInThisFrame++;
+                currentIndex++;
             }
-            pixelData.push(row);
 
-            if (frameCount < width * height) {
-                // Continue processing in the next frame
-                requestAnimationFrame(processImage);
+            if (currentIndex < totalPixels) {
+                // Buffer sequence calculation yields for frame display
+                requestAnimationFrame(processImageChunks);
             } else {
-                // All pixels processed
-                loadingText.style.display = 'none'; // Hide loading text
-                output.textContent = JSON.stringify(pixelData, null, 2); // Display the result
-                isProcessing = false; // Reset
+                // Done parsing complete structure
+                loadingText.style.display = 'none';
+                output.textContent = JSON.stringify(pixelData);
+                isProcessing = false;
             }
         }
     </script>

@@ -46,3 +46,29 @@ p {
     margin: 1px;
     padding: 1px;
 }
+.menu-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 40px; /* Creates clean pixel spacing between rows */
+            background: transparent;
+            z-index: 10;
+        }
+
+        .back-container {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+        }
+
+        /* Tweaking font size slightly so the back button doesn't crowd the screen */
+        .back-container a {
+            font-size: 24px;
+            padding: 8px 16px;
+        }

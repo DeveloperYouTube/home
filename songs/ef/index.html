@@ -117,47 +117,60 @@
 
         middle.loop = true;
 
+        function resetEngine() {
+            playBtn.disabled = false;
+            stopBtn.disabled = true;
+            intro.currentTime = 0;
+            middle.currentTime = 0;
+            outro.currentTime = 0;
+        }
+
         function startTrack() {
             playBtn.disabled = true;
             stopBtn.disabled = false;
-            intro.play();
-        }
 
-        intro.onended = () => {
-            middle.play();
-        };
+            intro.currentTime = 0;
+            intro.play();
+
+            intro.onended = () => {
+                middle.currentTime = 0;
+                middle.play();
+            };
+        }
 
         function triggerOutro() {
             stopBtn.disabled = true;
-            
-            // If the intro is interrupted early
+            let targetOutroTime = 0;
+
             if (!intro.paused) {
-                let barDuration = intro.duration / 7;
-                let introBarsPlayed = intro.currentTime / barDuration;
-                let outroStartBar = 6 - introBarsPlayed;
-                let outroTargetTime = outroStartBar * barDuration;
-                
+                // --- CASE 1: CUT DURING INTRO ---
+                const elapsedIntro = intro.currentTime;
                 intro.pause();
-                
-                if (outroTargetTime >= outro.duration) outroTargetTime = outro.duration - 0.1;
-                if (outroTargetTime < 0) outroTargetTime = 0;
-                
-                outro.currentTime = outroTargetTime;
-                outro.play();
-            } 
-            // Standard loop interruption behavior
-            else if (!middle.paused) {
-                let cutoffTime = middle.currentTime;
-                
+
+                if (elapsedIntro <= 12) {
+                    // Standard inverse mapping for the first 12 seconds
+                    targetOutroTime = 12 - elapsedIntro;
+                } else {
+                    // Last 2 seconds of intro (seconds 12 to 14) act like the middle loop.
+                    // We subtract 12 to see how far into the "fake middle" we are.
+                    const fakeMiddleTime = elapsedIntro - 12; 
+                    targetOutroTime = fakeMiddleTime % 4; 
+                }
+            } else if (!middle.paused) {
+                // --- CASE 2: CUT DURING MIDDLE ---
+                const elapsedMiddle = middle.currentTime;
                 middle.pause();
-                middle.loop = false;
                 
-                outro.currentTime = cutoffTime;
-                outro.play();
+                // Maps the 4-second loop progress onto the 12-second outro starting timeline
+                targetOutroTime = elapsedMiddle % 4;
             }
 
+            // Play calibrated outro
+            outro.currentTime = targetOutroTime;
+            outro.play();
+
             outro.onended = () => {
-                playBtn.disabled = false;
+                resetEngine();
             };
         }
     </script>

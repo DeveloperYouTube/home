@@ -1,36 +1,69 @@
 <!DOCTYPE html>
-<!--test-->
-<html>
-    <head>
-        <title>English makes absolutly no sense at all!</title>
-    </head>
-    <body>
-        <p>I present a present present in the present</p>
-        <p>I sent a scented cent</p>
-        <p id="b">Click to generate buffalo text</p>
-        <p id="f">Click to generate fish text</p>
-        <script>
-            const buffalo = document.getElementById("b");
-            const fish = document.getElementById("f");
-            let m = 0.000001;
-            const pause = async (ms) => new Promise(resolve => setTimeout(resolve, ms));
-            buffalo.addEventListener('click', async () => {
-                buffalo.innerHTML = "Buffalo ";
-                async function streamBuffalo() {
-                    requestAnimationFrame(streamBuffalo);
-                    for (i = 0; i<m; i++) {buffalo.innerHTML += "buffalo "; m++; await pause(5)}
-                }
-                requestAnimationFrame(streamBuffalo);
-            });
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English makes absolutely no sense at all!</title>
+    <link rel="stylesheet" href="english.css">
+</head>
+<body>
 
-            fish.addEventListener('click', async () => {
-                fish.innerHTML = "Fish ";
-                async function streamFish() {
-                    requestAnimationFrame(streamFish);
-                    for (i = 0; i<m; i++) {fish.innerHTML += "fish "; m++; await pause(5)}
-                }
-                requestAnimationFrame(streamFish);
-            });
-        </script>
-    </body>
+    <main class="container">
+        <nav class="top-nav">
+            <a href="../" class="back-btn">&larr; BACK</a>
+        </nav>
+
+        <header class="page-header">
+            <h1>Linguistic Quirks</h1>
+            <p class="subtitle">// Proof that English is completely broken</p>
+        </header>
+
+        <section class="paradox-section">
+            <div class="paradox-card">
+                <span class="label">Paradox_01:</span>
+                <p>"I present a present present in the present."</p>
+            </div>
+            <div class="paradox-card">
+                <span class="label">Paradox_02:</span>
+                <p>"I sent a scented cent."</p>
+            </div>
+        </section>
+
+        <section class="generator-section">
+            <div class="gen-box">
+                <button id="b" class="gen-btn">Click to generate buffalo text</button>
+            </div>
+            <div class="gen-box">
+                <button id="f" class="gen-btn">Click to generate fish text</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const buffalo = document.getElementById("b");
+        const fish = document.getElementById("f");
+
+        // Buffalo Text Generator
+        buffalo.addEventListener('click', () => {
+            buffalo.disabled = true; // Prevents multiple clicks crashing it
+            buffalo.classList.add('streaming');
+            buffalo.innerHTML = "Buffalo ";
+            
+            setInterval(() => {
+                buffalo.innerHTML += "buffalo ";
+            }, 50); // Clean 50ms interval loop
+        });
+
+        // Fish Text Generator
+        fish.addEventListener('click', () => {
+            fish.disabled = true;
+            fish.classList.add('streaming');
+            fish.innerHTML = "Fish ";
+            
+            setInterval(() => {
+                fish.innerHTML += "fish fish ";
+            }, 50);
+        });
+    </script>
+</body>
 </html>
