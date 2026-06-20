@@ -342,11 +342,14 @@ block_drops.forEach((element, index) => {
     }
 });
 window.addEventListener('beforeunload', (event) => {
-    // Cancel the event as stated by the standard.
+    // 1. Force the save immediately
+    window.save();
+
+    // 2. Standard modern browser flag to prevent thread interruption during localStorage writes
     event.preventDefault();
     
-    // Older browsers require a return value to be set.
-    event.returnValue = ''; 
+    // 3. Guarantee execution priority (some browsers require a returnValue assigned)
+    event.returnValue = true;
 });
 const entityIDs = {
     0: itemIDs
@@ -849,7 +852,6 @@ window.save = function() {
         ry: respawnY,
     };
     localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
-    window.location.replace('../../../../');
 };
 window.hidepause = function() {
     pause_screen.style.display = 'none';
