@@ -374,8 +374,8 @@ function get_block(x, y) {
             value = 3; // Air block above
         }
     } else {
-        if (y >= 0) {
-            if (y === 0) {
+        if (y >= -2) {
+            if (y === -2) {
                 value = 0; // Grass block on top
             } else {
                 if (y > -3) {
