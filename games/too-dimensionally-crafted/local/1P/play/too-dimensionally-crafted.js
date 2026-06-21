@@ -364,7 +364,7 @@ function get_block(x, y) {
             if (y === noiseFloor) {
                 value = 0; // Grass block on top
             } else {
-                if (y > noiseFloor + 3 + Math.random()) {
+                if (y > noiseFloor + 3.5) {
                     value = 4;
                 } else {
                     value = 1;
