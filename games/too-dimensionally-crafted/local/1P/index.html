@@ -36,27 +36,26 @@
             transform: translateY(2px);
         }
 
-        /* Container setup to align buttons neatly down the page */
+        /* Container scales to match the single widest button layout inside it */
         #world-displayer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            width: max-content;
+            min-width: 350px;              /* Base size so short names look substantial */
+            max-width: 100vw;              /* Prevents sizing past the active screen edge */
+            margin: 0 auto;                /* Centers the entire list group on the screen */
             box-sizing: border-box;
             padding: 0 20px;
         }
 
-        /* Style the world generation buttons dynamically */
+        /* Style the world generation buttons dynamically to match sizes */
         #world-displayer button {
-            display: inline-block;
-            width: max-content;            /* Shrink or expand perfectly to match text length */
-            min-width: 300px;              /* Keeps short world names looking clean and consistent */
-            max-width: 100%;               /* Caps size exactly at edge of browser window */
+            width: 100%;                   /* All buttons expand to match the shared column width */
             white-space: nowrap;           /* Strictly prevents text from breaking downwards */
             overflow-x: auto;              /* Attaches a horizontal scrollbar if name exceeds page width */
             text-align: center;            /* Centers text alignments inside button walls */
             margin: 8px 0;
-            padding: 10px 20px;
+            padding: 10px 24px;
             cursor: pointer;
             box-sizing: border-box;
         }
@@ -115,7 +114,7 @@
                 window.location.href = './play/';
             });
             
-            // 4. Safely drop the new button into your layout flex container
+            // 4. Safely drop the new button into your layout container
             world_displayer.appendChild(btn);
         });
     </script>
