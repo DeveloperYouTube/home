@@ -378,7 +378,7 @@ function get_block(x, y) {
             if (y === 2) {
                 value = 0; // Grass block on top
             } else {
-                if (y > -3) {
+                if (y > 4) {
                     value = 5;
                 } else {
                     value = 1;
