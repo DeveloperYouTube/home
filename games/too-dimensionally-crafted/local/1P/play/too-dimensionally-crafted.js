@@ -813,6 +813,7 @@ entities.forEach(entity => {
 game_update();
 
 //stuff for html things
+let save = true;
 window.respawnPlayer = function() {
     playerHP = 20;
     playerX = respawnX;
@@ -821,7 +822,7 @@ window.respawnPlayer = function() {
     playerVX = 0;
 };
 window.save = function() {
-    if (death_screen.style.display === 'flex') {
+    if(save){if (death_screen.style.display === 'flex') {
         window.respawnPlayer();
     };
     const worldsJSON = localStorage.getItem('2DCsinglePworlds');
@@ -852,9 +853,49 @@ window.save = function() {
         ry: respawnY,
     };
     localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
-};
+}};
 window.hidepause = function() {
     pause_screen.style.display = 'none';
     last_frame = performance.now();
     game_running = true;
 }
+window.deleteWorld = function(worldName = world_dataINIT.name) {
+    // 1. Confirm with the player
+    const confirmDelete = confirm(`Are you sure you want to delete "${worldName}"? This cannot be undone.`);
+    if (!confirmDelete) return; 
+
+    //  STOP ALL AUTOMATIC SAVES IMMEDIATELY
+    save = false; 
+
+    // 2. Fetch the current worlds object
+    const worldsJSON = localStorage.getItem('2DCsinglePworlds');
+    
+    if (worldsJSON) {
+        try {
+            let worlds = JSON.parse(worldsJSON);
+            
+            // 3. Check if the world actually exists, then delete it
+            if (worlds[worldName]) {
+                delete worlds[worldName]; 
+                
+                // 4. Save the updated worlds object back to localStorage
+                localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
+                console.log(`World "${worldName}" successfully deleted.`);
+                
+                // 5. Go to list
+                window.location.replace('../../');
+            } else {
+                // Fallback: If the world wasn't found, re-enable saving so the game isn't frozen out
+                save = true;
+                console.warn(`World "${worldName}" not found in storage.`);
+            }
+        } catch (e) {
+            // Fallback: Re-enable if parsing crashed
+            save = true;
+            console.error("Error deleting world:", e);
+        }
+    } else {
+        // Fallback: Re-enable if localStorage was completely empty
+        save = true;
+    }
+};
