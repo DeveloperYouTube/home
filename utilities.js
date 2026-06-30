@@ -31,6 +31,23 @@ export const utils = {
         range: function(/** @type {number[]} */ ...numbers) {
             if (numbers.length === 0) {return 0};
             return Math.max(...numbers) - Math.min(...numbers);
+        },
+        sigma: function(/** @type {number} */ e, /** @type {number} */ s, /** @type {Function} */ f) {
+            let r = 0;
+            for (let i = s; i < e; i++) {
+                r+=f(i);
+            }
+            return(r);
+        },
+        product: function(/** @type {number} */ e, /** @type {number} */ s, /** @type {Function} */ f) {
+            let r = f(s);
+            for (let i = s+1; i < e; i++) {
+                r=r*f(s);
+            }
+            return(r);
+        },
+        factorial: function(/** @type {number} */ n) {
+            return(this.product(n,1,(a)=>{return(a)}));
         }
     },
     pause: function (/** @type {number} */ ms) {
