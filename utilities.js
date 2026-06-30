@@ -34,19 +34,20 @@ export const utils = {
         },
         sigma: function(/** @type {number} */ e, /** @type {number} */ s, /** @type {Function} */ f) {
             let r = 0;
-            for (let i = s; i < e; i++) {
+            for (let i = s; i <= e; i++) {
                 r+=f(i);
             }
             return(r);
         },
         product: function(/** @type {number} */ e, /** @type {number} */ s, /** @type {Function} */ f) {
             let r = f(s);
-            for (let i = s+1; i < e; i++) {
-                r=r*f(s);
+            for (let i = s+1; i <= e; i++) {
+                r=r*f(i);
             }
             return(r);
         },
         factorial: function(/** @type {number} */ n) {
+            if (n === 0 || n === 1) return 1;
             return(this.product(n,1,(a)=>{return(a)}));
         }
     },
