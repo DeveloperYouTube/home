@@ -40,6 +40,7 @@ export const utils = {
             return(r);
         },
         product: function(/** @type {number} */ e, /** @type {number} */ s, /** @type {Function} */ f) {
+            if (e < s) return 1;
             let r = f(s);
             for (let i = s+1; i <= e; i++) {
                 r=r*f(i);
