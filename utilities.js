@@ -32,14 +32,14 @@ export const utils = {
             if (numbers.length === 0) {return 0};
             return Math.max(...numbers) - Math.min(...numbers);
         },
-        sigma: function(/** @type {number} */ e, /** @type {number} */ s, /** @type {Function} */ f) {
+        SIGMA: function(/** @type {number} */ e, /** @type {number} */ s, /** @type {Function} */ f) {
             let r = 0;
             for (let i = s; i <= e; i++) {
                 r+=f(i);
             }
             return(r);
         },
-        product: function(/** @type {number} */ e, /** @type {number} */ s, /** @type {Function} */ f) {
+        PI: function(/** @type {number} */ e, /** @type {number} */ s, /** @type {Function} */ f) {
             if (e < s) return 1;
             let r = f(s);
             for (let i = s+1; i <= e; i++) {
@@ -49,7 +49,15 @@ export const utils = {
         },
         factorial: function(/** @type {number} */ n) {
             if (n === 0 || n === 1) return 1;
-            return(this.product(n,1,(a)=>{return(a)}));
+            return(this.PI(n,1,(a)=>{return(a)}));
+        },
+        calc: {
+            velocity: (/** @type {number} */ a, /** @type {number} */ v, /** @type {number} */ t) {
+                return(a*t + v);
+            },
+            integral: (/** @type {number} */ a, /** @type {number} */ v, /** @type {number} */ t, /** @type {number} */ C) {
+                return(0.5*a*t*t + v*t + C);
+            }
         }
     },
     pause: function (/** @type {number} */ ms) {
