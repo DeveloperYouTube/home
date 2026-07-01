@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Too Dimensionally Crafted: Sign in</title>
+    <link rel="icon" href="../../images/grass_block.png" type="image/png">
+    <link rel="stylesheet" href="too-dimensionally-crafted.css">
+    <style>
+        /* These styles only run on this page, keeping your main CSS global and safe */
+        .menu-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 40px; /* Creates clean pixel spacing between rows */
+            background: transparent;
+            z-index: 10;
+        }
+
+        .back-container {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+        }
+
+        /* Tweaking font size slightly so the back button doesn't crowd the screen */
+        .back-container a {
+            font-size: 24px;
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-wrapper">
+        <div class="back-container">
+            <a href="../">BACK</a>
+        </div>
+
+        <p>Too Dimensionally Crafted</p>
+        <a href="./local/">Use local storage</a>
+    </div>
+
+</body>
+</html>
