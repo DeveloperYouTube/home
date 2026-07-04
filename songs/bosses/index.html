@@ -2,161 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boss Music Dashboard</title>
-    <link rel="stylesheet" href="../../too-dimensionally-crafted.css">
+    <title>BOSS_AUDIO_ARCHIVE</title>
     <style>
-        /* Base page layout matching your homepage dashboard style */
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: 'Courier New', Courier, monospace;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .dashboard-header {
-            border-bottom: 2px solid #333333;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .dashboard-title {
-            margin: 0;
-            font-size: 28px;
-            letter-spacing: 1px;
-        }
-
-        /* Return button layout matching standard navigation headers */
-        .nav-link {
-            display: inline-block;
-            text-decoration: none;
-            color: #00ff66;
-            border: 1px solid #00ff66;
-            padding: 6px 14px;
-            background: transparent;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .nav-link:hover {
-            background: rgba(0, 255, 102, 0.1);
-        }
-
-        /* Centered grid column system optimized for the song list width */
-        .dashboard-content {
-            display: grid;
-            grid-template-columns: 1fr;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .panel {
-            background-color: #1a1a1a;
-            border: 1px solid #333333;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .panel-title {
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #bbbbbb;
-            border-bottom: 1px solid #2a2a2a;
-            padding-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        /* Interactive list containers */
-        .song-list-container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-
-        /* Standardized song selection list item button styles */
-        .song-item-btn {
-            display: block;
-            width: 100%;
-            text-decoration: none;
-            background-color: #222222;
-            border: 1px solid #444444;
-            color: #ffffff;
-            padding: 14px 18px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-            text-align: left;
-            cursor: pointer;
-            transition: border-color 0.1s, background-color 0.1s;
-        }
-
-        .song-item-btn:hover {
-            background-color: #2a2a2a;
-            border-color: #00ff66;
-        }
-
-        .song-item-btn-title {
-            font-size: 18px;
-            font-weight: bold;
-            display: block;
-        }
-
-        .song-item-btn-meta {
-            display: block;
-            font-size: 13px;
-            color: #888888;
-            margin-top: 6px;
-        }
+        body { background: #0e0e0e; color: #a0a0a0; font-family: 'Courier New', monospace; padding: 40px; }
+        .header { margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .archive-list { width: 100%; max-width: 800px; border-collapse: collapse; }
+        .archive-row { border-bottom: 1px solid #222; cursor: pointer; transition: 0.2s; }
+        .archive-row:hover { color: #fff; background: #151515; }
+        td { padding: 15px 10px; }
+        .id-col { color: #555; width: 60px; }
+        a { text-decoration: none; color: inherit; display: block; }
     </style>
 </head>
 <body>
+    <div class="header">BOSS_AUDIO_ARCHIVE // DIRECTORY_LISTING</div>
+    <table class="archive-list" id="archive">
+        <!-- Injected via JS -->
+    </table>
 
-    <header class="dashboard-header">
-        <h1 class="dashboard-title">BOSS_MUSIC_HUB //</h1>
-        <a href="../" class="nav-link">RETURN_TO_MAIN</a>
-    </header>
-
-    <main class="dashboard-content">
-        
-        <!-- BOSS TRACK REGISTRY DISPLAY SECTION -->
-        <section class="panel">
-            <h2 class="panel-title">BOSS_TRACK_SELECTION</h2>
-            <div id="boss-displayer" class="song-list-container"></div>
-        </section>
-
-    </main>
-
-    <script type="module">
-        const boss_displayer = document.getElementById('boss-displayer');
-
-        // Central registry list tracking your dynamic and looping boss tracks
-        const bossTracks = [
-            {
-                name: "Track 1",
-                meta: "Adaptive 2-Track System (4 Sections / 6 NPS)",
-                url: "./1/"
-            }
+    <script>
+        const tracks = [
+            { href: "1", name: "ADAPTIVE_SEQ_A", meta: "4_SECTIONS / 6_NPS" }
         ];
 
-        // Wipe default elements and inject the styled button strings dynamically
-        boss_displayer.innerHTML = '';
-        
-        bossTracks.forEach(track => {
-            const anchor = document.createElement('a');
-            anchor.className = 'song-item-btn';
-            anchor.href = track.url;
-            
-            anchor.innerHTML = `
-                <span class="song-item-btn-title">${track.name}</span>
-                <span class="song-item-btn-meta">${track.meta}</span>
-            `;
-            
-            boss_displayer.appendChild(anchor);
+        const table = document.getElementById('archive');
+        tracks.forEach(track => {
+            const row = document.createElement('tr');
+            row.className = 'archive-row';
+            row.innerHTML = `<td><a href="./${track.href}">${track.name}</a></td><td>${track.meta}</td>`;
+            table.appendChild(row);
         });
     </script>
 </body>
