@@ -2,66 +2,203 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PLAYER_CONSOLE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boss #001</title>
     <style>
-        body { background: #050505; color: #fff; font-family: 'Courier New', monospace; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .console-box { width: 300px; border: 1px solid #333; padding: 20px; margin-top: 50px; }
-        .log { font-size: 12px; color: #666; margin-top: 20px; border-top: 1px solid #222; padding-top: 10px; }
-        button { background: transparent; border: 1px solid #fff; color: #fff; padding: 10px; width: 100%; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #fff; color: #000; }
-        .active { border-color: #f00; color: #f00; }
+        :root {
+            --bg-color: #000000;
+            --panel-bg: #0b0c10;
+            --accent-green: #39ff14;
+            --accent-red: #ff073a;
+            --text-main: #00c000;
+            --text-muted: #006600;
+            --border-color: #003300;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Roboto Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+            padding: 20px;
+        }
+
+        /* Top navigation layout wrapper */
+        .top-nav {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+        }
+
+        /* Clean Terminal-style Back link */
+        .back-btn {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: color 0.2s ease;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        /* Centered Media Deck Card */
+        .audio-card {
+            background: var(--panel-bg);
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 0 0 24px 0;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        button {
+            flex: 1;
+            border: none;
+            padding: 14px 20px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #playBtn {
+            background: var(--accent-green);
+            color: #000;
+        }
+
+        #playBtn:hover:not(:disabled) {
+            background: #2ee610;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+        }
+
+        #stopBtn {
+            background: var(--accent-red);
+            color: #fff;
+        }
+
+        #stopBtn:hover:not(:disabled) {
+            background: #e00633;
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.3);
+        }
+
+        button:disabled {
+            background: #14161d !important;
+            color: var(--text-muted) !important;
+            cursor: not-allowed;
+            box-shadow: none !important;
+        }
     </style>
 </head>
 <body>
-    <div class="console-box">
-        <div id="status">READY</div>
-        <button id="trigger">EXECUTE_SEQUENCE</button>
-        <div class="log" id="log">SYS_INIT_COMPLETE</div>
+
+    <nav class="top-nav">
+        <a href="../" class="back-btn">&larr; BACK</a>
+    </nav>
+
+    <div class="audio-card">
+        <h1>Boss soundtrack #001</h1>
+
+        <div class="btn-group">
+            <button id="playBtn" onclick="startTrack()">Play Track</button>
+            <button id="stopBtn" onclick="triggerOutro()" disabled>Cut to Outro</button>
+        </div>
     </div>
 
-    <audio id="main" src="../../../music/boss/1/4824602425032704.wav" loop></audio>
-    <audio id="outro" src="../../../music/boss/1/6026566471122944.wav"></audio>
-
     <script>
-        const main = document.getElementById('main');
-        const outro = document.getElementById('outro');
-        const trigger = document.getElementById('trigger');
-        const log = document.getElementById('log');
-        
-        let active = false;
-        const NPS = 6;
-        const SEC_DUR = 31 / NPS;
+        const loop = new Audio('../../../music/boss/1/4824602425032704.wav');
+        const end = new Audio('../../../music/boss/1/6026566471122944.wav');
+        // Loop both elements properly if needed, but 'loop' definitely needs it
+loop.loop = true;
 
-        trigger.onclick = () => {
-            if (!active) {
-                main.play();
-                trigger.innerText = "TRIGGER_OUTRO";
-                trigger.classList.add('active');
-                active = true;
-                log.innerText = "SEQ_ACTIVE // MONITORING";
-            } else {
-                handleTransition();
-            }
-        };
+const playBtn = document.getElementById('playBtn');
+const stopBtn = document.getElementById('stopBtn');
 
-        function handleTransition() {
-            const stopTime = main.currentTime;
-            main.pause();
-            const sec = Math.floor(stopTime / SEC_DUR) % 4;
-            const timeIn = stopTime % SEC_DUR;
-            const note = Math.floor(timeIn / (1/NPS)) + 1;
-            
-            // Logic rules
-            let target = (note <= 10 || note > 16) ? (6/NPS + timeIn) : (timeIn - 9/NPS);
-            
-            outro.currentTime = Math.max(0, target);
-            outro.play();
-            
-            trigger.innerText = "EXECUTE_SEQUENCE";
-            trigger.classList.remove('active');
-            active = false;
-            log.innerText = `OUTRO_TRIGGERED // SEC:${sec} NOTE:${note}`;
-        }
+// Timing constants for the calculation
+const NOTES_PER_SECOND = 6;
+const NOTE_DURATION = 1 / NOTES_PER_SECOND;
+const NOTES_PER_SECTION = 31;
+const SECTION_DURATION = NOTES_PER_SECTION * NOTE_DURATION;
+
+function startTrack() {
+    // Reset audio states just in case
+    end.pause();
+    end.currentTime = 0;
+    
+    loop.currentTime = 0;
+    loop.play();
+    
+    // Toggle button active states
+    playBtn.disabled = true;
+    stopBtn.disabled = false;
+}
+
+function triggerOutro() {
+    const stopTime = loop.currentTime;
+    loop.pause();
+    
+    // Update button states right away
+    playBtn.disabled = false;
+    stopBtn.disabled = true;
+
+    // Calculate structural alignment inside the tracks
+    const currentSection = Math.floor(stopTime / SECTION_DURATION) % 4;
+    const timeInSection = stopTime % SECTION_DURATION;
+    let currentNote = Math.floor(timeInSection / NOTE_DURATION) + 1;
+
+    // Boundary check for missing step in final section
+    if (currentSection === 3 && currentNote > 30) {
+        currentNote = 30; 
+    }
+
+    let targetStartTime = 0;
+
+    // Transition matrix mapping logic
+    if (currentNote <= 10 || currentNote > (NOTES_PER_SECTION - 15)) {
+        const note7Time = 6 * NOTE_DURATION; 
+        targetStartTime = note7Time + timeInSection;
+    } else {
+        const note10Time = 9 * NOTE_DURATION;
+        targetStartTime = timeInSection - note10Time;
+    }
+
+    // Fire the outro at the calculated math point
+    end.currentTime = Math.max(0, targetStartTime);
+    end.play();
+}
     </script>
 </body>
 </html>

@@ -2,36 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BOSS_AUDIO_ARCHIVE</title>
-    <style>
-        body { background: #0e0e0e; color: #a0a0a0; font-family: 'Courier New', monospace; padding: 40px; }
-        .header { margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .archive-list { width: 100%; max-width: 800px; border-collapse: collapse; }
-        .archive-row { border-bottom: 1px solid #222; cursor: pointer; transition: 0.2s; }
-        .archive-row:hover { color: #fff; background: #151515; }
-        td { padding: 15px 10px; }
-        .id-col { color: #555; width: 60px; }
-        a { text-decoration: none; color: inherit; display: block; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songs/Bosses</title>
+    <link rel="stylesheet" href="../songs.css">
 </head>
 <body>
-    <div class="header">BOSS_AUDIO_ARCHIVE // DIRECTORY_LISTING</div>
-    <table class="archive-list" id="archive">
-        <!-- Injected via JS -->
-    </table>
 
-    <script>
-        const tracks = [
-            { href: "1", name: "ADAPTIVE_SEQ_A", meta: "4_SECTIONS / 6_NPS" }
-        ];
+    <main class="container">
+        <nav class="top-nav">
+            <a href="../" class="back-btn">&larr; BACK</a>
+        </nav>
 
-        const table = document.getElementById('archive');
-        tracks.forEach(track => {
-            const row = document.createElement('tr');
-            row.className = 'archive-row';
-            row.innerHTML = `<td><a href="./${track.href}/">${track.name}</a></td><td>${track.meta}</td>`;
-            table.appendChild(row);
-        });
-    </script>
+        <header class="page-header">
+            <h1>Boss Audio Archive</h1>
+            <p class="subtitle">// Music, loops, and compositions for bosses</p>
+        </header>
+
+        <section class="tracks-list">
+            <a href="./1" class="track-card">
+                <div class="track-meta">
+                    <span class="track-icon">♫</span>
+                    <div class="track-details">
+                        <h3>001</h3>
+                        <p class="track-type">Audio Project / Sequence</p>
+                    </div>
+                </div>
+                <span class="play-indicator">OPEN</span>
+            </a>\
+            </section>
+    </main>
+
 </body>
 </html>
