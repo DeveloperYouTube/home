@@ -3,129 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Too Dimensionally Crafted: Boss Music Hub</title>
+    <title>Boss Music Dashboard</title>
     <link rel="stylesheet" href="../../too-dimensionally-crafted.css">
     <style>
-        /* Local layout fixes to isolate your floating menu buttons */
-        .ui-nav-overlay {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            z-index: 100;
+        /* Base page layout matching your homepage dashboard style */
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        /* Enforce retro theme matching your custom font configuration */
-        .back-btn {
+        .dashboard-header {
+            border-bottom: 2px solid #333333;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-title {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        /* Return button layout matching standard navigation headers */
+        .nav-link {
             display: inline-block;
             text-decoration: none;
-            text-align: center;
-            font-size: 24px;
-            color: white;
-            padding: 8px 16px;
-            border-width: 5px;
-            border-style: outset;
-            background-color: #808080;
-            border-color: #c0c0c0 #404040 #404040 #c0c0c0;
+            color: #00ff66;
+            border: 1px solid #00ff66;
+            padding: 6px 14px;
+            background: transparent;
+            font-size: 14px;
             cursor: pointer;
-            user-select: none;
         }
 
-        .back-btn:active {
-            border-style: inset;
-            border-color: #404040 #c0c0c0 #c0c0c0 #404040;
-            transform: translateY(2px);
+        .nav-link:hover {
+            background: rgba(0, 255, 102, 0.1);
         }
 
-        /* Container scales to match the single widest button layout inside it */
-        #boss-displayer {
+        /* Centered grid column system optimized for the song list width */
+        .dashboard-content {
             display: grid;
             grid-template-columns: 1fr;
-            width: max-content;
-            min-width: 400px;              /* Base size so names look substantial */
-            max-width: 100vw;              /* Prevents sizing past the active screen edge */
-            margin: 0 auto;                /* Centers the entire list group on the screen */
-            box-sizing: border-box;
-            padding: 0 20px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        /* Style the boss selector links to look like uniform menu buttons */
-        #boss-displayer .boss-link-btn {
-            display: inline-block;
-            width: 100%;                   /* All buttons expand to match the shared column width */
-            text-decoration: none;
-            font-size: 24px;
-            color: white;
-            padding: 12px 24px;
-            margin: 8px 0;
-            border-width: 5px;
-            border-style: outset;
-            background-color: #4a1212;     /* Dark reddish crimson for a boss theme tint */
-            border-color: #8b2525 #240808 #240808 #8b2525;
-            cursor: pointer;
-            user-select: none;
-            white-space: nowrap;           /* Strictly prevents text from breaking downwards */
-            overflow-x: auto;              /* Attaches a horizontal scrollbar if name exceeds page width */
-            text-align: center;            /* Centers text alignments inside button walls */
+        .panel {
+            background-color: #1a1a1a;
+            border: 1px solid #333333;
+            padding: 20px;
             box-sizing: border-box;
         }
 
-        #boss-displayer .boss-link-btn:active {
-            border-style: inset;
-            border-color: #240808 #8b2525 #8b2525 #240808;
-            transform: translateY(2px);
-        }
-
-        /* Clear out inline margins for smaller subtitle text lines */
-        .boss-link-btn br + small {
+        .panel-title {
+            margin-top: 0;
+            margin-bottom: 20px;
             font-size: 18px;
-            opacity: 0.8;
-            display: block;                /* Keeps subtitle centered directly below layout line break */
-            text-align: center;
-            color: #ffcccc;
+            color: #bbbbbb;
+            border-bottom: 1px solid #2a2a2a;
+            padding-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Interactive list containers */
+        .song-list-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Standardized song selection list item button styles */
+        .song-item-btn {
+            display: block;
+            width: 100%;
+            text-decoration: none;
+            background-color: #222222;
+            border: 1px solid #444444;
+            color: #ffffff;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.1s, background-color 0.1s;
+        }
+
+        .song-item-btn:hover {
+            background-color: #2a2a2a;
+            border-color: #00ff66;
+        }
+
+        .song-item-btn-title {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+        }
+
+        .song-item-btn-meta {
+            display: block;
+            font-size: 13px;
+            color: #888888;
+            margin-top: 6px;
         }
     </style>
 </head>
 <body>
 
-    <nav class="ui-nav-overlay">
-        <!-- Adjust this path to match wherever your main game options menu lives -->
-        <a href="../" class="back-btn">BACK</a>
-    </nav>
+    <header class="dashboard-header">
+        <h1 class="dashboard-title">BOSS_MUSIC_HUB //</h1>
+        <a href="../" class="nav-link">RETURN_TO_MAIN</a>
+    </header>
 
-    <div class="screen" style="background-color: black;">
-        <p style="color: #ff3333; text-shadow: 2px 2px #000000;">BOSS MUSIC ARCHIVE</p>
+    <main class="dashboard-content">
         
-        <!-- The shared container where all boss options are built identically wide -->
-        <div id="boss-displayer"></div>
-    </div>
+        <!-- BOSS TRACK REGISTRY DISPLAY SECTION -->
+        <section class="panel">
+            <h2 class="panel-title">BOSS_TRACK_SELECTION</h2>
+            <div id="boss-displayer" class="song-list-container"></div>
+        </section>
+
+    </main>
 
     <script type="module">
         const boss_displayer = document.getElementById('boss-displayer');
 
-        // Centralized data table for your boss themes.
-        // Add new themes here and the page updates automatically with identical button widths!
+        // Central registry list tracking your dynamic and looping boss tracks
         const bossTracks = [
             {
-                name: "First one made",
-                type: "Dynamic 2-Track System",
-                folderPath: "./1/"
+                name: "Track 1",
+                meta: "Adaptive 2-Track System (4 Sections / 6 NPS)",
+                url: "./1c/"
             }
         ];
 
-        // Clear out any structural text securely
+        // Wipe default elements and inject the styled button strings dynamically
         boss_displayer.innerHTML = '';
-
-        bossTracks.forEach(boss => {
-            // 1. Create the anchor block styled to act exactly like an interactive button
-            const linkBtn = document.createElement('a');
-            linkBtn.className = 'boss-link-btn';
-            linkBtn.href = boss.folderPath;
+        
+        bossTracks.forEach(track => {
+            const anchor = document.createElement('a');
+            anchor.className = 'song-item-btn';
+            anchor.href = track.url;
             
-            // 2. Format internal dynamic label rows neatly
-            linkBtn.innerHTML = `${boss.name}<br><small>${boss.type}</small>`;
+            anchor.innerHTML = `
+                <span class="song-item-btn-title">${track.name}</span>
+                <span class="song-item-btn-meta">${track.meta}</span>
+            `;
             
-            // 3. Drop clean element onto the screen grid
-            boss_displayer.appendChild(linkBtn);
+            boss_displayer.appendChild(anchor);
         });
     </script>
 </body>
