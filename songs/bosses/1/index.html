@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Sequencer</title>
+    <link rel="stylesheet" href="../../too-dimensionally-crafted.css">
+    <style>
+        /* Center container layout */
+        .audio-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #000000;
+            font-family: monospace;
+            color: #ffffff;
+        }
+
+        /* Matches the signature 3D retro button theme */
+        .audio-btn {
+            padding: 12px 24px;
+            font-size: 20px;
+            color: white;
+            background-color: #808080;
+            border-width: 5px;
+            border-style: outset;
+            border-color: #c0c0c0 #404040 #404040 #c0c0c0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .audio-btn:active {
+            border-style: inset;
+            border-color: #404040 #c0c0c0 #c0c0c0 #404040;
+        }
+
+        .status-text {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #aaaaaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="audio-container">
+        <!-- Replace audio src properties with your relative project track paths -->
+        <audio id="primary-loop" src="../../../music/boss/1/4824602425032704.wav" loop></audio>
+        <audio id="outro-track" src="../../../music/boss/1/6026566471122944.wav"></audio>
+
+        <button id="sequence-trigger" class="audio-btn">PLAY SEQUENCE</button>
+        <div id="status" class="status-text">Audio State: Idle</div>
+    </div>
+
+    <script type="module">
+        const mainLoop = document.getElementById('primary-loop');
+        const outroTrack = document.getElementById('outro-track');
+        const triggerBtn = document.getElementById('sequence-trigger');
+        const status = document.getElementById('status');
+
+        // Core timing configuration rules
+        const NOTES_PER_SECOND = 6;
+        const NOTE_DURATION = 1 / NOTES_PER_SECOND; // ~0.166667 seconds per note
+        const NOTES_PER_SECTION = 31;
+        const SECTION_DURATION = NOTES_PER_SECTION * NOTE_DURATION; // ~5.166667 seconds per section
+
+        let isPlaying = false;
+
+        triggerBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                // Start primary loop playback
+                mainLoop.play();
+                triggerBtn.innerText = "STOP & TRIGGER OUTRO";
+                status.innerText = "Audio State: Main loop active...";
+                isPlaying = true;
+            } else {
+                // Handle the stop and transition logic immediately
+                handleTrackTransition();
+            }
+        });
+
+        function handleTrackTransition() {
+            const stopTime = mainLoop.currentTime;
+            mainLoop.pause();
+
+            // Determine which mathematical section (0 to 3) the loop stopped in
+            const currentSection = Math.floor(stopTime / SECTION_DURATION) % 4;
+            // Get the time passed strictly within that specific section
+            const timeInSection = stopTime % SECTION_DURATION;
+            
+            // Calculate current active note index (0-indexed base)
+            let currentNote = Math.floor(timeInSection / NOTE_DURATION) + 1;
+
+            // Account for the missing note constraint in the 4th section due to download truncation
+            if (currentSection === 3 && currentNote > 30) {
+                currentNote = 30; 
+            }
+
+            let targetStartTime = 0;
+
+            // Condition 1: First 10 notes are playing
+            if (currentNote <= 10) {
+                const note7Time = 6 * NOTE_DURATION; 
+                targetStartTime = note7Time + timeInSection;
+                status.innerText = `Outro Node: Section ${currentSection + 1}, Note ${currentNote} (Early window transition)`;
+            } 
+            // Condition 2: Last 15 notes are playing
+            else if (currentNote > (NOTES_PER_SECTION - 15)) {
+                const note7Time = 6 * NOTE_DURATION;
+                targetStartTime = note7Time + timeInSection;
+                status.innerText = `Outro Node: Section ${currentSection + 1}, Note ${currentNote} (Late window transition)`;
+            } 
+            // Condition 3: Middle notes fallback alternative
+            else {
+                const note10Time = 9 * NOTE_DURATION;
+                targetStartTime = timeInSection - note10Time;
+                status.innerText = `Outro Node: Section ${currentSection + 1}, Note ${currentNote} (Mid window transition)`;
+            }
+
+            // Clamp value safely to avoid setting negative audio tracking space pointers
+            outroTrack.currentTime = Math.max(0, targetStartTime);
+            outroTrack.play();
+
+            // Reset UI trigger controls
+            triggerBtn.innerText = "PLAY SEQUENCE";
+            isPlaying = false;
+        }
+    </script>
+</body>
+</html>
