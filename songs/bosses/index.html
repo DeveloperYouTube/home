@@ -29,7 +29,7 @@
         tracks.forEach(track => {
             const row = document.createElement('tr');
             row.className = 'archive-row';
-            row.innerHTML = `<td><a href="./${track.href}">${track.name}</a></td><td>${track.meta}</td>`;
+            row.innerHTML = `<td><a href="./${track.href}/">${track.name}</a></td><td>${track.meta}</td>`;
             table.appendChild(row);
         });
     </script>
