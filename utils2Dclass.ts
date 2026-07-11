@@ -1,8 +1,8 @@
 //vector
 class Vector2 {
-    constructor(x, y) {
-        this._x = x;
-        this._y = y;
+    constructor(x: number, y: number) {
+        this._x: number = x;
+        this._y: number = y;
     }
     get x() {
         return this._x;
@@ -18,4 +18,7 @@ class Vector2 {
     set y(value) {
         this._y = value;
     }
+}
+class Tiles {
+    constructor (img: )
 }
