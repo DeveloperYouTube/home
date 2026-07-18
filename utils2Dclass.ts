@@ -10,16 +10,18 @@ export interface CollisionSide {
 export interface TileSpecialProperties {
     passThrough?: boolean;
     // Target sprite, tile grid x, tile grid y, and side hit
-    onTouch?: (runner: Sprite, x: number, y: number, side: CollisionSide) => void;
+    onTouch?: (runner: Sprite, side: CollisionSide) => void;
     within?: (runner: Sprite, x: number, y: number) => void;
 }
 
 export interface SpriteStatProperties {
     hp: number;
+    damage: (type: string, ammount: number) => void;
+    movement: (keyboard: Record<string, boolean>, mouse: Record<string, any>) => void;
     passThrough?: boolean;
     // Target sprite, other sprite hit, and side hit
-    onTouch?: (runner: Sprite, other: Sprite, side: CollisionSide) => void;
-    within?: (runner: Sprite, other: Sprite) => void;
+    onTouch?: (runner: Sprite, side: CollisionSide) => void;
+    within?: (runner: Sprite) => void;
 }
 
 //vector
@@ -102,7 +104,7 @@ export const tilemap: Record<string, string> = {};
 
 class Tile {
     private img: ImgCanvas;
-    private special: object;
+    private special: any;
 
     private constructor(img: ImgCanvas, special: object) {
         this.img = img;
@@ -125,8 +127,15 @@ class Tile {
             delete tilemap[p.vectors]
         }
     }
+    get properties(): any {
+        return this.special;
+    }
+    get image(): ImgCanvas {
+        return this.img;
+    }
 }
-export const sprites: Sprite[] = [];
+export const sprites: Record<number, Sprite> = {};
+export let sprite_n: number = 0;
 // Use Record<string, any> instead of object so TypeScript allows dynamic property access
 export const spriteBlueprint: Record<string, { img: ImgCanvas; stats: Record<string, any> }> = {};
 
@@ -154,8 +163,10 @@ class Sprite {
         };
     }
 
-    static summon(p: Vector2, v: Vector2, a: Vector2, img: ImgCanvas, stats?: Record<string, any>): void {
-        sprites.push(new this(p, v, a, img, stats));
+    static summon(p: Vector2, v: Vector2, a: Vector2, img: ImgCanvas, stats?: Record<string, any>): number {
+        sprite_n++;
+        sprites[sprite_n]=new this(p, v, a, img, stats);
+        return sprite_n;
     }
 
     static summonBlueprint(name: string, p: Vector2, v: Vector2, a: Vector2, overrides?: Record<string, any>): void {
@@ -238,113 +249,282 @@ function update(): void {
     const dt = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
 
-    // Cap dt to avoid huge physics jumps during stutters
-    if (dt > 0.1) return; 
-
-    // 1. Receive Input Across All Sprites
-    for (let i = 0; i < sprites.length; i++) {
-        sprites[i].movement(sprites[i], keys, mouse);
+    for (const id in sprites) {
+        const sprite = sprites[id]
+        sprite.stats.movement(keys, mouse)
+        sprite.p.x += sprite.v.x * dt + 0.5 * sprite.a.x * dt * dt
+        sprite.p.y += sprite.v.y * dt + 0.5 * sprite.a.y * dt * dt
+        sprite.v.x += sprite.a.x * dt
+        sprite.v.y += sprite.a.y * dt
     }
-
-    // 2. Exact Kinematic Motion Pass
-    for (let i = 0; i < sprites.length; i++) {
-        const s = sprites[i];
-        s.p.x += (0.5 * s.a.x * dt * dt) + (s.v.x * dt);
-        s.p.y += (0.5 * s.a.y * dt * dt) + (s.v.y * dt);
-
-        s.v.x += s.a.x * dt;
-        s.v.y += s.a.y * dt;
-    }
-
-    // 3. Collisions (Tiles First -> Sprites Second)
-    for (let i = 0; i < sprites.length; i++) {
-        handleTileCollisions(sprites[i]);
-        handleSpriteCollisions(sprites[i], i);
+    for (const id1 in sprites) {for (const id2 in sprites) {
+        if (id1==id2){continue}
+        const spr1 = sprites[id1]
+        const spr2 = sprites[id2]
+        if(checkAABBCollision(spr1, spr2)){handleDecollide(spr1,spr2)}
+    }}
+    for (const id in sprites) {
+        const sprite = sprites[id]
+        handleTileCollisions(sprite)
     }
 }
+function handleDecollide(s1: Sprite, s2: Sprite): void {
+    if (!(s1.stats.passThrough || s2.stats.passThrough)) {
+        
+        const result: CollisionSide = {
+            up: false,
+            down: false,
+            left: false,
+            right: false
+        };
 
-function render(): void {
-    if (!ctx) return;
-    
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        const center1X = s1.p.x + s1.size.x / 2;
+        const center1Y = s1.p.y + s1.size.y / 2;
+        const center2X = s2.p.x + s2.size.x / 2;
+        const center2Y = s2.p.y + s2.size.y / 2;
 
-    // Draw Background Tiles
-    for (const [posKey, tileName] of Object.entries(tilemap)) {
-        const [x, y] = posKey.split(',').map(Number);
-        const tileConfig = tiles[tileName];
-        if (tileConfig) {
-            ctx.drawImage(tileConfig.img.canvas, x * tileSize, y * tileSize, tileSize, tileSize);
+        const distX = center1X - center2X;
+        const distY = center1Y - center2Y;
+
+        const minSizeX = s1.size.x / 2 + s2.size.x / 2;
+        const minSizeY = s1.size.y / 2 + s2.size.y / 2;
+
+        const overlapX = minSizeX - Math.abs(distX);
+        const overlapY = minSizeY - Math.abs(distY);
+
+        // 1. Calculate side flags and stop velocity on the hit axis
+        if (overlapX < overlapY) {
+            if (distX > 0) {
+                result.left = true;
+                if (!s1.stats.immoveable) s1.v.x = 0;
+            } else {
+                result.right = true;
+                if (!s1.stats.immoveable) s1.v.x = 0;
+            }
+        } else {
+            if (distY > 0) {
+                result.up = true;
+                if (!s1.stats.immoveable) s1.v.y = 0;
+            } else {
+                result.down = true;
+                if (!s1.stats.immoveable) s1.v.y = 0; // Acceleration left completely untouched!
+            }
         }
-    }
 
-    // Draw Foreground Sprites
-    for (let i = 0; i < sprites.length; i++) {
-        const s = sprites[i];
-        ctx.drawImage(s.img.canvas, s.p.x, s.p.y);
+        // 2. Generate the precise 1px nudge vector from your boolean math
+        const dx = +result.left - +result.right;
+        const dy = +result.down - +result.up;
+
+        // 3. Apply the 1px nudge if s1 is allowed to move
+        if (!s1.stats.immoveable) {
+            s1.p.x += dx;
+            s1.p.y += dy;
+        }
+
+        // 4. Trigger the collision action handler
+        s2.stats.onTouch?.(s1, result);
+
+    } else {
+        s2.stats.within?.(s1);
     }
 }
+function checkAABBCollision(s1: Sprite, s2: Sprite): boolean {
+  // Check if they overlap on the horizontal X axis
+  const overlapX = s1.p.x < s2.p.x + s2.size.x && s1.p.x + s1.size.x > s2.p.x
 
-function loop(): void {
-    update();
-    render();
-    requestAnimationFrame(loop);
-};
-// ==========================================
-// ENGINE CONFIGURATION
-// ==========================================
-export let tileSize: number = 32; // Square tiles (e.g., 32x32 pixels)
+  // Check if they overlap on the vertical Y axis
+  const overlapY = s1.p.y < s2.p.y + s2.size.y && s1.p.y + s1.size.y > s2.p.y
 
-// ==========================================
-// COLLISION SYSTEM
-// ==========================================
+  // A collision only happens if BOTH are true!
+  return overlapX && overlapY
+}
+function handleTileCollisions(s1: Sprite): void {
+    // 1. Calculate the bounding tile indices based on the sprite's bounding box
+    const startX = Math.floor(s1.p.x / tileSize);
+    const endX = Math.floor((s1.p.x + s1.size.x) / tileSize);
+    const startY = Math.floor(s1.p.y / tileSize);
+    const endY = Math.floor((s1.p.y + s1.size.y) / tileSize);
 
-function handleTileCollisions(s: Sprite): void {
-    // 1. Calculate the bounding box of the sprite in pixels
-    const spriteLeft = s.p.x;
-    const spriteRight = s.p.x + s.size.x;
-    const spriteTop = s.p.y;
-    const spriteBottom = s.p.y + s.size.y;
-
-    // 2. Convert pixel boundaries into grid coordinates to check nearby tiles
-    const startX = Math.floor(spriteLeft / tileSize);
-    const endX = Math.floor(spriteRight / tileSize);
-    const startY = Math.floor(spriteTop / tileSize);
-    const endY = Math.floor(spriteBottom / tileSize);
-
-    // 3. Scan the grid area overlapping the sprite
+    // 2. Scan every grid coordinate the sprite overlaps
     for (let x = startX; x <= endX; x++) {
         for (let y = startY; y <= endY; y++) {
-            const coordinateKey = `${x},${y}`;
-            const tileName = tilemap[coordinateKey];
+            
+            // Look up the tile name via your "x,y" string format match
+            const tileName = tilemap[`${x},${y}`];
+            if (!tileName) continue; 
 
-            if (tileName) {
-                const tileConfig = tiles[tileName];
+            const tile = tiles[tileName];
+            if (!tile) continue;
+
+            const props = tile.properties; // Access via our class getter
+
+            // Find the boundary boundaries of the current grid tile
+            const tileLeft = x * tileSize;
+            const tileTop = y * tileSize;
+
+            const center1X = s1.p.x + s1.size.x / 2;
+            const center1Y = s1.p.y + s1.size.y / 2;
+            const center2X = tileLeft + tileSize / 2;
+            const center2Y = tileTop + tileSize / 2;
+
+            const distX = center1X - center2X;
+            const distY = center1Y - center2Y;
+
+            const minSizeX = s1.size.x / 2 + tileSize / 2;
+            const minSizeY = s1.size.y / 2 + tileSize / 2;
+
+            const overlapX = minSizeX - Math.abs(distX);
+            const overlapY = minSizeY - Math.abs(distY);
+
+            // Double check there's an active overlap intersection
+            if (overlapX > 0 && overlapY > 0) {
                 
-                
-                if (tileConfig && !tileConfig.passThrough) {
-                    // Your custom de-collision pushing logic will go right here!
+                // --- PASS-THROUGH PHASE ---
+                if (props.passThrough) {
+                    props.within?.(s1);
+                    continue; 
+                }
+
+                // --- SOLID PHYSICS DE-COLLISION PHASE ---
+                const result: CollisionSide = { up: false, down: false, left: false, right: false };
+                let collided = false; // Flag to track if a push actually happened
+
+                if (overlapX < overlapY) {
+                    // Horizontal Collision Check
+                    if (distX > 0) {
+                        // Sprite is on the right, moving left into the tile's right face
+                        if (s1.v.x < 0) {
+                            s1.p.x += overlapX; // Push out fully
+                            s1.v.x = 0;
+                            result.left = true;
+                            collided = true;
+                        }
+                    } else {
+                        // Sprite is on the left, moving right into the tile's left face
+                        if (s1.v.x > 0) {
+                            s1.p.x -= overlapX; // Push out fully
+                            s1.v.x = 0;
+                            result.right = true;
+                            collided = true;
+                        }
+                    }
+                } else {
+                    // Vertical Collision Check
+                    if (distY > 0) {
+                        // Sprite is below, moving up into the tile's ceiling face
+                        if (s1.v.y < 0) {
+                            s1.p.y += overlapY; // Push out fully
+                            s1.v.y = 0;
+                            result.up = true;
+                            collided = true;
+                        }
+                    } else {
+                        // Sprite is above, moving down into the tile's floor face
+                        if (s1.v.y > 0) {
+                            s1.p.y -= overlapY; // Push out fully
+                            s1.v.y = 0;
+                            result.down = true;
+                            collided = true;
+                        }
+                    }
+                }
+
+                // FIXED: Call onTouch exactly once down here, ONLY if a collision actually happened
+                if (collided) {
+                    props.onTouch?.(s1, result);
                 }
             }
         }
     }
 }
 
-function handleSpriteCollisions(s: Sprite, index: number): void {
-    // Start looping from index + 1 to avoid checking the same pair twice or checking a sprite against itself
-    for (let j = index + 1; j < sprites.length; j++) {
-        const other = sprites[j];
+function render(): void {
+    if (!ctx || !canvas) return;
 
-        // Axis-Aligned Bounding Box (AABB) overlap check
-        const isOverlapping = 
-            s.p.x < other.p.x + other.size.x &&
-            s.p.x + s.size.x > other.p.x &&
-            s.p.y < other.p.y + other.size.y &&
-            s.p.y + s.size.y > other.p.y;
+    // 1. Fill the entire canvas viewport with the base background color
+    ctx.fillStyle = bgcolor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        if (isOverlapping) {
-            // Reserve space for special behaviors (e.g., bullet hits player, items get picked up)
-            
-            // Your custom de-collide physical pushing math goes here!
+    // 2. Center the camera window over Sprite ID 1
+    const player = sprites[1];
+    let camX = 0;
+    let camY = 0;
+
+    if (player) {
+        camX = (player.p.x + player.size.x / 2) - canvas.width / 2;
+        camY = (player.p.y + player.size.y / 2) - canvas.height / 2;
+    }
+
+    // 3. Render World Grid Viewport (Already culled by visible bounds)
+    const startX = Math.floor(camX / tileSize);
+    const endX = Math.ceil((camX + canvas.width) / tileSize);
+    const startY = Math.floor(camY / tileSize);
+    const endY = Math.ceil((camY + canvas.height) / tileSize);
+
+    for (let x = startX; x <= endX; x++) {
+        for (let y = startY; y <= endY; y++) {
+            const tileName = tilemap[`${x},${y}`];
+            const drawX = x * tileSize - camX;
+            const drawY = y * tileSize - camY;
+
+            if (!tileName) {
+                ctx.fillStyle = notilecolor;
+                ctx.fillRect(drawX, drawY, tileSize, tileSize);
+                continue;
+            }
+
+            const tile = tiles[tileName];
+            if (tile && tile.image && tile.image.isLoaded) {
+                ctx.drawImage(tile.image.canvas, drawX, drawY, tileSize, tileSize);
+            } else {
+                ctx.fillStyle = notilecolor;
+                ctx.fillRect(drawX, drawY, tileSize, tileSize);
+            }
         }
     }
+
+    // 4. Render All Sprites (With Frustum Culling)
+    for (const id in sprites) {
+        const sprite = sprites[id];
+        
+        if (sprite.img && sprite.img.isLoaded) {
+            // OPTIMIZATION: Check if the sprite overlaps the camera screen bounds
+            const isVisible = sprite.p.x < camX + canvas.width &&
+                              sprite.p.x + sprite.size.x > camX &&
+                              sprite.p.y < camY + canvas.height &&
+                              sprite.p.y + sprite.size.y > camY;
+
+            if (isVisible) {
+                ctx.drawImage(
+                    sprite.img.canvas,
+                    sprite.p.x - camX,
+                    sprite.p.y - camY,
+                    sprite.size.x,
+                    sprite.size.y
+                );
+            }
+        }
+    }
+}
+
+function loop(): void {
+    update();
+    render();
+    requestAnimationFrame(loop)
+}
+export let tileSize: number;
+export let canvas: HTMLCanvasElement;
+export let ctx: CanvasRenderingContext2D; // Store the context for fast drawing loops
+export let bgcolor: string;
+export let notilecolor: string;
+
+export function start(_tileSize: number, _canvas: HTMLCanvasElement, bg:string, notile: string) {
+    bgcolor=bg
+    notilecolor=notile
+    tileSize = _tileSize;
+    canvas = _canvas;
+    ctx = canvas.getContext("2d")!; // Capture the 2D canvas context
+    
+    lastTime = performance.now(); // Initialize the frame timer safely
+    loop();
 }
