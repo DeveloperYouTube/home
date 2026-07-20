@@ -1,3 +1,21 @@
+import './utilities.js';
+
+export let tileSize: number;
+export let canvas: HTMLCanvasElement;
+export let ctx: CanvasRenderingContext2D; // Store the context for fast drawing loops
+export let bgcolor: string;
+export let notilecolor: string;
+
+export function start(_tileSize: number, _canvas: HTMLCanvasElement, bg:string, notile: string) {
+    bgcolor=bg
+    notilecolor=notile
+    tileSize = _tileSize;
+    canvas = _canvas;
+    ctx = canvas.getContext("2d")!; // Capture the 2D canvas context
+    
+    lastTime = performance.now(); // Initialize the frame timer safely
+    loop();
+}
 //interfaces
 // Simple layout to report which side of the box collided
 export interface CollisionSide {
@@ -25,7 +43,7 @@ export interface SpriteStatProperties {
 }
 
 //vector
-class Vector2 {
+export class Vector2 {
     private _x: number;
     private _y: number;
 
@@ -53,7 +71,7 @@ class Vector2 {
         return `${this._x},${this._y}`
     }
 }
-class ImgCanvas {
+export class ImgCanvas {
     public src: string;
     public canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
@@ -102,7 +120,7 @@ class ImgCanvas {
 export const tiles: Record<string, Tile> = {};
 export const tilemap: Record<string, string> = {};
 
-class Tile {
+export class Tile {
     private img: ImgCanvas;
     private special: any;
 
@@ -139,7 +157,7 @@ export let sprite_n: number = 0;
 // Use Record<string, any> instead of object so TypeScript allows dynamic property access
 export const spriteBlueprint: Record<string, { img: ImgCanvas; stats: Record<string, any> }> = {};
 
-class Sprite {
+export class Sprite {
     public p: Vector2;
     public v: Vector2;
     public a: Vector2;
@@ -512,19 +530,9 @@ function loop(): void {
     render();
     requestAnimationFrame(loop)
 }
-export let tileSize: number;
-export let canvas: HTMLCanvasElement;
-export let ctx: CanvasRenderingContext2D; // Store the context for fast drawing loops
-export let bgcolor: string;
-export let notilecolor: string;
 
-export function start(_tileSize: number, _canvas: HTMLCanvasElement, bg:string, notile: string) {
-    bgcolor=bg
-    notilecolor=notile
-    tileSize = _tileSize;
-    canvas = _canvas;
-    ctx = canvas.getContext("2d")!; // Capture the 2D canvas context
-    
-    lastTime = performance.now(); // Initialize the frame timer safely
-    loop();
-}
+(globalThis as any).Vector2 = Vector2;
+(globalThis as any).Tile = Tile;
+(globalThis as any).Sprite = Sprite;
+(globalThis as any).ImgCanvas = ImgCanvas;
+(globalThis as any).startGame2D = start;
