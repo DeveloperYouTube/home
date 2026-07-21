@@ -207,8 +207,12 @@ export class Sprite {
 }
 
 
-
-
+let loops: Function[] = []
+export class Loop {
+    static onUpdate (f:Function) {
+        loops.push(f)
+    }
+}
 
 
 //GAME LOGIC
@@ -267,9 +271,25 @@ function update(): void {
     const dt = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
 
+    for (let i = 0; i < loops.length; i++) {
+        loops[i](dt); // Pass dt in case callbacks need delta time!
+    }
+
     for (const id in sprites) {
         const sprite = sprites[id]
-        sprite.stats.movement(keys, mouse)
+        const move = sprite.stats.movement(keys, mouse)
+        if(move.vx){
+            sprite.v.x=move.vx
+        }
+        if(move.vy){
+            sprite.v.y=move.vy
+        }
+        if(move.ax){
+            sprite.a.x=move.ax
+        }
+        if(move.ay){
+            sprite.a.y=move.ay
+        }
         sprite.p.x += sprite.v.x * dt + 0.5 * sprite.a.x * dt * dt
         sprite.p.y += sprite.v.y * dt + 0.5 * sprite.a.y * dt * dt
         sprite.v.x += sprite.a.x * dt
