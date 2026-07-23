@@ -1,11 +1,11 @@
 //imports
-import {Tile, Sprite, Loop, sprites} from '../../../../../2d.ts';
+import {ImgCanvas, Loop, start, Tile, Sprite, Vector2, tiles, tilemap} from '/2d.ts';
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworld'))
 localStorage.removeItem('2DCsinglePworld');
 const screen = document.getElementById('screen')
-start(32, screen,'#00ffff','#000000')
+start(32,screen,'#0ff','#000')
 const background = document.body
 const death = {
     void: `You fell out of the world`
@@ -34,13 +34,82 @@ window.addEventListener('resize', resizeCanvas);
 
 //START!
 function create () {
-    Tile.create('GrassBlock', new ImgCanvas('/home/images/2dc/grass_block.png'), {})
-    Tile.create('Cobblestone', new ImgCanvas('/home/images/2dc/cobblestone.png'), {})
+    Tile.create('GrassBlock', new ImgCanvas('/images/2dc/grass_block.png'), {})
+    Tile.create('Cobblestone', new ImgCanvas('/images/2dc/cobblestone.png'), {})
 }
-Sprite
+const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,10),new ImgCanvas('/images/2dc/player.png'),{hp: 20, movement: (keys, mouse) => {
+
+}})
 Loop.onUpdate((dt) => {
-    
-})
+    // 1. Get player position directly
+    const playerPos = sprites[player].p;
+
+    // 2. Calculate camera bounds centered on player
+    const halfWidth = screen.width / 2;
+    const halfHeight = screen.height / 2;
+
+    // 3. Convert visible world bounds directly to grid indices using 32
+    const minTileX = Math.floor((playerPos.x - halfWidth) / 32) - 1;
+    const maxTileX = Math.ceil((playerPos.x + halfWidth) / 32) + 1;
+    const minTileY = Math.floor((playerPos.y - halfHeight) / 32) - 1;
+    const maxTileY = Math.ceil((playerPos.y + halfHeight) / 32) + 1;
+
+    // 4. Loop through visible tiles
+    for (let x = minTileX; x <= maxTileX; x++) {
+        for (let y = minTileY; y <= maxTileY; y++) {
+            const key = `${x},${y}`;
+
+            if (!Object.hasOwn(tilemap,key)) {
+                // 1. Continental noise: determines landmass vs deep ocean span (0.003 = wide region spans)
+                const landmass = perlin.noise(x * 0.003, seed); 
+
+                // 2. Local elevation noise: hills, cliffs, and peaks
+                const hillNoise = perlin.noise(x * 0.02, seed) - 0.5;
+                const mountainNoise = perlin.noise(x * 0.05, seed) - 0.5;
+
+                // 3. Inland water noise: creates river cuts and lake basins on land
+                const riverNoise = Math.abs(perlin.noise(x * 0.015, seed) - 0.5);
+
+                // Calculate base terrain elevation relative to sea level (y=63) and ocean floor (y=45)
+                let height;
+
+                if (landmass > 0.45) {
+                    // --- LANDMASS REGION ---
+                    // Smooth rolling hills and occasional steep cliffs/mountains
+                    let elevation = (hillNoise * 20) + (Math.max(0, hillNoise) * mountainNoise * 25);
+                    
+                    // Cut out rivers/lakes where river noise drops near zero
+                    if (riverNoise < 0.04) {
+                        elevation = Math.min(elevation, -2); // Carves rivers down to sea level or slightly below
+                    }
+
+                    // Land base sits around y=63 (sea level) and extends upward
+                    height = 63 - Math.floor(elevation + 4); 
+                } else {
+                    // --- OCEAN REGION ---
+                    // Ocean floor sits near y=45
+                    let oceanFloor = 45 - Math.floor(hillNoise * 8);
+
+                    // Island / Seamount check: high local peaks in shallow ocean can break above sea level
+                    const islandPeak = mountainNoise * 35;
+                    if (landmass > 0.38 && islandPeak > 18) {
+                        height = 63 - Math.floor(islandPeak - 15); // Small island/cliff rising out of the water
+                    } else {
+                        height = oceanFloor;
+                    }
+                }
+                height=Math.floor(height)
+
+
+
+                //summon tile
+                if(y==height){
+                    
+                }
+            }
+        }
+    }
+});
 //END!
 
 window.addEventListener('beforeunload', (event) => {

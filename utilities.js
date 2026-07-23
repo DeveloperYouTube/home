@@ -46,44 +46,36 @@ Array.prototype.scale2D_upToMax = function(maxX, maxY) {
 // ==========================================
 // 3. ENGINE UTILITIES (Attached globally via globalThis)
 // ==========================================
-globalThis.utils = {
+// 1. Time utilities
+globalThis.time = {
     pause: function(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
-    },
-    logic: {
-        ors: function(...booleans) {
-            for (const element of booleans) {
-                if (element) return true;
-            }
-            return false;
-        },
-        ands: function(...booleans) {
-            return !this.ors(...booleans.map(b => !b));
-        }
-    },
-    perlin: {
-        noise: function(x, seed = "0") {
-            const x0 = Math.floor(x);
-            const x1 = x0 + 1;
-            const t = x - x0;
+    }
+};
 
-            const fade = t * t * t * (t * (t * 6 - 15) + 10);
+// 2. Perlin noise utilities
+globalThis.perlin = {
+    noise: function(x, seed = "0") {
+        const x0 = Math.floor(x);
+        const x1 = x0 + 1;
+        const t = x - x0;
 
-            const getGradient = (p) => {
-                // Uses the shiny new string prototype patch!
-                const hash = Math.sin(p + seed.toIntHash()) * 43758.5453123;
-                return (hash - Math.floor(hash)) * 2 - 1;
-            };
+        const fade = t * t * t * (t * (t * 6 - 15) + 10);
 
-            const g0 = getGradient(x0);
-            const g1 = getGradient(x1);
-            
-            const n0 = g0 * t;
-            const n1 = g1 * (t - 1);
+        const getGradient = (p) => {
+            // Uses the custom String.prototype.toIntHash!
+            const hash = Math.sin(p + seed.toIntHash()) * 43758.5453123;
+            return (hash - Math.floor(hash)) * 2 - 1;
+        };
 
-            const lerp = (a, b, weight) => a + weight * (b - a);
-            return lerp(n0, n1, fade) + 0.5;
-        }
+        const g0 = getGradient(x0);
+        const g1 = getGradient(x1);
+        
+        const n0 = g0 * t;
+        const n1 = g1 * (t - 1);
+
+        const lerp = (a, b, weight) => a + weight * (b - a);
+        return lerp(n0, n1, fade) + 0.5;
     }
 };
 
