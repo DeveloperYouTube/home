@@ -1,5 +1,5 @@
 //imports
-import {ImgCanvas, Loop, start, Tile, Sprite, Vector2, tiles, tilemap} from '/2d.ts';
+import {ImgCanvas, Loop, start, Tile, Sprite, Vector2, tiles, tilemap} from '/home/2d.ts';
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const sqrt2560 = 16 * Math.SQRT10
@@ -35,9 +35,9 @@ window.addEventListener('resize', resizeCanvas);
 
 //START!
 function create () {
-    Tile.create('GrassBlock', new ImgCanvas('/images/2dc/grass_block.png'), {})
-    Tile.create('Cobblestone', new ImgCanvas('/images/2dc/cobblestone.png'), {})
-    Tile.create('Air', new ImgCanvas('/images/nothing.png'), {})
+    Tile.create('GrassBlock', new ImgCanvas('/home/images/2dc/grass_block.png'), {})
+    Tile.create('Cobblestone', new ImgCanvas('/home/images/2dc/cobblestone.png'), {})
+    Tile.create('Air', new ImgCanvas('/home/images/nothing.png'), {})
 }
 const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new ImgCanvas('/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
     let move = {vx:0}

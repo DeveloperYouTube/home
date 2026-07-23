@@ -1,4 +1,4 @@
-import './utilities.js';
+import '/home/utilities.js';
 
 export let tileSize: number;
 export let canvas: HTMLCanvasElement;
