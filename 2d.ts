@@ -277,7 +277,7 @@ function update(): void {
 
     for (const id in sprites) {
         const sprite = sprites[id]
-        const move = sprite.stats.movement(keys, mouse)
+        const move = sprite.stats.movement(keys, mouse, sprite)
         if(move.vx){
             sprite.v.x=move.vx
         }

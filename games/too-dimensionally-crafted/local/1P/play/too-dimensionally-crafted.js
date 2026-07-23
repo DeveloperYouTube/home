@@ -2,6 +2,7 @@
 import {ImgCanvas, Loop, start, Tile, Sprite, Vector2, tiles, tilemap} from '/2d.ts';
 //varibles
 //const(can't change (e.g. HTML elements and objects))
+const sqrt2560 = 16 * Math.SQRT10
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworld'))
 localStorage.removeItem('2DCsinglePworld');
 const screen = document.getElementById('screen')
@@ -36,9 +37,19 @@ window.addEventListener('resize', resizeCanvas);
 function create () {
     Tile.create('GrassBlock', new ImgCanvas('/images/2dc/grass_block.png'), {})
     Tile.create('Cobblestone', new ImgCanvas('/images/2dc/cobblestone.png'), {})
+    Tile.create('Air', new ImgCanvas('/images/nothing.png'), {})
 }
-const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,10),new ImgCanvas('/images/2dc/player.png'),{hp: 20, movement: (keys, mouse) => {
-
+const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new ImgCanvas('/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
+    let move = {vx:0}
+    if(keys.d){
+        move.vx+=138.144
+    }
+    if(keys.a){
+        move.vx-=138.144
+    }
+    if(keys.space&&p.v.y==0){
+        move.vy=sqrt2560
+    }
 }})
 Loop.onUpdate((dt) => {
     // 1. Get player position directly
@@ -104,7 +115,11 @@ Loop.onUpdate((dt) => {
 
                 //summon tile
                 if(y==height){
-                    
+                    Tile.set(new Vector2(x,y),"GrassBlock")
+                } else if (y<height){
+                    Tile.set(new Vector2(x,y),"Cobblestone")
+                } else {
+                    Tile.set(new Vector2(x,y),"Air")
                 }
             }
         }
