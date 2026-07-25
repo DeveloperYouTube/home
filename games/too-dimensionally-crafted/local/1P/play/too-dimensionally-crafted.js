@@ -1,5 +1,5 @@
 //imports
-import {ImgCanvas, Loop, start, Tile, Sprite, Vector2, tiles, tilemap} from '/home/2d.js';
+import {sprites, tiles, tilemap} from '/home/2d.js';
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const sqrt2560 = 16 * Math.SQRT10
