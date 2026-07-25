@@ -39,7 +39,7 @@ function create () {
     Tile.create('Cobblestone', new ImgCanvas('/home/images/2dc/cobblestone.png'), {});
     Tile.create('Air', new ImgCanvas('/home/images/nothing.png'), {})
 }
-const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new ImgCanvas('/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
+const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new ImgCanvas('/home/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
     let move = {vx:0}
     if(keys.d){
         move.vx+=138.144
