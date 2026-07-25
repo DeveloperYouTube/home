@@ -441,6 +441,7 @@ function loop() {
 }
 globalThis.Vector2 = Vector2;
 globalThis.Tile = Tile;
+globalThis.Loop = Loop;
 globalThis.Sprite = Sprite;
 globalThis.ImgCanvas = ImgCanvas;
 globalThis.startGame = start;
