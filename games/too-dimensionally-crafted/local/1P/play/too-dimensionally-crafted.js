@@ -6,7 +6,7 @@ const sqrt2560 = 16 * Math.SQRT10
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworld'))
 localStorage.removeItem('2DCsinglePworld');
 const screen = document.getElementById('screen')
-start(32,screen,'#0ff','#000')
+startGame(32,screen,'#0ff','#000')
 const background = document.body
 const death = {
     void: `You fell out of the world`
