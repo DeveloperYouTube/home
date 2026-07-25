@@ -550,9 +550,3 @@ function loop(): void {
     render();
     requestAnimationFrame(loop)
 }
-
-(globalThis as any).Vector2 = Vector2;
-(globalThis as any).Tile = Tile;
-(globalThis as any).Sprite = Sprite;
-(globalThis as any).ImgCanvas = ImgCanvas;
-(globalThis as any).startGame2D = start;
