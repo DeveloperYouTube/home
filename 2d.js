@@ -188,16 +188,16 @@ function update() {
     for (const id in sprites) {
         const sprite = sprites[id];
         const move = sprite.stats.movement(keys, mouse, sprite);
-        if (Object.hasOwn(move, vx)) {
+        if (Object.hasOwn(move, 'vx')) {
             sprite.v.x = move.vx;
         }
-        if (Object.hasOwn(move, vy)) {
+        if (Object.hasOwn(move, 'vy')) {
             sprite.v.y = move.vy;
         }
-        if (Object.hasOwn(move, zx)) {
+        if (Object.hasOwn(move, 'ax')) {
             sprite.a.x = move.ax;
         }
-        if (Object.hasOwn(move, ay)) {
+        if (Object.hasOwn(move, 'ay')) {
             sprite.a.y = move.ay;
         }
         sprite.p.x += sprite.v.x * dt + 0.5 * sprite.a.x * dt * dt;
