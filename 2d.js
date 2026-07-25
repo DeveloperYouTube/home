@@ -187,7 +187,7 @@ function update() {
     }
     for (const id in sprites) {
         const sprite = sprites[id];
-        const move = sprite.stats.movement(keys, mouse, sprite);
+        const move = sprite.stats.movement(keys, mouse, sprite) || {};;
         if (Object.hasOwn(move, 'vx')) {
             sprite.v.x = move.vx;
         }
