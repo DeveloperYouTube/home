@@ -48,7 +48,7 @@ const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new 
         move.vx-=138.144
     }
     if(keys.space&&p.v.y==0){
-        move.vy=sqrt2560
+        move.vy=-sqrt2560
     }
 }})
 Loop.onUpdate((dt) => {
@@ -109,14 +109,14 @@ Loop.onUpdate((dt) => {
                         height = oceanFloor;
                     }
                 }
-                height=Math.floor(height)
+                height=0-Math.floor(height)
 
 
 
                 //summon tile
                 if(y==height){
                     Tile.set(new Vector2(x,y),"GrassBlock")
-                } else if (y<height){
+                } else if (y>height){
                     Tile.set(new Vector2(x,y),"Cobblestone")
                 } else {
                     Tile.set(new Vector2(x,y),"Air")
