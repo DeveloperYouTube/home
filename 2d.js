@@ -5,6 +5,12 @@ export let ctx; // Store the context for fast drawing loops
 export let bgcolor;
 export let notilecolor;
 let tilecreateused = false;
+export let memory = true;
+export let fov = Math.PI/3*2;
+export function blackout(memo, sight) {
+    memory=memo;
+    fov=sight
+}
 export function start(_tileSize, _canvas, bg, notile) {
     if(tilecreateused){bgcolor = bg;
     notilecolor = notile;
@@ -15,6 +21,28 @@ export function start(_tileSize, _canvas, bg, notile) {
     loop();} else {//not so safe anymore unlike lasttime initializing safly
         throw new Error("Tile.create() must be invoked at least once prior to startGame().");
     }
+}
+function calculateTextureTransparency(imageOrCanvas) {
+  // 1. Draw tile texture onto an offscreen canvas to sample raw pixels
+  const offCanvas = document.createElement("canvas");
+  offCanvas.width = imageOrCanvas.width;
+  offCanvas.height = imageOrCanvas.height;
+  const offCtx = offCanvas.getContext("2d");
+  offCtx.drawImage(imageOrCanvas, 0, 0);
+
+  // 2. Fetch RGBA pixel array
+  const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height).data;
+  let totalAlpha = 0;
+  const totalPixels = imgData.length / 4;
+
+  // 3. Sum up all alpha values (index 3, 7, 11, etc.)
+  for (let i = 3; i < imgData.length; i += 4) {
+    totalAlpha += imgData[i]; // Alpha ranges from 0 to 255
+  }
+
+  // 4. Return average transparency as a 0.0 - 1.0 multiplier
+  const averageAlpha = totalAlpha / totalPixels;
+  return averageAlpha / 255; 
 }
 //vector
 export class Vector2 {
@@ -37,6 +65,9 @@ export class Vector2 {
     }
     get vectors() {
         return `${this._x},${this._y}`;
+    }
+    get hypot() {
+        return Math.hypot(this._x,this._y)
     }
 }
 export class ImgCanvas {
@@ -75,6 +106,7 @@ export class ImgCanvas {
 // 1. Declare your registries globally using proper TypeScript Record types
 export const tiles = {};
 export const tilemap = {};
+export const sprites = {};
 export class Tile {
     constructor(img, special) {
         this.img = img;
@@ -87,8 +119,22 @@ export class Tile {
     }
     // Static map placement method
     static set(p, name) {
-        // Use your clean p.vectors getter here! 
-        // This converts the Vector2 instance into a unique string key like "12,34"
+        const ray = new Vector2(
+            sprites[1].x + (sprites[1].width / 2),
+            sprites[1].y + (sprites[1].height / 2)
+        );
+        const tilecent = new Vector2((p.x+0.5)*tileSize,(p.y+0.5)*tileSize)const dx = tilecent.x - ray.x;
+        const dy = tilecent.y - ray.y;
+
+        // 2. Distance BETWEEN the two points (hypotenuse of dx and dy!)
+        const d = Math.hypot(dx, dy); // Or: new Vector2(dx, dy).hypo
+
+        // 3. Normalized step vector scaled by step size (use tileSize / 2 for reliable stepping!)
+        const stepSize = tileSize / 2;
+        const step = new Vector2(
+            d > 0 ? (dx / d) * stepSize : 0,
+            d > 0 ? (dy / d) * stepSize : 0
+        );
         tilemap[p.vectors] = name;
     }
     static remove(p, name) {
@@ -103,7 +149,6 @@ export class Tile {
         return this.img;
     }
 }
-export const sprites = {};
 export let sprite_n = 0;
 // Use Record<string, any> instead of object so TypeScript allows dynamic property access
 export const spriteBlueprint = {};
