@@ -119,7 +119,7 @@ Loop.onUpdate((dt) => {
                 } else if (y>height){
                     Tile.set(new Vector2(x,y),"Cobblestone")
                 } else {
-                    Tile.set(new Vector2(x,y),"Air")
+                    Tile.set(new Vector2(x,y),"Air");
                 }
             }
         }
