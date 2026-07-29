@@ -6,7 +6,6 @@ const sqrt2560 = 16 * Math.SQRT10
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworld'))
 localStorage.removeItem('2DCsinglePworld');
 const screen = document.getElementById('screen')
-startGame(32,screen,'#0ff','#000')
 const background = document.body
 const death = {
     void: `You fell out of the world`
@@ -37,8 +36,9 @@ window.addEventListener('resize', resizeCanvas);
 function create () {
     Tile.create('GrassBlock', new ImgCanvas('/home/images/2dc/grass_block.png'), {})
     Tile.create('Cobblestone', new ImgCanvas('/home/images/2dc/cobblestone.png'), {});
-    Tile.create('Air', new ImgCanvas('/home/images/nothing.png'), {})
+    Tile.create('Air', new ImgCanvas('/home/images/nothing.png'), {passThrough: true})
 }
+create()
 const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new ImgCanvas('/home/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
     let move = {vx:0}
     if(keys.d){
@@ -125,6 +125,7 @@ Loop.onUpdate((dt) => {
         }
     }
 });
+startGame(32,screen,'#0ff','#000');
 //END!
 
 window.addEventListener('beforeunload', (event) => {

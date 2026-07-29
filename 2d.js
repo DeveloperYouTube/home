@@ -4,14 +4,17 @@ export let canvas;
 export let ctx; // Store the context for fast drawing loops
 export let bgcolor;
 export let notilecolor;
+let tilecreateused = false;
 export function start(_tileSize, _canvas, bg, notile) {
-    bgcolor = bg;
+    if(tilecreateused){bgcolor = bg;
     notilecolor = notile;
     tileSize = _tileSize;
     canvas = _canvas;
     ctx = canvas.getContext("2d"); // Capture the 2D canvas context
     lastTime = performance.now(); // Initialize the frame timer safely
-    loop();
+    loop();} else {//not so safe anymore unlike lasttime initializing safly
+        throw new Error("Tile.create() must be invoked at least once prior to startGame().");
+    }
 }
 //vector
 export class Vector2 {
@@ -80,6 +83,7 @@ export class Tile {
     // Static registration method
     static create(name, img, special) {
         tiles[name] = new Tile(img, special);
+        tilecreateused=true;
     }
     // Static map placement method
     static set(p, name) {
@@ -404,8 +408,8 @@ function render() {
             const tileName = tilemap[`${x},${y}`];
             const drawX = x * tileSize - camX;
             const drawY = y * tileSize - camY;
+            ctx.fillStyle = notilecolor;
             if (!tileName) {
-                ctx.fillStyle = notilecolor;
                 ctx.fillRect(drawX, drawY, tileSize, tileSize);
                 continue;
             }
@@ -414,7 +418,6 @@ function render() {
                 ctx.drawImage(tile.image.canvas, drawX, drawY, tileSize, tileSize);
             }
             else {
-                ctx.fillStyle = notilecolor;
                 ctx.fillRect(drawX, drawY, tileSize, tileSize);
             }
         }
