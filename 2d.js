@@ -136,6 +136,9 @@ export class ImgCanvas {
     get height() {
         return this.canvas.height;
     }
+    get canvas() {
+        return this.canvas;
+    }
 }
 const TAU = Math.PI * 2;
 const halfFov = 0.5 * fov;
@@ -148,7 +151,7 @@ export class Tile {
     constructor(img, special) {
         this.img = img;
         this.special = special;
-        this.transparency=calculateTextureTransparency(this.img);
+        this.transparency=calculateTextureTransparency(img.canvas);
     }
     // Static registration method
     static create(name, img, special) {
