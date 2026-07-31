@@ -5,11 +5,15 @@ export let ctx; // Store the context for fast drawing loops
 export let bgcolor;
 export let notilecolor;
 let tilecreateused = false;
+let black = false
 export let memory = true;
 export let fov = Math.PI/3*2;
-export function blackout(memo, sight) {
+export let stepSize;
+export function blackout(memo, sight, qual) {
+    black = true
     memory=memo;
     fov=sight
+    stepSize=qual
 }
 export function start(_tileSize, _canvas, bg, notile) {
     if(tilecreateused){bgcolor = bg;
@@ -70,6 +74,34 @@ export class Vector2 {
         return Math.hypot(this._x,this._y)
     }
 }
+let mouse = {
+    positiontl: new Vector2(0,0),
+    positionmc: new Vector2(0,0),
+    anglemc: 0
+}
+window.addEventListener("mousemove", (event) => {
+    // 1. Get the bounding box of the canvas element on the page
+    const rect = canvas.getBoundingClientRect();
+
+    // 2. Scale factor in case canvas CSS dimensions differ from internal resolution
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    // 3. True canvas pixel coordinates (top-left origin)
+    mouse.positiontl.x = (event.clientX - rect.left) * scaleX;
+    mouse.positiontl.y = (event.clientY - rect.top) * scaleY;
+
+    // 4. Internal canvas center point
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    // 5. Offset relative to canvas center
+    mouse.positionmc.x = mouse.positiontl.x - centerX;
+    mouse.positionmc.y = mouse.positiontl.y - centerY;
+
+    // 6. Angle from canvas center
+    mouse.anglemc = Math.atan2(mouse.positionmc.y, mouse.positionmc.x);
+});
 export class ImgCanvas {
     /**
      * @param filepath - The text path or URL to the image file (e.g., './assets/img.png')
@@ -106,11 +138,13 @@ export class ImgCanvas {
 // 1. Declare your registries globally using proper TypeScript Record types
 export const tiles = {};
 export const tilemap = {};
+export const seen = {};
 export const sprites = {};
 export class Tile {
     constructor(img, special) {
         this.img = img;
         this.special = special;
+        this.transparency=calculateTextureTransparency(img)
     }
     // Static registration method
     static create(name, img, special) {
@@ -118,23 +152,7 @@ export class Tile {
         tilecreateused=true;
     }
     // Static map placement method
-    static set(p, name) {
-        const ray = new Vector2(
-            sprites[1].x + (sprites[1].width / 2),
-            sprites[1].y + (sprites[1].height / 2)
-        );
-        const tilecent = new Vector2((p.x+0.5)*tileSize,(p.y+0.5)*tileSize)const dx = tilecent.x - ray.x;
-        const dy = tilecent.y - ray.y;
-
-        // 2. Distance BETWEEN the two points (hypotenuse of dx and dy!)
-        const d = Math.hypot(dx, dy); // Or: new Vector2(dx, dy).hypo
-
-        // 3. Normalized step vector scaled by step size (use tileSize / 2 for reliable stepping!)
-        const stepSize = tileSize / 2;
-        const step = new Vector2(
-            d > 0 ? (dx / d) * stepSize : 0,
-            d > 0 ? (dy / d) * stepSize : 0
-        );
+    static set(p, name,del=false) {
         tilemap[p.vectors] = name;
     }
     static remove(p, name) {
