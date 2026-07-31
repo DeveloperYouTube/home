@@ -211,7 +211,7 @@ export class Loop {
 }
 // Global engine input registries
 export const keys = {};
-export const mouse = { x: 0, y: 0, left: false, right: false };
+export const mousei = { x: 0, y: 0, left: false, right: false };
 // ==========================================
 // SYSTEM LISTENERS
 // ==========================================
@@ -222,21 +222,21 @@ export function setupInputListeners(canvasElement) {
     // 2. Mouse Position Tracking (Adjusted for canvas bounding margins)
     canvasElement.addEventListener('mousemove', (e) => {
         const rect = canvasElement.getBoundingClientRect();
-        mouse.x = e.clientX - rect.left;
-        mouse.y = e.clientY - rect.top;
+        mousei.x = e.clientX - rect.left;
+        mousei.y = e.clientY - rect.top;
     });
     // 3. Dedicated Mouse Button Click Trackers
     canvasElement.addEventListener('mousedown', (e) => {
         if (e.button === 0)
-            mouse.left = true;
+            mousei.left = true;
         if (e.button === 2)
-            mouse.right = true;
+            mousei.right = true;
     });
     canvasElement.addEventListener('mouseup', (e) => {
         if (e.button === 0)
-            mouse.left = false;
+            mousei.left = false;
         if (e.button === 2)
-            mouse.right = false;
+            mousei.right = false;
     });
     // Prevents standard right-click context popups from breaking canvas actions
     canvasElement.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -254,7 +254,7 @@ function update() {
     }
     for (const id in sprites) {
         const sprite = sprites[id];
-        const move = sprite.stats.movement(keys, mouse, sprite) || {};;
+        const move = sprite.stats.movement(keys, mousei, sprite) || {};
         if (Object.hasOwn(move, 'vx')) {
             sprite.v.x = move.vx;
         }
