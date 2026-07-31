@@ -8,11 +8,13 @@ let tilecreateused = false;
 let black = false
 export let memory = true;
 export let fov = Math.PI/3*2;
+export let halffov = Math.PI/3;
 export let stepSize;
 export function blackout(memo, sight, qual) {
     black = true
     memory=memo;
-    fov=sight
+    fov=Math.deg2rad(sight)
+    halffov=0.5*fov
     stepSize=qual
 }
 export function start(_tileSize, _canvas, bg, notile) {
@@ -135,6 +137,8 @@ export class ImgCanvas {
         return this.canvas.height;
     }
 }
+const TAU = Math.PI * 2;
+const halfFov = 0.5 * fov;
 // 1. Declare your registries globally using proper TypeScript Record types
 export const tiles = {};
 export const tilemap = {};
@@ -466,18 +470,77 @@ function render() {
     const endX = Math.ceil((camX + canvas.width) / tileSize);
     const startY = Math.floor(camY / tileSize);
     const endY = Math.ceil((camY + canvas.height) / tileSize);
+
     for (let x = startX; x <= endX; x++) {
         for (let y = startY; y <= endY; y++) {
             const tileName = tilemap[`${x},${y}`];
             const drawX = x * tileSize - camX;
             const drawY = y * tileSize - camY;
             ctx.fillStyle = notilecolor;
+
+            let visible = true
+            if (black) {
+                // 1. Ray origin (Player center)
+                const ray = new Vector2(
+                    sprites[1].x + (sprites[1].width / 2),
+                    sprites[1].y + (sprites[1].height / 2)
+                );
+
+                // 2. Target tile center
+                const tilecent = new Vector2(
+                    (x + 0.5) * tileSize, 
+                    (y + 0.5) * tileSize
+                );
+
+                const dx = tilecent.x - ray.x;
+                const dy = tilecent.y - ray.y;
+                const d = Math.hypot(dx, dy);
+
+                const a = Math.atan2(dy,dx)
+
+                if (fov < TAU && Math.abs(((a - mouse.anglemc) % TAU + TAU + Math.PI) % TAU - Math.PI) > halffov) {visible = false;} else 
+                {
+                // 3. Step vector
+                const steps = Math.ceil(d / stepSize);
+                const step = new Vector2(
+                    (dx / d) * stepSize,
+                    (dy / d) * stepSize
+                );
+
+                let raystr = 1;
+                let oldtile = new Vector2(NaN,NaN)
+
+                for (let i = 0; i <= steps; i++) {
+                    const gridX = Math.floor(ray.x / tileSize);
+                    const gridY = Math.floor(ray.y / tileSize);
+
+                    // Only process unique grid cells as the ray crosses boundary lines
+                    if (gridX !== oldtile.x || gridY !== oldtile.y) {
+                        oldtile.x = gridX;
+                        oldtile.y = gridY;
+
+                        const currentTile = tiles[tilemap[`${gridX},${gridY}`]];
+
+                        if (currentTile?.img) {
+                            raystr -= (1 - currentTile.transparency);
+                            if (raystr <= 0) {visible=false;break}
+                        }
+
+                        // Target tile reached
+                        if (gridX === x && gridY === y) break;
+                    }
+
+                    ray.x += step.x;
+                    ray.y += step.y;
+                }}
+            }
+
             if (!tileName) {
                 ctx.fillRect(drawX, drawY, tileSize, tileSize);
                 continue;
             }
             const tile = tiles[tileName];
-            if (tile && tile.image && tile.image.isLoaded) {
+            if (tile && tile.image && tile.image.isLoaded && visible) {
                 ctx.drawImage(tile.image.canvas, drawX, drawY, tileSize, tileSize);
             }
             else {
@@ -485,6 +548,7 @@ function render() {
             }
         }
     }
+
     // 4. Render All Sprites (With Frustum Culling)
     for (const id in sprites) {
         const sprite = sprites[id];

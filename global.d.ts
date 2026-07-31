@@ -34,6 +34,8 @@ declare global {
             velocity(a: number, v: number, t: number): number;
             integral(a: number, v: number, t: number, C: number): number;
         };
+
+        within(min: number, n: number, max: number): number;
     }
 
     // ==========================================

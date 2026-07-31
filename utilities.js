@@ -207,3 +207,8 @@ Math.calc = {
         return 0.5 * a * t * t + v * t + C;
     }
 };
+
+// --- Other ---
+Math.within = function(min,n,max){
+    return (min<=n&&n<=max)
+}
