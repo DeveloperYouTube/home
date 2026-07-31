@@ -148,7 +148,7 @@ export class Tile {
     constructor(img, special) {
         this.img = img;
         this.special = special;
-        this.transparency=calculateTextureTransparency(img)
+        this.transparency=calculateTextureTransparency(this.img);
     }
     // Static registration method
     static create(name, img, special) {
