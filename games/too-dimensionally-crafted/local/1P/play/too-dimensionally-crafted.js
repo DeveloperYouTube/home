@@ -1,5 +1,5 @@
 //imports
-import {sprites, tiles, tilemap} from '/home/2d.js';
+import {sprites, tiles, tilemap, start} from '/home/2d.js';
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const sqrt2560 = 16 * Math.SQRT10
@@ -33,10 +33,13 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 //START!
+const GrassBlock_img = new ImgCanvas('/home/images/2dc/grass_block.png')
+const Cobblestone_img = new ImgCanvas('/home/images/2dc/cobblestone.png')
+const Air_img = new ImgCanvas('/home/images/nothing.png')
 function create () {
-    Tile.create('GrassBlock', new ImgCanvas('/home/images/2dc/grass_block.png'), {})
-    Tile.create('Cobblestone', new ImgCanvas('/home/images/2dc/cobblestone.png'), {});
-    Tile.create('Air', new ImgCanvas('/home/images/nothing.png'), {passThrough: true})
+    Tile.create('GrassBlock', GrassBlock_img, {drops: {GrassBlock:1}})
+    Tile.create('Cobblestone', Cobblestone_img, {drops: {Cobblestone:1}});
+    Tile.create('Air', Air_img, {passThrough: true, drops: {}})
 }
 create()
 const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new ImgCanvas('/home/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
@@ -51,7 +54,7 @@ const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new 
         move.vy=-sqrt2560
     }
 }})
-Loop.onUpdate((dt) => {
+Loop.onUpdate('worldgen',() => {
     // 1. Get player position directly
     const playerPos = sprites[player].p;
 
@@ -125,7 +128,7 @@ Loop.onUpdate((dt) => {
         }
     }
 });
-startGame(32,screen,'#0ff','#000');
+start(32,screen,'#0ff','#000');
 //END!
 
 window.addEventListener('beforeunload', (event) => {

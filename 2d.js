@@ -1,7 +1,7 @@
 import '/home/utilities.js';
 export let tileSize;
 export let canvas;
-export let ctx; // Store the context for fast drawing loops
+export let ctx; // Store the context for fast drawing 
 export let bgcolor;
 export let notilecolor;
 let tilecreateused = false;
@@ -207,10 +207,33 @@ export class Sprite {
         this.summon(p, v, a, blueprint.img, finalStats);
     }
 }
-let loops = [];
+let update_loops = {};
+let overlay_loops = {};
 export class Loop {
-    static onUpdate(f) {
-        loops.push(f);
+    static onUpdate(name,f) {
+        update_loops[name]=f;
+    }
+    static overlay(name,f) {
+        overlay_loops[name]=f;
+    }
+    static terminateOverlay(name) {
+        delete overlay_loops[name]
+    }
+    static terminateOnUpdate(name) {
+        delete update_loops[name]
+    }
+    // Call this inside your requestAnimationFrame update tick
+    static applyOnUpdate() {
+        for (const key in update_loops) {
+            update_loops[key]();
+        }
+    }
+
+    // Call this inside your main render/draw tick
+    static applyOverlay(pen) {
+        for (const key in overlay_loops) {
+            overlay_loops[key](pen);
+        }
     }
 }
 // Global engine input registries
@@ -253,9 +276,7 @@ function update() {
     const currentTime = performance.now();
     const dt = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
-    for (let i = 0; i < loops.length; i++) {
-        loops[i](dt); // Pass dt in case callbacks need delta time!
-    }
+    Loop.applyOnUpdate()
     for (const id in sprites) {
         const sprite = sprites[id];
         const move = sprite.stats.movement(keys, mousei, sprite) || {};
@@ -563,6 +584,7 @@ function render() {
             }
         }
     }
+    Loop.applyOverlay(ctx)
 }
 function loop() {
     update();
