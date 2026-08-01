@@ -136,9 +136,6 @@ export class ImgCanvas {
     get height() {
         return this.canvas.height;
     }
-    get canvas() {
-        return this.canvas;
-    }
 }
 const TAU = Math.PI * 2;
 const halfFov = 0.5 * fov;
