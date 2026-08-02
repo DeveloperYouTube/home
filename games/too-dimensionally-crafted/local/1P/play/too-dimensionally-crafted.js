@@ -1,5 +1,5 @@
 //imports
-import {sprites, tiles, tilemap, start} from '/home/2d.js';
+import { blackout, start } from '/2d';
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const sqrt2560 = 16 * Math.SQRT10
@@ -128,6 +128,7 @@ Loop.onUpdate('worldgen',() => {
         }
     }
 });
+blackout(true,120,16)
 start(32,screen,'#0ff','#000');
 //END!
 

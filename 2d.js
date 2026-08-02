@@ -11,7 +11,7 @@ export let fov = Math.PI/3*2;
 export let halffov = Math.PI/3;
 export let stepSize;
 export function blackout(memo, sight, qual) {
-    black = true
+    black = true;
     memory=memo;
     fov=Math.deg2rad(sight)
     halffov=0.5*fov
@@ -172,7 +172,6 @@ export class Tile {
     }
 }
 export let sprite_n = 0;
-// Use Record<string, any> instead of object so TypeScript allows dynamic property access
 export const spriteBlueprint = {};
 export class Sprite {
     constructor(p, v, a, img, stats) {
