@@ -1,5 +1,5 @@
 //imports
-import { blackout, start } from '/2d';
+import { blackout, start } from '/home/2d';
 //varibles
 //const(can't change (e.g. HTML elements and objects))
 const sqrt2560 = 16 * Math.SQRT10
