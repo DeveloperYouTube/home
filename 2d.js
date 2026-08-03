@@ -53,7 +53,6 @@ function calculateTextureTransparency(imageOrCanvas) {
 //vector
 export class Vector2 {
     constructor(x, y) {
-        // 2. Now assign them cleanly without inline type annotations
         this._x = x;
         this._y = y;
     }
@@ -74,6 +73,84 @@ export class Vector2 {
     }
     get hypot() {
         return Math.hypot(this._x,this._y)
+    }
+    polar(){
+        return new Polar2(this.hypot(),Math.atan(this._y,this._x))
+    }
+    complex(){
+        return new Complex(this._x,this._y)
+    }
+}
+export class Polar2 {
+    constructor(r,a){
+        this.r=r
+        this.a=a
+    }
+    vector(){
+        return new Vector2(this.r*Math.cos(this.a),this.r*Math.sin(this.a))
+    }
+    complex(){
+        return new Complex(this.r*Math.cos(this.a),this.r*Math.sin(this.a))
+    }
+}
+export class Complex {
+    constructor(real = 0, imag = 0) {
+        this.real = real;
+        this.imag = imag;
+    }
+
+    add(real, imag = 0) {
+        this.real += real;
+        this.imag += imag;
+        return this;
+    }
+
+    subtract(real, imag = 0) {
+        this.real -= real;
+        this.imag -= imag;
+        return this;
+    }
+
+    multiply(r, i = 0) {
+        const resReal = (this.real * r) - (this.imag * i);
+        const resImag = (this.real * i) + (this.imag * r);
+        this.real = resReal;
+        this.imag = resImag;
+        return this;
+    }
+
+    divide(r, i = 0) {
+        const denom = (r * r) + (i * i);
+        if (denom === 0) throw new Error("Complex division by zero");
+
+        const resReal = ((this.real * r) + (this.imag * i)) / denom;
+        const resImag = ((this.imag * r) - (this.real * i)) / denom;
+        this.real = resReal;
+        this.imag = resImag;
+        return this;
+    }
+
+    polar() {
+        return new Polar2(
+            Math.hypot(this.real, this.imag), 
+            Math.atan(this.imag, this.real)
+        );
+    }
+
+    vector() {
+        return new Vector2(this.real, this.imag);
+    }
+
+    power(e) {
+        const r = Math.hypot(this.real, this.imag) ** e;
+        const theta = Math.atan(this.imag, this.real) * e;
+        this.real = r * Math.cos(theta);
+        this.imag = r * Math.sin(theta);
+        return this;
+    }
+
+    root(n) {
+        return this.power(1 / n);
     }
 }
 let mouse = {
@@ -137,7 +214,6 @@ export class ImgCanvas {
         return this.canvas.height;
     }
 }
-const TAU = Math.PI * 2;
 const halfFov = 0.5 * fov;
 // 1. Declare your registries globally using proper TypeScript Record types
 export const tiles = {};
@@ -502,8 +578,8 @@ function render() {
             if (black) {
                 // 1. Ray origin (Player center)
                 const ray = new Vector2(
-                    sprites[1].x + (sprites[1].width / 2),
-                    sprites[1].y + (sprites[1].height / 2)
+                    sprites[1].p.x + (sprites[1].size.x * 0.5),
+                    sprites[1].p.y + (sprites[1].size.y * 0.5)
                 );
 
                 // 2. Target tile center
@@ -518,7 +594,7 @@ function render() {
 
                 const a = Math.atan2(dy,dx)
 
-                if (fov < TAU && Math.abs(((a - mouse.anglemc) % TAU + TAU + Math.PI) % TAU - Math.PI) > halffov) {visible = false;} else 
+                if (fov < Math.TAU && Math.abs(((a - mouse.anglemc) % Math.TAU + Math.TAU + Math.PI) % Math.TAU - Math.PI) > halffov) {visible = false;} else 
                 {
                 // 3. Step vector
                 const steps = Math.ceil(d / stepSize);
@@ -539,20 +615,24 @@ function render() {
                         oldtile.x = gridX;
                         oldtile.y = gridY;
 
-                        const currentTile = tiles[tilemap[`${gridX},${gridY}`]];
+                        // 1. We reached the target tile successfully! 
+                        // Stop ray before assessing target tile's own transparency.
+                        if (gridX === x && gridY === y) break;
 
+                        // 2. Check line-of-sight blockers along the path
+                        const currentTile = tiles[tilemap[`${gridX},${gridY}`]];
                         if (currentTile?.img) {
                             raystr -= (1 - currentTile.transparency);
-                            if (raystr <= 0) {visible=false;break}
+                            if (raystr <= 0) {
+                                visible = false;
+                                break;
+                            }
                         }
-
-                        // Target tile reached
-                        if (gridX === x && gridY === y) break;
                     }
 
                     ray.x += step.x;
                     ray.y += step.y;
-                }}
+                }
             }
 
             if (!tileName) {
@@ -591,6 +671,8 @@ function loop() {
     requestAnimationFrame(loop);
 }
 globalThis.Vector2 = Vector2;
+globalThis.Polar2 = Polar2;
+globalThis.Complex = Complex;
 globalThis.Tile = Tile;
 globalThis.Loop = Loop;
 globalThis.Sprite = Sprite;

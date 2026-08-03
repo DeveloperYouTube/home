@@ -36,6 +36,7 @@ declare global {
         };
 
         within(min: number, n: number, max: number): number;
+        TAU: number;
     }
 
     // ==========================================
@@ -56,16 +57,13 @@ declare global {
     // ==========================================
     // 3. GLOBAL ENGINE UTILITIES (utils.*)
     // ==========================================
-    var utils: {
+    var time: {
         /** Non-blocking async sleep pause tool. */
         pause(ms: number): Promise<void>;
-        logic: {
-            ors(...booleans: boolean[]): boolean;
-            ands(...booleans: boolean[]): boolean;
-        };
-        perlin: {
-            noise(x: number, seed?: string): number;
-        };
+        
+    };
+    var perlin: {
+        noise(x: number, seed?: string): number;
     };
 }
 

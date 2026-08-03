@@ -212,3 +212,4 @@ Math.calc = {
 Math.within = function(min,n,max){
     return (min<=n&&n<=max)
 }
+Math.TAU = 2*Math.PI
