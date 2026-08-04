@@ -218,7 +218,7 @@ const halfFov = 0.5 * fov;
 // 1. Declare your registries globally using proper TypeScript Record types
 export const tiles = {};
 export const tilemap = {};
-export const seen = {};
+export const seen = new Set();
 export const sprites = {};
 export class Tile {
     constructor(img, special) {
@@ -548,11 +548,12 @@ function handleTileCollisions(s1) {
     }
 }
 function render() {
-    if (!ctx || !canvas)
-        return;
+    if (!ctx || !canvas) { return; }
+
     // 1. Fill the entire canvas viewport with the base background color
     ctx.fillStyle = bgcolor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     // 2. Center the camera window over Sprite ID 1
     const player = sprites[1];
     let camX = 0;
@@ -561,6 +562,7 @@ function render() {
         camX = (player.p.x + player.size.x / 2) - canvas.width / 2;
         camY = (player.p.y + player.size.y / 2) - canvas.height / 2;
     }
+
     // 3. Render World Grid Viewport (Already culled by visible bounds)
     const startX = Math.floor(camX / tileSize);
     const endX = Math.ceil((camX + canvas.width) / tileSize);
@@ -572,78 +574,92 @@ function render() {
             const tileName = tilemap[`${x},${y}`];
             const drawX = x * tileSize - camX;
             const drawY = y * tileSize - camY;
-            ctx.fillStyle = notilecolor;
 
-            let visible = true
+            let visible = true;
+            const key = `${x},${y}`;
+
             if (black) {
-                // 1. Ray origin (Player center)
-                const ray = new Vector2(
-                    sprites[1].p.x + (sprites[1].size.x * 0.5),
-                    sprites[1].p.y + (sprites[1].size.y * 0.5)
-                );
+                // If memory is on AND the tile has already been seen, skip FOV/raycasting
+                if (!(memory && seen.has(key))) {
+                    // 1. Ray origin (Player center)
+                    const ray = new Vector2(
+                        sprites[1].p.x + (sprites[1].size.x * 0.5),
+                        sprites[1].p.y + (sprites[1].size.y * 0.5)
+                    );
 
-                // 2. Target tile center
-                const tilecent = new Vector2(
-                    (x + 0.5) * tileSize, 
-                    (y + 0.5) * tileSize
-                );
+                    // 2. Target tile center
+                    const tilecent = new Vector2(
+                        (x + 0.5) * tileSize, 
+                        (y + 0.5) * tileSize
+                    );
 
-                const dx = tilecent.x - ray.x;
-                const dy = tilecent.y - ray.y;
-                const d = Math.hypot(dx, dy);
+                    const dx = tilecent.x - ray.x;
+                    const dy = tilecent.y - ray.y;
+                    const d = Math.hypot(dx, dy);
 
-                const a = Math.atan2(dy,dx)
+                    const a = Math.atan2(dy, dx);
 
-                if (fov < Math.TAU && Math.abs(((a - mouse.anglemc) % Math.TAU + Math.TAU + Math.PI) % Math.TAU - Math.PI) > halffov) {visible = false;} else 
-                {
-                // 3. Step vector
-                const steps = Math.ceil(d / stepSize);
-                const step = new Vector2(
-                    (dx / d) * stepSize,
-                    (dy / d) * stepSize
-                );
+                    // FOV Cone Check
+                    const angleDiff = Math.abs(((a - mouse.anglemc) % Math.TAU + Math.TAU + Math.PI) % Math.TAU - Math.PI);
 
-                let raystr = 1;
-                let oldtile = new Vector2(NaN,NaN)
+                    if (fov < Math.TAU && angleDiff > halffov) {
+                        visible = false;
+                    } else {
+                        // 3. Step vector
+                        const steps = Math.ceil(d / stepSize);
+                        const step = new Vector2(
+                            (dx / d) * stepSize,
+                            (dy / d) * stepSize
+                        );
 
-                for (let i = 0; i <= steps; i++) {
-                    const gridX = Math.floor(ray.x / tileSize);
-                    const gridY = Math.floor(ray.y / tileSize);
+                        let raystr = 1;
+                        let oldtile = new Vector2(NaN, NaN);
 
-                    // Only process unique grid cells as the ray crosses boundary lines
-                    if (gridX !== oldtile.x || gridY !== oldtile.y) {
-                        oldtile.x = gridX;
-                        oldtile.y = gridY;
+                        for (let i = 0; i <= steps; i++) {
+                            const gridX = Math.floor(ray.x / tileSize);
+                            const gridY = Math.floor(ray.y / tileSize);
 
-                        // 1. We reached the target tile successfully! 
-                        // Stop ray before assessing target tile's own transparency.
-                        if (gridX === x && gridY === y) break;
+                            // Only process unique grid cells as the ray crosses boundary lines
+                            if (gridX !== oldtile.x || gridY !== oldtile.y) {
+                                oldtile.x = gridX;
+                                oldtile.y = gridY;
 
-                        // 2. Check line-of-sight blockers along the path
-                        const currentTile = tiles[tilemap[`${gridX},${gridY}`]];
-                        if (currentTile?.img) {
-                            raystr -= (1 - currentTile.transparency);
-                            if (raystr <= 0) {
-                                visible = false;
-                                break;
+                                // Target tile reached successfully! Mark as seen and stop ray.
+                                if (gridX === x && gridY === y) {
+                                    seen.add(key);
+                                    break;
+                                }
+
+                                // Check line-of-sight blockers along the path
+                                const currentTile = tiles[tilemap[`${gridX},${gridY}`]];
+                                if (currentTile?.img) {
+                                    raystr -= (1 - currentTile.transparency);
+                                    if (raystr <= 0) {
+                                        visible = false;
+                                        break;
+                                    }
+                                }
                             }
+
+                            ray.x += step.x;
+                            ray.y += step.y;
                         }
                     }
-
-                    ray.x += step.x;
-                    ray.y += step.y;
                 }
             }
 
+            // Draw Tile or Blank Space
             if (!tileName) {
+                ctx.fillStyle = notilecolor;
                 ctx.fillRect(drawX, drawY, tileSize, tileSize);
                 continue;
             }
+
             const tile = tiles[tileName];
             if (tile && tile.image && tile.image.isLoaded && visible) {
                 ctx.drawImage(tile.image.canvas, drawX, drawY, tileSize, tileSize);
-            }
-            else {
+            } else {
+                ctx.fillStyle = notilecolor;
                 ctx.fillRect(drawX, drawY, tileSize, tileSize);
             }
         }
@@ -653,7 +669,6 @@ function render() {
     for (const id in sprites) {
         const sprite = sprites[id];
         if (sprite.img && sprite.img.isLoaded) {
-            // OPTIMIZATION: Check if the sprite overlaps the camera screen bounds
             const isVisible = sprite.p.x < camX + canvas.width &&
                 sprite.p.x + sprite.size.x > camX &&
                 sprite.p.y < camY + canvas.height &&
@@ -663,7 +678,8 @@ function render() {
             }
         }
     }
-    Loop.applyOverlay(ctx)
+
+    Loop.applyOverlay(ctx);
 }
 function loop() {
     update();
