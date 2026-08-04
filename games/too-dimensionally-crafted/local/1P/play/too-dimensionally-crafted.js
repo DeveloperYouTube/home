@@ -55,7 +55,7 @@ const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new 
         move.vy=-sqrt2560
     }
 }})
-Loop.onUpdate('player'()=>{
+Loop.onUpdate('player',()=>{
     sprites[player_head].p.x=sprites[player].p.x
     sprites[player_head].p.y=sprites[player].p.y
 })

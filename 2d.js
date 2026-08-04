@@ -24,7 +24,8 @@ export function start(_tileSize, _canvas, bg, notile) {
     canvas = _canvas;
     ctx = canvas.getContext("2d"); // Capture the 2D canvas context
     lastTime = performance.now(); // Initialize the frame timer safely
-    loop();} else {//not so safe anymore unlike lasttime initializing safly
+    loop();
+    updateCanvasRect()} else {//not so safe anymore unlike lasttime initializing safly
         throw new Error("Tile.create() must be invoked at least once prior to startGame().");
     }
 }
@@ -158,27 +159,47 @@ let mouse = {
     positionmc: new Vector2(0,0),
     anglemc: 0
 }
+let cachedRect = null;
+
+function updateCanvasRect() {
+    if (canvas) {
+        cachedRect = canvas.getBoundingClientRect();
+    }
+}
+
+// 2. Update bounds on scroll/resize (or call updateCanvasRect() inside your start/init function)
+window.addEventListener("resize", updateCanvasRect);
+window.addEventListener("scroll", updateCanvasRect);
+
+// 3. Optimized mousemove listener
 window.addEventListener("mousemove", (event) => {
-    // 1. Get the bounding box of the canvas element on the page
-    const rect = canvas.getBoundingClientRect();
+    if (!canvas) return;
 
-    // 2. Scale factor in case canvas CSS dimensions differ from internal resolution
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
+    // Fetch rect if not cached yet or if unrendered
+    if (!cachedRect || cachedRect.width === 0) {
+        updateCanvasRect();
+    }
 
-    // 3. True canvas pixel coordinates (top-left origin)
-    mouse.positiontl.x = (event.clientX - rect.left) * scaleX;
-    mouse.positiontl.y = (event.clientY - rect.top) * scaleY;
+    // Safety guard: if still 0 (e.g. element hidden), bail out before dividing by zero
+    if (!cachedRect || cachedRect.width === 0 || cachedRect.height === 0) return;
 
-    // 4. Internal canvas center point
+    // Scale factor
+    const scaleX = canvas.width / cachedRect.width;
+    const scaleY = canvas.height / cachedRect.height;
+
+    // True canvas pixel coordinates (top-left origin)
+    mouse.positiontl.x = (event.clientX - cachedRect.left) * scaleX;
+    mouse.positiontl.y = (event.clientY - cachedRect.top) * scaleY;
+
+    // Internal canvas center point
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
 
-    // 5. Offset relative to canvas center
+    // Offset relative to canvas center
     mouse.positionmc.x = mouse.positiontl.x - centerX;
     mouse.positionmc.y = mouse.positiontl.y - centerY;
 
-    // 6. Angle from canvas center
+    // Angle from canvas center
     mouse.anglemc = Math.atan2(mouse.positionmc.y, mouse.positionmc.x);
 });
 export class ImgCanvas {
