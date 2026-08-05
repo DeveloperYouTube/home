@@ -157,7 +157,8 @@ export class Complex {
 let mouse = {
     positiontl: new Vector2(0,0),
     positionmc: new Vector2(0,0),
-    anglemc: 0
+    anglemc: 0,
+    
 }
 let cachedRect = null;
 

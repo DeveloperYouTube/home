@@ -43,7 +43,7 @@ function create () {
 }
 create()
 const player_head = Sprite.summon(new Vector2(0,0),new Vector2(0,0),new Vector2(0,0),new ImgCanvas('/home/images/nothing16.png'),{hp:1,movement: (keys,mouse,p)=>{},passThrough:true})
-const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,-1024),new ImgCanvas('/home/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
+const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new ImgCanvas('/home/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
     let move = {vx:0}
     if(keys.d){
         move.vx+=138.144
