@@ -42,7 +42,7 @@ function create () {
     Tile.create('Air', Air_img, {passThrough: true, drops: {}})
 }
 create()
-const player_head = Sprite.summon(new Vector2(0,0),new Vector2(0,0),new Vector2(0,0),new ImgCanvas('/home/images/nothing16.png'),{hp:1,movement: (keys,mouse,p)=>{},passThrough:true})
+const player_head = Sprite.summon(new Vector2(0,0),new Vector2(0,0),new Vector2(0,0),new ImgCanvas('/home/images/nothing.png'),{hp:1,movement: (keys,mouse,p)=>{},passThrough:true})
 const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new ImgCanvas('/home/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
     let move = {vx:0}
     if(keys.d){
@@ -133,7 +133,7 @@ Loop.onUpdate('worldgen',() => {
         }
     }
 });
-tileSelector(160, new ImgCanvas(), 0, player_head)
+tileSelector(160, new ImgCanvas('/home/images/2dc/selector.png'), 0, player_head)
 blackout(true,120,16)
 start(32,screen,'#0ff','#000');
 //END!
