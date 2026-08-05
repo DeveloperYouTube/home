@@ -10,6 +10,117 @@ export let memory = true;
 export let fov = Math.PI/3*2;
 export let halffov = Math.PI/3;
 export let stepSize;
+let tileselecid = 0
+export function tileSelector(maxdist, img, offset, start) {
+    const selector = Sprite.summon(
+        new Vector2(0, 0),
+        new Vector2(0, 0),
+        new Vector2(0, 0),
+        img,
+        { tile: new Vector2(0, 0) }
+    );
+
+    tileselecid++;
+    const radOffset = Math.deg2rad(offset);
+
+    Loop.onUpdate(`Tile Selector #${tileselecid}`, () => {
+        const player = sprites[1];
+        const target = sprites[start];
+        if (!target) return;
+
+        // 1. Calculate ray starting position and angle
+        const rayStart = new Vector2(target.p.x, target.p.y);
+
+        let dist;
+        if (start === 1) {
+            dist = mouse.positionmc;
+        } else {
+            dist = new Vector2(
+                player.p.x + mouse.positionmc.x - target.p.x,
+                player.p.y + mouse.positionmc.y - target.p.y
+            );
+        }
+
+        const a = Math.atan(dist.y, dist.x) + radOffset;
+        
+        // Ray direction vector (unit length)
+        const dirX = Math.cos(a);
+        const dirY = Math.sin(a);
+
+        // Current tile coordinates
+        let tileX = Math.floor(rayStart.x / tileSize);
+        let tileY = Math.floor(rayStart.y / tileSize);
+
+        // 2. DDA Setup
+        // How far the ray travels in pixels along the line per 1 grid unit step in X or Y
+        const deltaDistX = Math.abs(1 / (dirX || 1e-6)) * tileSize;
+        const deltaDistY = Math.abs(1 / (dirY || 1e-6)) * tileSize;
+
+        // Step direction (+1 or -1 tile) and distance to the immediate next grid boundary
+        let stepX, stepY;
+        let sideDistX, sideDistY;
+
+        if (dirX < 0) {
+            stepX = -1;
+            sideDistX = (rayStart.x - tileX * tileSize) * (deltaDistX / tileSize);
+        } else {
+            stepX = 1;
+            sideDistX = ((tileX + 1) * tileSize - rayStart.x) * (deltaDistX / tileSize);
+        }
+
+        if (dirY < 0) {
+            stepY = -1;
+            sideDistY = (rayStart.y - tileY * tileSize) * (deltaDistY / tileSize);
+        } else {
+            stepY = 1;
+            sideDistY = ((tileY + 1) * tileSize - rayStart.y) * (deltaDistY / tileSize);
+        }
+
+        // 3. DDA Traversal Loop
+        let selec = false;
+        let travelledDist = 0;
+        let currentTilePos = new Vector2(tileX, tileY);
+
+        while (travelledDist < maxdist) {
+            // Jump to the closest grid boundary (X line or Y line)
+            if (sideDistX < sideDistY) {
+                travelledDist = sideDistX;
+                sideDistX += deltaDistX;
+                tileX += stepX;
+            } else {
+                travelledDist = sideDistY;
+                sideDistY += deltaDistY;
+                tileY += stepY;
+            }
+
+            // Exceeding max pixel distance stops ray immediately
+            if (travelledDist > maxdist) break;
+
+            currentTilePos.x = tileX;
+            currentTilePos.y = tileY;
+
+            // Check tile collision
+            const tileID = tilemap[currentTilePos.vectors];
+            const currentTile = tiles[tileID];
+
+            if (currentTile && !currentTile.passThrough) {
+                selec = true;
+                break;
+            }
+        }
+
+        // 4. Update Selector
+        if (selec) {
+            selector.img = img;
+            selector.p.x = currentTilePos.x * tileSize;
+            selector.p.y = currentTilePos.y * tileSize;
+            selector.stats.tile = currentTilePos;
+        } else {
+            selector.img = nothingIMG;
+        }
+    });
+    return selector
+}
 export function blackout(memo, sight, qual) {
     black = true;
     memory=memo;
@@ -154,11 +265,16 @@ export class Complex {
         return this.power(1 / n);
     }
 }
-let mouse = {
+const mouse = {
     positiontl: new Vector2(0,0),
     positionmc: new Vector2(0,0),
     anglemc: 0,
-    
+    ldown: false,
+    lhold: false,
+    lreal: false,
+    rdown: false,
+    rhold: false,
+    rreal: false
 }
 let cachedRect = null;
 
@@ -236,6 +352,7 @@ export class ImgCanvas {
         return this.canvas.height;
     }
 }
+const nothingIMG=new ImgCanvas('./images/nothing.png')
 const halfFov = 0.5 * fov;
 // 1. Declare your registries globally using proper TypeScript Record types
 export const tiles = {};
@@ -335,7 +452,6 @@ export class Loop {
 }
 // Global engine input registries
 export const keys = {};
-export const mousei = { x: 0, y: 0, left: false, right: false };
 // ==========================================
 // SYSTEM LISTENERS
 // ==========================================
@@ -343,24 +459,26 @@ export function setupInputListeners(canvasElement) {
     // 1. Keyboard Tracking
     window.addEventListener('keydown', (e) => { keys[e.key] = true; });
     window.addEventListener('keyup', (e) => { keys[e.key] = false; });
-    // 2. Mouse Position Tracking (Adjusted for canvas bounding margins)
-    canvasElement.addEventListener('mousemove', (e) => {
-        const rect = canvasElement.getBoundingClientRect();
-        mousei.x = e.clientX - rect.left;
-        mousei.y = e.clientY - rect.top;
-    });
     // 3. Dedicated Mouse Button Click Trackers
     canvasElement.addEventListener('mousedown', (e) => {
-        if (e.button === 0)
-            mousei.left = true;
-        if (e.button === 2)
-            mousei.right = true;
+        if (e.button === 0){
+            mouse.ldown = true;
+            mouse.lhold = true;
+        }
+        if (e.button === 2){
+            mouse.rdown = true;
+            mouse.rhold = true;
+        }
     });
     canvasElement.addEventListener('mouseup', (e) => {
-        if (e.button === 0)
-            mousei.left = false;
-        if (e.button === 2)
-            mousei.right = false;
+        if (e.button === 0){
+            mouse.lreal = true;
+            mouse.lhold = false;
+        }
+        if (e.button === 2){
+            mouse.rreal = true;
+            mouse.rhold = false;
+        }
     });
     // Prevents standard right-click context popups from breaking canvas actions
     canvasElement.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -394,6 +512,10 @@ function update() {
         sprite.v.x += sprite.a.x * dt;
         sprite.v.y += sprite.a.y * dt;
     }
+    mouse.ldown = false;
+    mouse.lreal = false;
+    mouse.rdown = false;
+    mouse.rreal = false;
     for (const id1 in sprites) {
         for (const id2 in sprites) {
             if (id1 == id2) {
