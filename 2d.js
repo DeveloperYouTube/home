@@ -353,7 +353,7 @@ export class ImgCanvas {
         return this.canvas.height;
     }
 }
-const nothingIMG=new ImgCanvas('./images/nothing.png')
+const nothingIMG=new ImgCanvas('/home/images/nothing.png')
 const halfFov = 0.5 * fov;
 // 1. Declare your registries globally using proper TypeScript Record types
 export const tiles = {};
