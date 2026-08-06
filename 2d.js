@@ -20,7 +20,7 @@ export function tileSelector(maxdist, img, offset, start) {
         img,
         { tile: new Vector2(0, 0) }
     );
-
+ 
     tileselecid++;
     const radOffset = Math.deg2rad(offset);
 
