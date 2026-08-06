@@ -11,8 +11,8 @@ export let fov = Math.PI/3*2;
 export let halffov = Math.PI/3;
 export let stepSize;
 let tileselecid = 0
-export function tileSelector(maxdist, img, offset, start) {
-    img = img
+export function tileSelector(maxdist, image, offset, start) {
+    const img = image
     const selector = Sprite.summon(
         new Vector2(0, 0),
         new Vector2(0, 0),
