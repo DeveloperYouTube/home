@@ -133,7 +133,7 @@ Loop.onUpdate('worldgen',() => {
         }
     }
 });
-tileSelector(160, new ImgCanvas('/home/images/2dc/selector.png'), 0, player_head)
+tileSelector(160, new ImgCanvas('/home/images/2dc/selector.png'), 0, player_head);
 blackout(true,120,16)
 start(32,screen,'#0ff','#000');
 //END!
