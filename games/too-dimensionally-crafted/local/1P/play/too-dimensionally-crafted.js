@@ -287,6 +287,9 @@ window.respawnPlayer = function() {
     sprites[player].stats.hp = 20;
     death_screen.style.display = 'none';
 };
+window.hidepause = function () {
+    pause_screen.style.display = 'none'
+}
 window.save = function() {
     if(save){if (death_screen.style.display === 'flex') {
         window.respawnPlayer();
