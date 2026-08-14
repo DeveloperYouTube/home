@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Too Dimensionally Crafted: Settings</title>
+        <link rel="stylesheet" href="../../too-dimensionally-crafted.css">
+    </head>
+    <body>
+        <div class="menu-wrapper">
+            <div class="back-container">
+                <a href="../index.html">BACK</a>
+            </div>
+
+            <div class="checkbox-container">
+                <label>
+                    <input type="checkbox" id="memory-checkbox">
+                    <span class="custom-box"></span>
+                    Memory
+                </label>
+            </div>
+            <div class="slider-container">
+                <label for="fov-slider">FOV: <span id="fov-value">120</span></label>
+                <input type="range" id="fov-slider" min="0" max="360" value="120">
+            </div>
+        </div>
+
+        <script>
+            // 1. Grab your HTML UI elements
+            const fovSlider = document.getElementById('fov-slider');
+            const fovValueDisplay = document.getElementById('fov-value');
+            const memoryCheckbox = document.getElementById('memory-checkbox');
+
+            // 2. Load saved settings on page load (with fallback defaults)
+            const savedFOV = localStorage.getItem('2dcfov');
+            const savedMemory = localStorage.getItem('2dcmemory');
+
+            // 3. Set the UI elements to match saved state
+            fovSlider.value = savedFOV !== null ? savedFOV : 120;
+            fovValueDisplay.textContent = fovSlider.value;
+            memoryCheckbox.checked = savedMemory !== null ? (savedMemory === 'true') : false;
+
+            // 4. Save updates directly to localStorage whenever the user changes a setting
+            fovSlider.addEventListener('input', (e) => {
+                fovValueDisplay.textContent = e.target.value;
+                localStorage.setItem('2dcfov', e.target.value);
+            });
+
+            memoryCheckbox.addEventListener('change', (e) => {
+                localStorage.setItem('2dcmemory', e.target.checked);
+            });
+        </script>
+    </body>
+</html>

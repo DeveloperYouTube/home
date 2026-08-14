@@ -1,5 +1,0 @@
-{
-    "js/ts.validate.enabled": false,
-    "js/ts.implicitProjectConfig.checkJs": false,
-    "js/ts.suggest.paths": true
-}

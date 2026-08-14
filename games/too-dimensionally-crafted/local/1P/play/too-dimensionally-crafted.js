@@ -1,8 +1,7 @@
 //imports
-import { blackout, start, tilemap, sprites, tileSelector } from '/home/2d.js';
+import '../../../../../2d.js';
 //varibles
 //const(can't change (e.g. HTML elements and objects))
-const sqrt2560 = 16 * Math.SQRT10
 const world_dataINIT = JSON.parse(localStorage.getItem('2DCsinglePworld'))
 localStorage.removeItem('2DCsinglePworld');
 const screen = document.getElementById('screen')
@@ -14,12 +13,18 @@ const death_screen = document.querySelector('.death_screen');
 const death_message = document.querySelector('.deathID');
 const pause_screen = document.querySelector('.pause_screen');
 const seed = world_dataINIT.seed;
+const flat = world_dataINIT.flat;
+const blocks = world_dataINIT.blocks;
+const pRX = world_dataINIT.respawnX;
+const pRY = world_dataINIT.respawnY;
 const slots = document.querySelectorAll('.hotbar canvas');
 //background things
 let light = 15;
 //other
 let death_reason;
+let inventory = world_dataINIT.inventory
 document.querySelector('.how2play').style.display = 'none';
+let flying = false;
 
 pause_screen.style.display = 'none';
 death_screen.style.display = 'none';
@@ -33,31 +38,92 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 //START!
-const GrassBlock_img = new ImgCanvas('/home/images/2dc/grass_block.png')
-const Cobblestone_img = new ImgCanvas('/home/images/2dc/cobblestone.png')
-const Air_img = new ImgCanvas('/home/images/nothing.png')
-function create () {
-    Tile.create('GrassBlock', GrassBlock_img, {drops: {GrassBlock:1}})
-    Tile.create('Cobblestone', Cobblestone_img, {drops: {Cobblestone:1}});
+const GrassBlock_img = new ImgCanvas('../../../../../images/2dc/grass_block.png', 32, 32)
+const Cobblestone_img = new ImgCanvas('../../../../../images/2dc/cobblestone.png', 32, 32)
+const Air_img = new BlankImgCanvas(32, 32)
+
+//tile creation \/
+    Tile.create('GrassBlock', GrassBlock_img, {drops: {GrassBlock:1}, selectable: true});
+    Tile.create('Cobblestone', Cobblestone_img, {drops: {Cobblestone:1}, selectable: true});
     Tile.create('Air', Air_img, {passThrough: true, drops: {}})
+//tile creation /\
+
+let escDown = false;
+let escHold = false;
+let spaceDown = false;
+let spaceHold = false;
+let spaceLast = -501;
+Loop.onUpdate('keyDown',()=>{
+    if(keys['Escape']){
+        escDown = !escHold;
+        escHold = true;
+    } else {
+        escDown = false;
+        escHold = false;
+    }
+    if(keys[' ']){
+        spaceDown = !spaceHold;
+        if(spaceDown){
+            const n=spaceLast
+            spaceLast = performance.now();
+            if(difference(n, performance.now()) < 500){
+                flying = !flying;
+                spaceLast = -501;
+            }
+        }
+        spaceHold = true;
+    } else {
+        spaceDown = false;
+        spaceHold = false;
+    }
+})
+
+if (blocks && typeof blocks === 'object') {
+    Object.entries(blocks).forEach(([key, tileName]) => {
+        const [x, y] = key.split(',').map(Number);
+        
+        // Sets the saved block (or clears/sets to 'air' if broken)
+        Tile.set(new Vector2(x, y), tileName);
+    });
 }
-create()
-const player_head = Sprite.summon(new Vector2(0,0),new Vector2(0,0),new Vector2(0,0),new ImgCanvas('/home/images/nothing.png'),{hp:1,movement: (keys,mouse,p)=>{},passThrough:true})
-const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new ImgCanvas('/home/images/2dc/player.png'),{hp: 20, movement: (keys, mouse, p) => {
-    let move = {vx:0}
-    if(keys.d){
+
+const player_head = Sprite.summon(new Vector2(0,0),new Vector2(0,0),new Vector2(0,0),new BlankImgCanvas(32, 32),{hp:1,movement: (keys,mouse,p)=>{},passThrough:true})
+const player = Sprite.summon(new Vector2(world_dataINIT.x,world_dataINIT.y),new Vector2(0,0),new Vector2(0,1024),new SolidImgCanvas('#008080', 32, 64),{hp: 20, movement: (keys, mouse, p) => {
+    let move = { vx: 0, ay: 1024 }
+    if(keys['d']||keys['D']){
         move.vx+=138.144
     }
-    if(keys.a){
+    if(keys['a']||keys['A']){
         move.vx-=138.144
     }
-    if(keys.space&&p.v.y==0){
-        move.vy=-sqrt2560
+    if(keys[' ']&&p.stats.grounded){
+        move.vy = -sqrt81920;
     }
+    if(flying){
+        move.ay=0
+        move.vx*=2.5
+        move.vy=0
+        if(keys['Shift']){
+            move.vy+=345.36
+            move.vx*=sqrt0_5
+        }
+        if(keys[' ']){
+            move.vy-=345.36
+            move.vx*=sqrt0_5
+        }
+        if(keys['d']||keys['D']){
+            move.vy*=sqrt0_5
+        }
+        if (keys['a']||keys['A']) {
+            move.vy*=sqrt0_5
+        }
+    }
+    return move
 }})
 Loop.onUpdate('player',()=>{
     sprites[player_head].p.x=sprites[player].p.x
     sprites[player_head].p.y=sprites[player].p.y
+    console.log(sprites[player].p.y)
 })
 Loop.onUpdate('worldgen',() => {
     // 1. Get player position directly
@@ -79,7 +145,8 @@ Loop.onUpdate('worldgen',() => {
             const key = `${x},${y}`;
 
             if (!Object.hasOwn(tilemap,key)) {
-                // 1. Continental noise: determines landmass vs deep ocean span (0.003 = wide region spans)
+                let height=63;
+                if(!flat){// 1. Continental noise: determines landmass vs deep ocean span (0.003 = wide region spans)
                 const landmass = perlin.noise(x * 0.003, seed); 
 
                 // 2. Local elevation noise: hills, cliffs, and peaks
@@ -88,9 +155,6 @@ Loop.onUpdate('worldgen',() => {
 
                 // 3. Inland water noise: creates river cuts and lake basins on land
                 const riverNoise = Math.abs(perlin.noise(x * 0.015, seed) - 0.5);
-
-                // Calculate base terrain elevation relative to sea level (y=63) and ocean floor (y=45)
-                let height;
 
                 if (landmass > 0.45) {
                     // --- LANDMASS REGION ---
@@ -117,7 +181,7 @@ Loop.onUpdate('worldgen',() => {
                         height = oceanFloor;
                     }
                 }
-                height=0-Math.floor(height)
+                height=0-Math.floor(height)}
 
 
 
@@ -133,8 +197,74 @@ Loop.onUpdate('worldgen',() => {
         }
     }
 });
-tileSelector(160, new ImgCanvas('/home/images/2dc/selector.png'), 0, player_head);
-blackout(true,120,16)
+// 1. Create a shared reference array for the cursor to watch
+const cursorIgnoreList = [player_head, player];
+
+// 2. Summon the tile cursor using that array reference
+const cursor = tileSelector(
+    160, 
+    new ImgCanvas('../../../../../images/2dc/selector.png', 32, 32), 
+    0, 
+    player_head, 
+    'cursor', 
+    true, 
+    cursorIgnoreList
+);
+
+// 3. Summon the sprite cursor (which can safely reference 'cursor' now)
+const spritecursor = spriteSelector(
+    160, 
+    new BlankImgCanvas(32, 32), 
+    0, 
+    player_head, 
+    'spritecursor', 
+    [player_head, player, cursor], 
+    [], 
+    true, 
+    ['Air']
+);
+
+// 4. Mutation: Retroactively push the new spritecursor index into the cursor's list!
+cursorIgnoreList.push(spritecursor);
+
+
+let tile;
+let placeTile;
+Loop.onUpdate('cursor', () => {
+    const cursorStat = sprites[cursor]?.stats;
+    
+    if (cursorStat && cursorStat.tile) {
+        tile = cursorStat.tile;
+        placeTile = cursorStat.placeTile;
+    } else {
+        tile = null;
+        placeTile = null;
+    }
+    
+    if (tile) {
+        // 1. Left Click Down -> Breaks exactly one block per click
+        if (mouse.ldown) {
+            Tile.set(tile, "Air");
+            blocks[tile.vectors] = 'Air';
+        }
+        
+        // 2. Right Click Down -> Places exactly one block per click
+        if (mouse.rdown && placeTile) {
+            Tile.set(placeTile, "Cobblestone");
+            blocks[placeTile.vectors] = 'Cobblestone';
+        }
+    }
+});
+Loop.onUpdate('menu',()=>{
+    if(escDown){
+        if(pause_screen.style.display==='none'){
+            pause_screen.style.display='flex';
+        } else{
+            pause_screen.style.display='none';
+        }
+    }
+})
+blackout(localStorage.getItem('2dcmemory') == 'true',parseInt(localStorage.getItem('2dcfov')))
 start(32,screen,'#0ff','#000');
 //END!
 
@@ -152,7 +282,10 @@ window.addEventListener('beforeunload', (event) => {
 //stuff for html things
 let save = true;
 window.respawnPlayer = function() {
-    
+    sprites[player].p.x = pRX;
+    sprites[player].p.y = pRY;
+    sprites[player].stats.hp = 20;
+    death_screen.style.display = 'none';
 };
 window.save = function() {
     if(save){if (death_screen.style.display === 'flex') {
@@ -181,17 +314,12 @@ window.save = function() {
         blocks: blocks,
         HP: sprites[player].stats.hp,
         inventory: inventory,
-        entities: entities,
-        rx: respawnX,
-        ry: respawnY,
+        entities: sprites,
+        rx: pRX,
+        ry: pRY,
     };
     localStorage.setItem('2DCsinglePworlds', JSON.stringify(worlds));
 }};
-window.hidepause = function() {
-    pause_screen.style.display = 'none';
-    last_frame = performance.now();
-    game_running = true;
-}
 window.deleteWorld = function(worldName = world_dataINIT.name) {
     // 1. Confirm with the player
     const confirmDelete = confirm(`Are you sure you want to delete "${worldName}"? This cannot be undone.`);
