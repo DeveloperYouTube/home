@@ -494,6 +494,11 @@ Math.AST = {
 
 // Calculus Module
 globalThis.derivative = function(node, variable = 'x') {
+    if (node instanceof String) {
+        node = node.valueOf();
+    }
+
+    // Base case: primitive string (variable or constant)
     if (typeof node === 'string') {
         if (!isNaN(node)) return '0';
         return node === variable ? '1' : '0';
@@ -580,11 +585,28 @@ globalThis.derivative = function(node, variable = 'x') {
     return node;
 };
 
-// Returns the derived AST object as intended
-String.prototype.prime = function(variable = 'x') {
-    const ast = Math.AST.encode(this);
-    return derivative(ast, variable);
-};
+
+// 1. String prototype: parses expression string -> AST -> differentiates
+Object.defineProperty(String.prototype, 'prime', {
+    value: function(variable = 'x') {
+        const str = this.valueOf(); // Ensure primitive string
+        const ast = Math.AST.encode(str);
+        return derivative(ast, variable);
+    },
+    writable: true,
+    configurable: true,
+    enumerable: false
+});
+
+// 2. Object prototype: differentiates AST object directly
+Object.defineProperty(Object.prototype, 'prime', {
+    value: function(variable = 'x') {
+        return derivative(this, variable);
+    },
+    writable: true,
+    configurable: true,
+    enumerable: false
+});
 
 globalThis.integral = {
     indefinite: function(node, variable = 'x') {

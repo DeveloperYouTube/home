@@ -7,6 +7,8 @@ declare global {
     interface String {
         /** Converts a string into a repeatable 32-bit integer hash. */
         toIntHash(): number;
+        /** Assumes string as function and takes derivative */
+        prime(): object;
     }
 
     interface Array<T> {
