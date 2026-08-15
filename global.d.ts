@@ -189,11 +189,10 @@ declare global {
     /** Applies symbolic differentiation transformations onto a tree node structure relative to a targeted variable identity. */
     function derivative(node: MathExpression, variable?: string): MathExpression;
     
-    /** Applies symbolic anti-derivative transformations onto a tree node structure relative to a targeted variable identity. */
-    function integral(node: MathExpression, variable?: string): MathExpression;
-    
-    /** Computes a definite integral bound calculation across a localized interval window using FTC evaluation mapping equations. */
-    function limitIntegral(a: number, b: number, f: MathExpression, variable?: string): number;
+    interface integral {
+        indefinite(node, variable): object;
+        definite(a,b,f,v): number;
+    }
 
 
 
