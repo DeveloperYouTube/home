@@ -15,6 +15,8 @@ String.prototype.toIntHash = function() {
     return hash;
 };
 
+
+
 // ==========================================
 // 2. ARRAY EXTENSIONS (Built into Array.prototype)
 // ==========================================
@@ -490,21 +492,19 @@ Math.AST = {
 
 
 
-//calculus
+// Calculus Module
 globalThis.derivative = function(node, variable = 'x') {
     if (typeof node === 'string') {
+        if (!isNaN(node)) return '0';
         return node === variable ? '1' : '0';
-    }
-
-    if (!isNaN(node)) {
-        return '0';
     }
 
     const op = node.operator;
     const f = node.input1;
     const g = node.input2;
+    
     const df = derivative(f, variable);
-    const dg = derivative(g, variable);
+    const dg = g !== undefined ? derivative(g, variable) : '0';
 
     if (op === 'addition') {
         return { operator: 'addition', input1: df, input2: dg };
@@ -531,287 +531,138 @@ globalThis.derivative = function(node, variable = 'x') {
         };
     }
     if (op === 'exponentiation') {
-        if (!isNaN(g)) {
+        if (typeof g === 'string' && !isNaN(g)) {
             return {
                 operator: 'multiplication',
-                input1: g,
-                input2: {
-                    operator: 'exponentiation',
-                    input1: f,
-                    input2: String(Number(g) - 1)
-                }
+                input1: {
+                    operator: 'multiplication',
+                    input1: g,
+                    input2: {
+                        operator: 'exponentiation',
+                        input1: f,
+                        input2: String(Number(g) - 1)
+                    }
+                },
+                input2: df
+            };
+        }
+        if (typeof f === 'string' && !isNaN(f)) {
+            return {
+                operator: 'multiplication',
+                input1: {
+                    operator: 'multiplication',
+                    input1: node,
+                    input2: { operator: 'ln', input1: f }
+                },
+                input2: dg
             };
         }
     }
 
-    // Trigonometric Rules
     if (op === 'sin') {
-        return {
-            operator: 'multiplication',
-            input1: df,
-            input2: { operator: 'cos', input1: f }
-        };
+        return { operator: 'multiplication', input1: df, input2: { operator: 'cos', input1: f } };
     }
     if (op === 'cos') {
         return {
             operator: 'multiplication',
             input1: df,
-            input2: {
-                operator: 'subtraction',
-                input1: '0',
-                input2: { operator: 'sin', input1: f }
-            }
+            input2: { operator: 'subtraction', input1: '0', input2: { operator: 'sin', input1: f } }
         };
     }
     if (op === 'tan') {
         return {
             operator: 'multiplication',
             input1: df,
-            input2: {
-                operator: 'exponentiation',
-                input1: { operator: 'sec', input1: f },
-                input2: '2'
-            }
-        };
-    }
-    if (op === 'csc') {
-        return {
-            operator: 'multiplication',
-            input1: df,
-            input2: {
-                operator: 'subtraction',
-                input1: '0',
-                input2: {
-                    operator: 'multiplication',
-                    input1: { operator: 'csc', input1: f },
-                    input2: { operator: 'cot', input1: f }
-                }
-            }
-        };
-    }
-    if (op === 'sec') {
-        return {
-            operator: 'multiplication',
-            input1: df,
-            input2: {
-                operator: 'multiplication',
-                input1: { operator: 'sec', input1: f },
-                input2: { operator: 'tan', input1: f }
-            }
-        };
-    }
-    if (op === 'cot') {
-        return {
-            operator: 'multiplication',
-            input1: df,
-            input2: {
-                operator: 'subtraction',
-                input1: '0',
-                input2: {
-                    operator: 'exponentiation',
-                    input1: { operator: 'csc', input1: f },
-                    input2: '2'
-                }
-            }
+            input2: { operator: 'exponentiation', input1: { operator: 'sec', input1: f }, input2: '2' }
         };
     }
 
-    // Inverse Trigonometric Rules
-    if (op === 'asin') {
-        return {
-            operator: 'division',
-            input1: df,
-            input2: {
-                operator: 'exponentiation',
-                input1: {
-                    operator: 'subtraction',
-                    input1: '1',
-                    input2: { operator: 'exponentiation', input1: f, input2: '2' }
-                },
-                input2: '0.5'
-            }
-        };
-    }
-    if (op === 'acos') {
-        return {
-            operator: 'division',
-            input1: {
-                operator: 'subtraction',
-                input1: '0',
-                input2: df
-            },
-            input2: {
-                operator: 'exponentiation',
-                input1: {
-                    operator: 'subtraction',
-                    input1: '1',
-                    input2: { operator: 'exponentiation', input1: f, input2: '2' }
-                },
-                input2: '0.5'
-            }
-        };
-    }
-    if (op === 'atan') {
-        return {
-            operator: 'division',
-            input1: df,
-            input2: {
-                operator: 'addition',
-                input1: '1',
-                input2: { operator: 'exponentiation', input1: f, input2: '2' }
-            }
-        };
-    }
-    if (op === 'acsc') {
-        return {
-            operator: 'division',
-            input1: {
-                operator: 'subtraction',
-                input1: '0',
-                input2: df
-            },
-            input2: {
-                operator: 'multiplication',
-                input1: {
-                    operator: 'exponentiation',
-                    input1: {
-                        operator: 'subtraction',
-                        input1: { operator: 'exponentiation', input1: f, input2: '2' },
-                        input2: '1'
-                    },
-                    input2: '0.5'
-                },
-                input2: {
-                    operator: 'absolute', // or keep plain multiplication depending on how you represent abs
-                    input1: f
-                }
-            }
-        };
-    }
-    if (op === 'asec') {
-        return {
-            operator: 'division',
-            input1: df,
-            input2: {
-                operator: 'multiplication',
-                input1: {
-                    operator: 'exponentiation',
-                    input1: {
-                        operator: 'subtraction',
-                        input1: { operator: 'exponentiation', input1: f, input2: '2' },
-                        input2: '1'
-                    },
-                    input2: '0.5'
-                },
-                input2: {
-                    operator: 'absolute',
-                    input1: f
-                }
-            }
-        };
-    }
-    if (op === 'acot') {
-        return {
-            operator: 'division',
-            input1: {
-                operator: 'subtraction',
-                input1: '0',
-                input2: df
-            },
-            input2: {
-                operator: 'addition',
-                input1: '1',
-                input2: { operator: 'exponentiation', input1: f, input2: '2' }
-            }
-        };
-    }
-
-    // Leave unknown nodes un-differentiated instead of throwing an error
     return node;
-}
-globalThis.integral = function(node, variable = 'x') {
-    if (typeof node === 'string') {
-        if (node === variable) {
-            // ∫ x dx = (1/2) * x^2
+};
+
+// Returns the derived AST object as intended
+String.prototype.prime = function(variable = 'x') {
+    const ast = Math.AST.encode(this);
+    return derivative(ast, variable);
+};
+
+globalThis.integral = {
+    indefinite: function(node, variable = 'x') {
+        if (typeof node === 'string') {
+            if (node === variable) {
+                return {
+                    operator: 'multiplication',
+                    input1: { operator: 'division', input1: '1', input2: '2' },
+                    input2: { operator: 'exponentiation', input1: variable, input2: '2' }
+                };
+            }
+            return { operator: 'multiplication', input1: node, input2: variable };
+        }
+
+        if (typeof node === 'number' || !isNaN(node)) {
+            return { operator: 'multiplication', input1: String(node), input2: variable };
+        }
+
+        const op = node.operator;
+        const f = node.input1;
+        const g = node.input2;
+
+        if (op === 'addition') {
             return {
-                operator: 'multiplication',
-                input1: { operator: 'division', input1: '1', input2: '2' },
-                input2: { operator: 'exponentiation', input1: variable, input2: '2' }
+                operator: 'addition',
+                input1: integral.indefinite(f, variable),
+                input2: integral.indefinite(g, variable)
             };
         }
-        // ∫ c dx = c * x
-        return { operator: 'multiplication', input1: node, input2: variable };
-    }
 
-    if (!isNaN(node)) {
-        // ∫ c dx = c * x
-        return { operator: 'multiplication', input1: String(node), input2: variable };
-    }
-
-    const op = node.operator;
-    const f = node.input1;
-    const g = node.input2;
-
-    // Sum Rule: ∫ (f + g) dx = ∫ f dx + ∫ g dx
-    if (op === 'addition') {
-        return {
-            operator: 'addition',
-            input1: integral(f, variable),
-            input2: integral(g, variable)
-        };
-    }
-
-    // Difference Rule: ∫ (f - g) dx = ∫ f dx - ∫ g dx
-    if (op === 'subtraction') {
-        return {
-            operator: 'subtraction',
-            input1: integral(f, variable),
-            input2: integral(g, variable)
-        };
-    }
-
-    // Power Rule: ∫ x^n dx = (1 / (n + 1)) * x^(n + 1)  (for n != -1)
-    if (op === 'exponentiation' && f === variable && !isNaN(g)) {
-        const n = Number(g);
-        if (n !== -1) {
+        if (op === 'subtraction') {
             return {
-                operator: 'multiplication',
-                input1: { operator: 'division', input1: '1', input2: String(n + 1) },
-                input2: { operator: 'exponentiation', input1: variable, input2: String(n + 1) }
+                operator: 'subtraction',
+                input1: integral.indefinite(f, variable),
+                input2: integral.indefinite(g, variable)
             };
         }
-    }
 
-    // Basic Trigonometric Integrals
-    if (op === 'cos' && f === variable) {
-        // ∫ cos(x) dx = sin(x)
-        return { operator: 'sin', input1: variable };
-    }
+        if (op === 'exponentiation' && f === variable && typeof g === 'string' && !isNaN(g)) {
+            const n = Number(g);
+            if (n !== -1) {
+                return {
+                    operator: 'multiplication',
+                    input1: { operator: 'division', input1: '1', input2: String(n + 1) },
+                    input2: { operator: 'exponentiation', input1: variable, input2: String(n + 1) }
+                };
+            }
+        }
 
-    if (op === 'sin' && f === variable) {
-        // ∫ sin(x) dx = -cos(x)
+        if (op === 'cos' && f === variable) {
+            return { operator: 'sin', input1: variable };
+        }
+
+        if (op === 'sin' && f === variable) {
+            return {
+                operator: 'subtraction',
+                input1: '0',
+                input2: { operator: 'cos', input1: variable }
+            };
+        }
+
         return {
-            operator: 'subtraction',
-            input1: '0',
-            input2: { operator: 'cos', input1: variable }
+            operator: 'integral',
+            input1: node,
+            input2: variable
         };
-    }
+    },
 
-    if (op === 'exponentiation' && f.operator === 'sec' && f.input1 === variable && g === '2') {
-        // Correctly captures sec(x)^2 and resolves to tan(x)
-        return { operator: 'tan', input1: variable };
+    definite: function(a, b, expr, variable = 'x') {
+        const ast = typeof expr === 'string' ? Math.AST.encode(expr) : expr;
+        const antiDerivative = integral.indefinite(ast, variable);
+        
+        const valB = Math.AST.evaluate(antiDerivative, { [variable]: b });
+        const valA = Math.AST.evaluate(antiDerivative, { [variable]: a });
+        
+        return valB - valA;
     }
-
-    // Leave unknown nodes un-integrated
-    return {
-        operator: 'integral',
-        input1: node,
-        input2: variable
-    };
-}
-globalThis.limitIntegral = function(a,b,f,variable='x'){
-    return Math.AST.evaluate(integral(f,variable),{[variable]:b})-Math.AST.evaluate(integral(f,variable),{[variable]:a})
-}
+};
 
 //rounding
 globalThis.round = function(n, i=1) {
